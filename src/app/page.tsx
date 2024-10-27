@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div>
       <center>
-        <h1>Home Page</h1>
+        <h1>QR Code Generate</h1>
       </center>
       <QRCodeComponent />
     </div>
