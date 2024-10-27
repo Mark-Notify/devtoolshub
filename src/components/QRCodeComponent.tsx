@@ -48,12 +48,18 @@ function QRCodeComponent() {
     }
   };
 
-  // Handle Enter key press
+  // Function to handle Enter key press
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim()) {
       generateQRCode(inputValue.trim());
     }
   };
+
+  // useEffect to generate QR code with the current URL when component mounts
+  useEffect(() => {
+    const currentUrl = window.location.href; // Get the current URL
+    generateQRCode(currentUrl); // Automatically generate the QR code
+  }, []); // Empty dependency array to run this effect only once when the component mounts
 
   return (
     <center>
@@ -64,9 +70,18 @@ function QRCodeComponent() {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyPress={handleKeyPress} 
-          style={{ padding: '10px', width: '300px', marginBottom: '10px' }} // Basic styling
+          style={{ 
+            padding: '10px', 
+            width: '300px', 
+            marginBottom: '10px', 
+            borderColor: '#000', 
+            borderWidth: '2px', 
+            borderRadius: '5px', 
+            outline: 'none', 
+            color: '#000',
+          }} 
         />
-        {loading && <p>Loading QR Code...</p>}
+        {loading && <p style={{ color: 'blue' }}>Loading QR Code...</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" />}
       </div>
