@@ -18,10 +18,14 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+          rel="stylesheet"
+        ></link>
       </head>
       <body
         className="bg-fixed bg-cover"
-        style={{ fontFamily: "Prompt, sans-serif" }}
+        style={{ fontFamily: "Playfair Display, sans-serif" }}
       >
         <div className="relative z-10">{children}</div>
 
@@ -29,8 +33,15 @@ export default function RootLayout({
         <footer className="footer text-center text-white mt-4">
           <div className="container">
             <p>
-              &copy; {new Date().getFullYear()} Dev Tools. All rights
-              reserved. | <a href="https://devtools2.vercel.app" target="_blank" rel="noopener noreferrer">Devtools.app</a>
+              &copy; {new Date().getFullYear()} Dev Tools. All rights reserved.
+              |{" "}
+              <a
+                href="https://devtools2.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                devtools.app
+              </a>
             </p>
           </div>
         </footer>
