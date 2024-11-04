@@ -73,3 +73,14 @@ h1, h2, h3, h4, h5 {
   border-radius: 4px;
   background-color: #1e1e1e;
 }
+
+.footer {
+  background-color: #333;
+  /* สีพื้นหลังของ footer */
+  padding: 1rem 0;
+  /* เพิ่ม padding ให้ footer */
+  position: relative;
+  /* ทำให้ footer อยู่ที่ด้านล่าง */
+  bottom: 0;
+  width: 100%;
+}

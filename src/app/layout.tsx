@@ -24,6 +24,16 @@ export default function RootLayout({
         style={{ fontFamily: "Prompt, sans-serif" }}
       >
         <div className="relative z-10">{children}</div>
+
+        {/* Footer */}
+        <footer className="footer text-center text-white mt-4">
+          <div className="container">
+            <p>
+              &copy; {new Date().getFullYear()} Your Company. All rights
+              reserved. | yourdomain.com
+            </p>
+          </div>
+        </footer>
       </body>
     </html>
   );

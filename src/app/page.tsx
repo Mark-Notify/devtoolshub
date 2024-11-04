@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { unserialize } from 'php-serialize';
+import { unserialize } from "php-serialize";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
@@ -14,7 +14,7 @@ export default function HomePage() {
   const processData = () => {
     let result = "";
 
-    const isJSON = (data: string): boolean => { // กำหนดประเภทของ data เป็น string
+    const isJSON = (data: string): boolean => {
       try {
         JSON.parse(data);
         return true;
@@ -23,8 +23,15 @@ export default function HomePage() {
       }
     };
 
-    const isPHPSerialized = (data: string): boolean => { // กำหนดประเภทของ data เป็น string
-      return data.startsWith("a:") || data.startsWith("O:") || data.startsWith("s:") || data.startsWith("i:") || data.startsWith("b:") || data.startsWith("d:");
+    const isPHPSerialized = (data: string): boolean => {
+      return (
+        data.startsWith("a:") ||
+        data.startsWith("O:") ||
+        data.startsWith("s:") ||
+        data.startsWith("i:") ||
+        data.startsWith("b:") ||
+        data.startsWith("d:")
+      );
     };
 
     if (isJSON(inputData)) {
@@ -38,8 +45,8 @@ export default function HomePage() {
         setOutputData(result);
       } catch (error) {
         console.error("Unserialization error:", error);
-        // ใช้ Type Assertion เพื่อให้ TypeScript รู้ว่า error เป็นประเภท Error
-        const errorMessage = (error as Error).message || "Unknown error occurred";
+        const errorMessage =
+          (error as Error).message || "Unknown error occurred";
         setOutputData(`Error: Invalid PHP serialized data! ${errorMessage}`);
       }
     } else {
