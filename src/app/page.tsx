@@ -60,6 +60,23 @@ export default function HomePage() {
     });
   };
 
+  const copyToInlineClipboard = () => {
+    try {
+      // แปลง jsonString เป็น object ก่อน
+      const jsonObject = JSON.parse(outputData);
+
+      // แปลงกลับไปเป็น string แบบ inline โดยไม่มีการจัดรูปแบบ
+      const inlineJSON = JSON.stringify(jsonObject);
+
+      // คัดลอก inline JSON ไปยัง clipboard โดยตรง (ไม่ต้อง JSON.stringify ซ้ำอีกครั้ง)
+      navigator.clipboard.writeText(inlineJSON).catch((err) => {
+        console.error("Failed to copy output: ", err);
+      });
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+    }
+  };
+
   return (
     <div className="container mt-4">
       <h1 className="text-center text-white">Programmer Helper Tool</h1>
@@ -67,6 +84,7 @@ export default function HomePage() {
       <div className="form-group text-white">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
         <textarea
+          style={{ fontFamily: "Prompt, sans-serif" }}
           id="inputData"
           className="input-area opacity-55"
           placeholder="Paste your JSON or serialized data here..."
@@ -78,12 +96,22 @@ export default function HomePage() {
       <label htmlFor="outputData" className="text-white">
         Formatted Output
       </label>
-      <button
-        className="btn btn-secondary btn-sm float-right"
-        onClick={copyToClipboard}
-      >
-        Copy
-      </button>
+      <div className="float-right">
+        <button
+          className="rounded-md rounded-r-none bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          type="button"
+          onClick={copyToInlineClipboard}
+        >
+          Copy Inline
+        </button>
+        <button
+          className="rounded-md rounded-l-none bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          type="button"
+          onClick={copyToClipboard}
+        >
+          Copy
+        </button>
+      </div>
       <Editor
         height="80vh"
         language="json"

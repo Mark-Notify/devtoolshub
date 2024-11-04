@@ -29,8 +29,8 @@ body {
   background-color: rgba(10, 10, 10, 0.85);
   /* font-family: "Playfair Display", "Prompt", sans-serif; */
   font-family: "Playfair Display", serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+  /* font-optical-sizing: auto;
+  font-style: normal; */
   color: var(--foreground);
   /* width: 100vw; */
   /* height: 100vh; */
