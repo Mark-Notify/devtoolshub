@@ -3,20 +3,9 @@ import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize } from 'php-serialize';
 
-export const Metadata = {
-  title: "Programmer Helper Tools",
-  description: "Format JSON and Unserialize Data in one place with a user-friendly Monaco editor.",
-  keywords: "Programmer Helper, JSON formatter, Unserialize, Monaco editor, Developer tools",
-  openGraph: {
-    title: "Programmer Helper Tools",
-    description: "A tool for developers to format JSON and unserialize data with ease.",
-    type: "website",
-  },
-};
-
 export default function HomePage() {
-  const [inputData, setInputData] = useState("");
-  const [outputData, setOutputData] = useState("");
+  const [inputData, setInputData] = useState<string>("");
+  const [outputData, setOutputData] = useState<string>("");
 
   useEffect(() => {
     processData();
@@ -25,7 +14,7 @@ export default function HomePage() {
   const processData = () => {
     let result = "";
 
-    const isJSON = (data) => {
+    const isJSON = (data: string): boolean => { // กำหนดประเภทของ data เป็น string
       try {
         JSON.parse(data);
         return true;
@@ -34,7 +23,7 @@ export default function HomePage() {
       }
     };
 
-    const isPHPSerialized = (data) => {
+    const isPHPSerialized = (data: string): boolean => { // กำหนดประเภทของ data เป็น string
       return data.startsWith("a:") || data.startsWith("O:") || data.startsWith("s:") || data.startsWith("i:") || data.startsWith("b:") || data.startsWith("d:");
     };
 
@@ -44,16 +33,17 @@ export default function HomePage() {
       setOutputData(result);
     } else if (isPHPSerialized(inputData)) {
       try {
-        // แปลงข้อมูลจาก PHP serialization เป็น JavaScript object
         const unserializedData = unserialize(inputData.trim());
         result = JSON.stringify(unserializedData, null, 4);
         setOutputData(result);
       } catch (error) {
         console.error("Unserialization error:", error);
-        setOutputData(`Error: Invalid PHP serialized data! ${error.message}`);
+        // ใช้ Type Assertion เพื่อให้ TypeScript รู้ว่า error เป็นประเภท Error
+        const errorMessage = (error as Error).message || "Unknown error occurred";
+        setOutputData(`Error: Invalid PHP serialized data! ${errorMessage}`);
       }
     } else {
-      // setOutputData("Error: Input data is neither JSON nor PHP serialized format.");
+      setOutputData("Error: Input data is neither JSON nor PHP serialized format.");
     }
   };
 
@@ -65,7 +55,7 @@ export default function HomePage() {
 
   return (
     <div className="container mt-4">
-      <h1 className="text-center text-white">Programmer Helper Tools</h1>
+      <h1 className="text-center text-white">Programmer Helper Tool</h1>
 
       <div className="form-group text-white">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
@@ -88,7 +78,7 @@ export default function HomePage() {
         Copy
       </button>
       <Editor
-        height="70vh"
+        height="90vh"
         language="json"
         value={outputData}
         theme="vs-dark"
