@@ -29,8 +29,8 @@ export default function RootLayout({
         <footer className="footer text-center text-white mt-4">
           <div className="container">
             <p>
-              &copy; {new Date().getFullYear()} Your Company. All rights
-              reserved. | yourdomain.com
+              &copy; {new Date().getFullYear()} Dev Tools. All rights
+              reserved. | <a href="https://devtools2.vercel.app" target="_blank" rel="noopener noreferrer">Devtools.app</a>
             </p>
           </div>
         </footer>
