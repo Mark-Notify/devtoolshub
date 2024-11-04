@@ -43,7 +43,7 @@ export default function HomePage() {
         setOutputData(`Error: Invalid PHP serialized data! ${errorMessage}`);
       }
     } else {
-      setOutputData("Error: Input data is neither JSON nor PHP serialized format.");
+      // setOutputData("Error: Input data is neither JSON nor PHP serialized format.");
     }
   };
 
@@ -78,7 +78,7 @@ export default function HomePage() {
         Copy
       </button>
       <Editor
-        height="90vh"
+        height="80vh"
         language="json"
         value={outputData}
         theme="vs-dark"
