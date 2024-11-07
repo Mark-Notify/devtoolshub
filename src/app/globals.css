@@ -26,7 +26,7 @@ body {
 body {
   @apply bg-fixed bg-center bg-no-repeat bg-cover;
 /*   background-image: url('../../public/hacker-cat.png'); */
-  background-color: #000 !important;
+  background-color: #0a0a0a !important;
   /* font-family: "Playfair Display", "Prompt", sans-serif; */
   font-family: "Playfair Display", serif;
   /* font-optical-sizing: auto;
