@@ -86,7 +86,7 @@ export default function HomePage() {
         <textarea
           style={{ fontFamily: "Prompt, sans-serif" }}
           id="inputData"
-          className="input-area opacity-55"
+          className="input-area"
           placeholder="Paste your JSON or serialized data here..."
           value={inputData}
           onChange={(e) => setInputData(e.target.value)}
