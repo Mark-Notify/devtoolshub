@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize } from "php-serialize";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
