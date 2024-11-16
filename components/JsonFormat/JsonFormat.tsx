@@ -79,8 +79,11 @@ export default function HomePage() {
   };
 
   // ฟังก์ชันที่ใช้เก็บค่าจาก Monaco Editor
-  const handleEditorChange = (value) => {
-    setOutputData(value);
+  const handleEditorChange = (value: string | undefined) => {
+    // ตรวจสอบว่า value มีค่าหรือไม่
+    if (value !== undefined) {
+      setOutputData(value);
+    }
   };
 
   return (
