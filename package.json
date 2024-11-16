@@ -8,11 +8,8 @@
   "scripts": {
     "build": "prisma generate && next build",
     "dev": "next dev",
-    "prisma:deploy": "prisma migrate deploy",
-    "prisma:generate": "prisma generate",
     "setup": "NODE_OPTIONS='--experimental-json-modules' node ./scripts/setup.mjs",
-    "start": "next start",
-    "vercel-build": "export DATABASE_URL=$(node ./scripts/env.mjs) && yarn run prisma:deploy && yarn run setup && yarn run build"
+    "start": "next start"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
