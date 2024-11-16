@@ -77,14 +77,35 @@ export default function HomePage() {
     }
   };
 
+  // ฟังก์ชันที่ใช้เก็บค่าจาก Monaco Editor
+  const handleEditorChange = (value) => {
+    setOutputData(value);
+  };
+
   return (
     <div className="container mt-4">
       {/* <h1 className="text-center text-white">Programmer Helper Tool</h1> */}
 
       <div className="form-group text-white">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
+        <div className="float-right">
+          <button
+            className="rounded-md bg-slate-800 py-2.5 px-5 border border-transparent text-center text-base text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+            type="button"
+            onClick={processData}
+          >
+            Process
+          </button>
+        </div>
         <textarea
-          style={{ fontFamily: "Prompt, sans-serif" }}
+          style={{
+            fontFamily: "Prompt, sans-serif",
+            backgroundColor: "#333", // Dark background color
+            color: "#fff", // Light text color
+            border: "1px solid #555", // Border color for a dark theme
+            padding: "10px",
+            borderRadius: "5px",
+          }}
           id="inputData"
           className="input-area"
           placeholder="Paste your JSON or serialized data here..."
@@ -117,6 +138,7 @@ export default function HomePage() {
         language="json"
         value={outputData}
         theme="vs-dark"
+        onChange={handleEditorChange} // ติดตามการเปลี่ยนแปลงของ Monaco Editor
         options={{
           readOnly: false,
           automaticLayout: true,

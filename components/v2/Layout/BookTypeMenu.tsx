@@ -42,7 +42,7 @@ export default function BookTypeMenu() {
         className='menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52'
       >
         <li>
-          <div className='menu-title'>Book Type</div>
+          <div className='menu-title'>Menu</div>
           <ul>
             {bookTypeList.map((bookType) => (
               <li
