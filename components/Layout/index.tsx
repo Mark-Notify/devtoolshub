@@ -9,7 +9,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 
-import Header, { HeaderProps } from "components/v2/Layout/Header";
+import Header, { HeaderProps } from "components/Layout/Header";
 
 export interface CommonLayoutProps {
   children?: any;

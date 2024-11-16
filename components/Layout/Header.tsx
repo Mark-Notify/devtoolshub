@@ -7,7 +7,7 @@ import {
   CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 
-import BookTypeMenu from 'components/v2/Layout/BookTypeMenu';
+import BookTypeMenu from 'components/Layout/BookTypeMenu';
 import { shoppingCartState } from 'atoms';
 import { useRecoilState } from 'recoil';
 import { calcCartItemSum } from 'lib/utils';

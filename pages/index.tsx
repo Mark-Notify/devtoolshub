@@ -4,22 +4,11 @@ import Head from 'next/head';
 import { useRecoilState } from 'recoil';
 import { homePageBookSumState, homePageQueryState } from 'atoms';
 
-import CommonLayout from 'components/v2/Layout';
-import { FilteredChips } from 'components/v2/Chips/FilteredChips';
-// import BookList from 'components/v2/Cards/ShoppingItemCardList';
-import Pagination from 'components/v2/Pagination';
+import CommonLayout from 'components/Layout';
 import JsonFormat from 'components/JsonFormat/JsonFormat';
 import { PAGE_SIZE } from 'const';
 
 const Home: NextPage = () => {
-  const [homePageQueryData, setHomePageQueryData] =
-    useRecoilState(homePageQueryState);
-  const [homePageBookSum] = useRecoilState(homePageBookSumState);
-
-  const handleClickPagination = (page: number) => {
-    setHomePageQueryData({ ...homePageQueryData, page });
-  };
-
   return (
     <>
       <Head>
@@ -29,20 +18,7 @@ const Home: NextPage = () => {
       </Head>
 
       <CommonLayout>
-        {(homePageQueryData.sort || homePageQueryData.type) && (
-          <FilteredChips
-            data={homePageQueryData}
-            onChange={setHomePageQueryData}
-          />
-        )}
         <JsonFormat />
-        <div className='flex justify-center pt-6'>
-          <Pagination
-            currentPage={homePageQueryData?.page || 1}
-            pages={Math.round(homePageBookSum / PAGE_SIZE)}
-            onClick={handleClickPagination}
-          />
-        </div>
       </CommonLayout>
     </>
   );

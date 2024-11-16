@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useRecoilState } from 'recoil';
 
-import CommonLayout from 'components/v2/Layout';
+import CommonLayout from 'components/Layout';
 import { bookDetailsIdState } from 'atoms';
 import BookInfoSection from 'components/v2/BookDetails/BookInfoSection';
 import BookReviewsSection from 'components/v2/BookDetails/BookReviewsSection';
