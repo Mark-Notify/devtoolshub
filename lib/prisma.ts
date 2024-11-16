@@ -24,15 +24,15 @@ const databaseURL = DATABASE_URL
     ? `${DATABASE_URL}?${SSL_FLAGS}`
     : `mysql://${TIDB_USER}:${TIDB_PASSWORD}@${TIDB_HOST}:${TIDB_PORT}/${TIDB_DB_NAME}?${SSL_FLAGS}`;
 
-if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: databaseURL,
-      },
-    },
-  });
-} else {
+// if (process.env.NODE_ENV === 'production') {
+//   prisma = new PrismaClient({
+//     datasources: {
+//       db: {
+//         url: databaseURL,
+//       },
+//     },
+//   });
+// } else {
   if (!global.prisma) {
     global.prisma = new PrismaClient({
       datasources: {
@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === 'production') {
     });
   }
   prisma = global.prisma
-}
+// }
 
 BigInt.prototype.toJSON = function() {       
   return this.toString()
