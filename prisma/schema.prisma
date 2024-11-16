@@ -15,11 +15,11 @@ generator client {
 // More descriptions about MySQL compatibility:
 // Refercene: https://docs.pingcap.com/tidb/dev/mysql-compatibility
 
-datasource db {
-  provider             = "mysql"
-  url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
-}
+//datasource db {
+ // provider             = "mysql"
+ // url                  = env("DATABASE_URL")
+//  referentialIntegrity = "prisma"
+//}
 
 // 
 // https://www.prisma.io/docs/concepts/components/prisma-schema/data-model
