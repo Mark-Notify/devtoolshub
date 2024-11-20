@@ -23,7 +23,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
     <>
       <div
         className="min-h-full"
-        style={{ fontFamily: "Noto Serif Ahom, serif" }}
+        style={{ fontFamily: "Courier Prime, serif" }}
       >
         <Header {...headerProps} />
 
