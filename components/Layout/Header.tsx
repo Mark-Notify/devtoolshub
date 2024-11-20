@@ -29,6 +29,8 @@ export default function Header(props: HeaderProps) {
         href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ahom&display=swap"
         rel="stylesheet"
       />
+      
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     </Head>
       <div className='navbar bg-base-100 mx-auto max-w-7xl mt-4 shadow-xl rounded-box'>
         <div className='navbar-start'>
