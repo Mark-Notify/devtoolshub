@@ -13,7 +13,7 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>Devtools</title>
-        <meta name='description' content='Bookstore Home Page' />
+        <meta name='description' content='Programmer Helper Tools' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
