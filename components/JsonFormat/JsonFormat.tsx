@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize } from "php-serialize";
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
+  const [isFullScreen, setIsFullScreen] = useState(false); // State สำหรับโหมด Full Screen
 
   useEffect(() => {
     processData();
@@ -50,8 +50,6 @@ export default function HomePage() {
           (error as Error).message || "Unknown error occurred";
         setOutputData(`Error: Invalid PHP serialized data! ${errorMessage}`);
       }
-    } else {
-      // setOutputData("Error: Input data is neither JSON nor PHP serialized format.");
     }
   };
 
@@ -63,13 +61,8 @@ export default function HomePage() {
 
   const copyToInlineClipboard = () => {
     try {
-      // แปลง jsonString เป็น object ก่อน
       const jsonObject = JSON.parse(outputData);
-
-      // แปลงกลับไปเป็น string แบบ inline โดยไม่มีการจัดรูปแบบ
       const inlineJSON = JSON.stringify(jsonObject);
-
-      // คัดลอก inline JSON ไปยัง clipboard โดยตรง (ไม่ต้อง JSON.stringify ซ้ำอีกครั้ง)
       navigator.clipboard.writeText(inlineJSON).catch((err) => {
         console.error("Failed to copy output: ", err);
       });
@@ -78,23 +71,27 @@ export default function HomePage() {
     }
   };
 
-  // ฟังก์ชันที่ใช้เก็บค่าจาก Monaco Editor
   const handleEditorChange = (value: string | undefined) => {
-    // ตรวจสอบว่า value มีค่าหรือไม่
     if (value !== undefined) {
       setOutputData(value);
     }
   };
 
-  return (
-    <div className="container mt-4">
-      {/* <h1 className="text-center text-white">Programmer Helper Tool</h1> */}
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+  };
 
+  return (
+    <div
+      className={`container mt-4 ${
+        isFullScreen ? "fullscreen" : ""
+      }`} // เพิ่มคลาส fullscreen
+    >
       <div className="form-group text-white">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
         <div className="float-right">
           <button
-            className="rounded-md bg-slate-800 py-2.5 px-5 border border-transparent text-center text-base text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+            className="rounded-md bg-slate-800 py-2.5 px-5"
             type="button"
             onClick={processData}
           >
@@ -102,19 +99,18 @@ export default function HomePage() {
           </button>
         </div>
         <textarea
+          id="inputData"
+          className="input-area"
+          placeholder="Paste your JSON or Serialized data here..."
+          value={inputData}
+          onChange={(e) => setInputData(e.target.value)}
           style={{
-            fontFamily: "Prompt, sans-serif",
-            backgroundColor: "#333", // Dark background color
-            color: "#fff", // Light text color
-            border: "1px solid #555", // Border color for a dark theme
+            backgroundColor: "#333",
+            color: "#fff",
+            border: "1px solid #555",
             padding: "10px",
             borderRadius: "5px",
           }}
-          id="inputData"
-          className="input-area"
-          placeholder="Paste your JSON or serialized data here..."
-          value={inputData}
-          onChange={(e) => setInputData(e.target.value)}
         ></textarea>
       </div>
 
@@ -123,31 +119,51 @@ export default function HomePage() {
       </label>
       <div className="float-right">
         <button
-          className="rounded-md rounded-r-none bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          className="rounded-md rounded-r-none bg-slate-800 py-2 px-4"
           type="button"
           onClick={copyToInlineClipboard}
         >
           Copy Inline
         </button>
         <button
-          className="rounded-md rounded-l-none bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          className="rounded-md rounded-l-none bg-slate-800 py-2 px-4"
           type="button"
           onClick={copyToClipboard}
         >
           Copy
         </button>
+        <button
+          className="rounded-md bg-slate-800 py-2 px-4 ml-2"
+          type="button"
+          onClick={toggleFullScreen}
+        >
+          {isFullScreen ? "Exit Full Screen" : "Full Screen"}
+        </button>
       </div>
+
       <Editor
-        height="80vh"
+        height={isFullScreen ? "100vh" : "80vh"}
         language="json"
         value={outputData}
         theme="vs-dark"
-        onChange={handleEditorChange} // ติดตามการเปลี่ยนแปลงของ Monaco Editor
+        onChange={handleEditorChange}
         options={{
           readOnly: false,
           automaticLayout: true,
         }}
       />
+
+      <style jsx>{`
+        .fullscreen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1000;
+          background: #1e1e1e; /* สีพื้นหลัง */
+        }
+      `}</style>
     </div>
   );
 }
