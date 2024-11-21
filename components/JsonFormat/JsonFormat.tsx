@@ -132,13 +132,13 @@ export default function HomePage() {
         >
           Copy
         </button>
-        <button
+        {/* <button
           className="rounded-md bg-slate-800 py-2 px-4 ml-2"
           type="button"
           onClick={toggleFullScreen}
         >
           {isFullScreen ? "Exit Full Screen" : "Full Screen"}
-        </button>
+        </button> */}
       </div>
 
       <Editor
