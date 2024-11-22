@@ -1,77 +1,58 @@
+/* Tailwind base styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Define light mode colors by default */
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* If theme is dark, override the variables */
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
-:root, [data-theme] {
-    /*     background-color: hsl(var(--b1) / var(--tw-bg-opacity, 1)); */
-    background-color: unset; 
-    color: hsl(var(--bc) / var(--tw-text-opacity, 1));
+/* If theme is light, override the variables */
+[data-theme="light"] {
+  --background: #dfe6e9;
+  --foreground: #171717;
 }
 
-
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+/* Apply background and foreground variables globally */
+:root,
+[data-theme] {
+  background-color: var(--background) !important;
 }
 
-/* src/app/globals.css */
-/* src/app/globals.css */
-
+/* Apply background and text colors based on the defined CSS variables */
 body {
   @apply bg-fixed bg-center bg-no-repeat bg-cover;
-/*   background-image: url('../../public/hacker-cat.png'); */
-  background-color: #0a0a0a !important;
-  /* font-family: "Playfair Display", "Prompt", sans-serif; */
-  font-family: "Playfair Display", serif;
-  /* font-optical-sizing: auto;
-  font-style: normal; */
   color: var(--foreground);
-  /* width: 100vw; */
-  /* height: 100vh; */
-  /* position: relative; */
+  font-family: "Playfair Display", serif;
+  background-color: var(--background);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: rgba(0, 0, 0, 0.85);
-  }
-}
-
-/* body {
-  background-image: url('../../public/hacker-cat.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  font-family: "Prompt", sans-serif;
-} */
-
-h1, h2, h3, h4, h5 {
-  /* color: #fff; */
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-weight: 900;
 }
 
+/* Additional styling for input area and editor */
 .input-area {
   width: 100%;
   height: 250px;
   font-size: 18px;
   padding: 10px;
-  color: #0a0a0a;
-  border: 2px solid #ced4da;
+  color: var(--foreground);
+  /* background-color: var(--background); */
+  border: 2px solid var(--foreground);
   border-radius: 4px;
   margin-bottom: 20px;
 }
@@ -80,18 +61,16 @@ h1, h2, h3, h4, h5 {
   width: 100%;
   min-height: 300px;
   height: calc(100vh - 400px);
-  border: 1px solid #ced4da;
+  border: 3px solid var(--foreground);
   border-radius: 4px;
-  background-color: #1e1e1e;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
-.footer {
-  background-color: #333;
-  /* สีพื้นหลังของ footer */
-  padding: 1rem 0;
-  /* เพิ่ม padding ให้ footer */
-  position: relative;
-  /* ทำให้ footer อยู่ที่ด้านล่าง */
-  bottom: 0;
-  width: 100%;
+footer {
+  border-top: 2px solid var(--foreground);
+}
+
+button {
+  border: 2px solid var(--foreground);
 }

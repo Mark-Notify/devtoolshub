@@ -7,11 +7,6 @@ export const homePageBookSumState = atom({
   default: 0,
 });
 
-export const shoppingCartState = atom<shoppingCartItemProps[]>({
-  key: "shoppingCartState",
-  default: [],
-});
-
 export const bookTypeListState = atom<string[]>({
   key: "bookTypeListState",
   default: ['xxx','yyy','zzz'],
@@ -20,14 +15,4 @@ export const bookTypeListState = atom<string[]>({
 export const homePageQueryState = atom({
   key: "homePageQueryState",
   default: { page: 1, type: "", sort: "", size: PAGE_SIZE },
-});
-
-export const bookDetailsIdState = atom({
-  key: "bookDetailsIdState",
-  default: "",
-});
-
-export const currentUserIdState = atom({
-  key: "currentUserIdState",
-  default: "1",
 });

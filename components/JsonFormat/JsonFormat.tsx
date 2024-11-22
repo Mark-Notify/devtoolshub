@@ -1,4 +1,5 @@
-"use client";
+"use client"; // Ensures this code only runs on the client
+
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize } from "php-serialize";
@@ -6,7 +7,19 @@ import { unserialize } from "php-serialize";
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
-  const [isFullScreen, setIsFullScreen] = useState(false); // State สำหรับโหมด Full Screen
+  const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
+  const [theme, setTheme] = useState<string | null>(null); // State to store theme
+
+  useEffect(() => {
+    // Get theme from localStorage once the component is mounted
+    const storedTheme = localStorage.getItem("theme");    
+    if (storedTheme) {
+      setTheme(storedTheme); // Set the stored theme if available
+    } else {
+      // Default to light theme if no stored theme
+      setTheme("dark");
+    }
+  }, []); // Run only once after the component mounts
 
   useEffect(() => {
     processData();
@@ -82,16 +95,12 @@ export default function HomePage() {
   };
 
   return (
-    <div
-      className={`container mt-4 ${
-        isFullScreen ? "fullscreen" : ""
-      }`} // เพิ่มคลาส fullscreen
-    >
-      <div className="form-group text-white">
+    <div className={`container mt-4 ${isFullScreen ? "fullscreen" : ""}`}>
+      <div className="form-group">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
         <div className="float-right">
           <button
-            className="rounded-md bg-slate-800 py-2.5 px-5"
+            className="rounded-md py-2 px-4 border"
             type="button"
             onClick={processData}
           >
@@ -105,8 +114,6 @@ export default function HomePage() {
           value={inputData}
           onChange={(e) => setInputData(e.target.value)}
           style={{
-            backgroundColor: "#333",
-            color: "#fff",
             border: "1px solid #555",
             padding: "10px",
             borderRadius: "5px",
@@ -114,44 +121,43 @@ export default function HomePage() {
         ></textarea>
       </div>
 
-      <label htmlFor="outputData" className="text-white">
-        Formatted Output
-      </label>
+      <label htmlFor="outputData">Formatted Output</label>
       <div className="float-right">
         <button
-          className="rounded-md rounded-r-none bg-slate-800 py-2 px-4"
+          className="rounded-md rounded-r-none py-2 px-4 border"
           type="button"
           onClick={copyToInlineClipboard}
         >
           Copy Inline
         </button>
         <button
-          className="rounded-md rounded-l-none bg-slate-800 py-2 px-4"
+          className="rounded-md rounded-l-none py-2 px-4 border"
           type="button"
           onClick={copyToClipboard}
         >
           Copy
         </button>
         {/* <button
-          className="rounded-md bg-slate-800 py-2 px-4 ml-2"
+          className="rounded-md rounded-l-none py-2 px-4 border"
           type="button"
           onClick={toggleFullScreen}
         >
-          {isFullScreen ? "Exit Full Screen" : "Full Screen"}
+          Full
         </button> */}
       </div>
-
-      <Editor
-        height={isFullScreen ? "100vh" : "80vh"}
-        language="json"
-        value={outputData}
-        theme="vs-dark"
-        onChange={handleEditorChange}
-        options={{
-          readOnly: false,
-          automaticLayout: true,
-        }}
-      />
+      <div className="max-w-sm rounded overflow-hidden shadow-lg w-full lg:max-w-full lg:flex">
+        <Editor
+          height={isFullScreen ? "100vh" : "80vh"}
+          language="json"
+          value={outputData}
+          theme={theme === "dark" ? "vs-dark" : "vs-light"} // Use the theme from state
+          onChange={handleEditorChange}
+          options={{
+            readOnly: false,
+            automaticLayout: true,
+          }}
+        />
+      </div>
 
       <style jsx>{`
         .fullscreen {
@@ -161,7 +167,7 @@ export default function HomePage() {
           width: 100%;
           height: 100%;
           z-index: 1000;
-          background: #1e1e1e; /* สีพื้นหลัง */
+          background: #1e1e1e; /* Dark background for fullscreen */
         }
       `}</style>
     </div>

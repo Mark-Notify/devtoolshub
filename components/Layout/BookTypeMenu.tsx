@@ -4,9 +4,6 @@ import { useSnackbar } from 'notistack';
 import { useRecoilState } from 'recoil';
 import { bookTypeListState, homePageQueryState } from 'atoms';
 import clsx from 'clsx';
-
-import { SORT_VALUE } from 'const';
-import { upperCaseEachWord } from 'lib/utils';
 import { fetchBookTypes } from 'lib/http';
 
 export default function BookTypeMenu() {

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useRecoilState } from 'recoil';
-import { homePageBookSumState, homePageQueryState } from 'atoms';
 
 import CommonLayout from 'components/Layout';
 import JsonFormat from 'components/JsonFormat/JsonFormat';
