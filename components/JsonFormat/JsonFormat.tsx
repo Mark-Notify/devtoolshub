@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize } from "php-serialize";
+import Swal from "sweetalert2";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
@@ -12,7 +13,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Get theme from localStorage once the component is mounted
-    const storedTheme = localStorage.getItem("theme");    
+    const storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
       setTheme(storedTheme); // Set the stored theme if available
     } else {
@@ -67,20 +68,40 @@ export default function HomePage() {
   };
 
   const copyToClipboard = () => {
+    if (outputData.trim() === "") {
+      console.error("Failed to copy output: empty");
+      alertError('Output is empty');
+      return '';
+    }
     navigator.clipboard.writeText(outputData).catch((err) => {
       console.error("Failed to copy output: ", err);
+      alertError("Failed to copy output!");
     });
+    alertCopy();
   };
 
   const copyToInlineClipboard = () => {
     try {
+      // Check if outputData is a valid JSON string
+      if (outputData.trim() === "") {
+        console.error("Failed to copy output: empty");
+        alertError('Output is empty');
+        return '';
+      }
+      if (outputData.trim() === "") {
+        console.error("Failed to copy output: empty");
+        alertError('Output is empty');
+        return '';
+      }
       const jsonObject = JSON.parse(outputData);
       const inlineJSON = JSON.stringify(jsonObject);
       navigator.clipboard.writeText(inlineJSON).catch((err) => {
         console.error("Failed to copy output: ", err);
+        alertError("Failed to copy output!");
       });
+      alertCopy('Copied inline to clipboard!');
     } catch (error) {
-      console.error("Error parsing JSON:", error);
+      alertError("Invalid JSON format.");
     }
   };
 
@@ -92,6 +113,42 @@ export default function HomePage() {
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
+  };
+
+  const alertCopy: (title?: string) => void = (title) => {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      iconColor: '#dfe6e9',
+      title: title || 'Copied to clipboard!', // Use default text if no title is provided
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: '#4caf50',
+      color: '#fff',
+      width: 300,
+      padding: '10px',
+    });
+  };
+
+  const alertError: (message?: string) => void = (message) => {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      iconColor: '#dfe6e9',
+      // title: 'Oops...',
+      title: message || 'Something went wrong!',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      // confirmButtonText: 'Close',
+      background: '#fd79a8', // Red background for error
+      color: '#fff', // White text
+      width: 300,
+      padding: '10px',
+    });
   };
 
   return (

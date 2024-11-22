@@ -30,7 +30,8 @@
     "postcss": "^8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "recoil": "^0.7.5"
+    "recoil": "^0.7.5",
+    "sweetalert2": "^11.14.5"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",

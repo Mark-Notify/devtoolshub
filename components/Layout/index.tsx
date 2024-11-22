@@ -25,14 +25,15 @@ export default function CommonLayout(props: CommonLayoutProps) {
     <div className="min-h-full" style={{ fontFamily: "Courier Prime, serif" }}>
       <Header {...headerProps} onThemeChange={handleThemeChange} />
       <main>
-        <div key={refreshKey} className="mx-auto max-w-7xl py-6 px-4">
+        <div key={refreshKey} className="mx-auto min-h-7xl max-w-7xl py-6 px-4">
           {/* การเพิ่ม key ให้กับ children เพื่อให้ React รีเรนเดอร์ใหม่ทุกครั้งที่ refreshKey เปลี่ยน */}
           {children}
         </div>
-        <footer className="py-4 shadow">
-          <div className="container mx-auto text-center">
+        <footer className="py-4 shadow min-[20]:">
+          <div className="container text-center">
             <p className="text-lg">
-              &copy; {new Date().getFullYear()} Dev Tools. All rights reserved. |{" "}
+              &copy; {new Date().getFullYear()} Dev Tools. All rights reserved.
+              |{" "}
               <a
                 href="https://devtools2.vercel.app"
                 target="_blank"

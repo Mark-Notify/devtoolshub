@@ -67,10 +67,10 @@ h5 {
   color: var(--foreground);
 }
 
-footer {
-  border-top: 2px solid var(--foreground);
-}
-
 button {
   border: 2px solid var(--foreground);
+}
+
+footer {
+  border-top: 1px solid var(--foreground);
 }

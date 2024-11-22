@@ -7,7 +7,7 @@ import {
   SunIcon,
 } from "@heroicons/react/24/outline";
 
-import BookTypeMenu from "components/Layout/BookTypeMenu";
+import SettingMenu from "components/Layout/Menu";
 import Head from "next/head";
 import { useState, useEffect } from "react";
 
@@ -77,7 +77,7 @@ export default function Header(props: HeaderProps) {
             >
               <Bars3Icon className="w-6 h-6" />
             </label>
-            <BookTypeMenu />
+            <SettingMenu />
           </div>
         </div>
         <div className="navbar-center">
