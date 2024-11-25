@@ -73,9 +73,8 @@ button {
 
 footer {
   border-top: 1px solid var(--foreground);
-  position: fixed;
   bottom: 0;
-  position: fixed;
+  /* position: fixed; */
   left: 0;
   bottom: 0;
   width: 100%;
