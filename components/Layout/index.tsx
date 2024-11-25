@@ -30,7 +30,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
           {children}
         </div>
         <footer className="py-4 shadow min-[20]:">
-          <div className="container text-center">
+          <div className="text-center">
             <p className="text-lg">
               &copy; {new Date().getFullYear()} Dev Tools. All rights reserved.
               |{" "}
