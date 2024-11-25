@@ -29,7 +29,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
           {/* การเพิ่ม key ให้กับ children เพื่อให้ React รีเรนเดอร์ใหม่ทุกครั้งที่ refreshKey เปลี่ยน */}
           {children}
         </div>
-        <footer className="py-4 shadow min-[20]:">
+        <footer className="py-4 shadow min-[20]:" style={{min-height: 84vh;}}>
           <div className="text-center">
             <p className="text-lg">
               &copy; {new Date().getFullYear()} Dev Tools. All rights reserved.
