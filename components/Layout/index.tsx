@@ -22,14 +22,14 @@ export default function CommonLayout(props: CommonLayoutProps) {
   };
 
   return (
-    <div className="min-h-full" style={{ fontFamily: "Courier Prime, serif" }}>
+    <div className="flex flex-col min-h-screen" style={{ fontFamily: "Courier Prime, serif" }}>
       <Header {...headerProps} onThemeChange={handleThemeChange} />
       <main>
         <div key={refreshKey} className="mx-auto min-h-7xl max-w-7xl pb-7 px-4">
           {/* การเพิ่ม key ให้กับ children เพื่อให้ React รีเรนเดอร์ใหม่ทุกครั้งที่ refreshKey เปลี่ยน */}
           {children}
         </div>
-        <footer className="py-4 shadow min-[20]:" style={{min-height: 84vh;}}>
+        <footer className="p-4 shadow">
           <div className="text-center">
             <p className="text-lg">
               &copy; {new Date().getFullYear()} Dev Tools. All rights reserved.
