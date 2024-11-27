@@ -28,6 +28,18 @@ const Home: NextPage = () => {
         <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
         <meta name="description" content="รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ" />
         <link rel="icon" href="/favicon.ico" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "url": "https://devtoolshub.vercel.app/",
+              "name": "DevToolsHub",
+              "description": "ศูนย์รวมเครื่องมือสำหรับนักพัฒนา",
+            }),
+          }}
+        />
       </Head>
 
       <CommonLayout>
