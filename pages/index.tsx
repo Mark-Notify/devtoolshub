@@ -25,8 +25,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Devtools</title>
-        <meta name="description" content="Programmer Helper Tools" />
+        <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
+        <meta name="description" content="รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
