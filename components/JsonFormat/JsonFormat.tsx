@@ -157,7 +157,7 @@ export default function HomePage() {
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
         <div className="float-right">
           <button
-            className="rounded-md py-2 px-4 border"
+            className="rounded-md py-2 px-4 border bg-base-100"
             type="button"
             onClick={processData}
           >
@@ -181,14 +181,14 @@ export default function HomePage() {
       <label htmlFor="outputData">Formatted Output</label>
       <div className="float-right">
         <button
-          className="rounded-md rounded-r-none py-2 px-4 border"
+          className="rounded-md rounded-r-none py-2 px-4 border bg-base-100"
           type="button"
           onClick={copyToInlineClipboard}
         >
           Copy Inline
         </button>
         <button
-          className="rounded-md rounded-l-none py-2 px-4 border"
+          className="rounded-md rounded-l-none py-2 px-4 border bg-base-100"
           type="button"
           onClick={copyToClipboard}
         >
