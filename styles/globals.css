@@ -80,3 +80,7 @@ footer {
   width: 100%;
   text-align: center;
 }
+
+.navbar-start > .dropdown > ul > li {
+  margin-top: 5px;
+}

@@ -1,21 +1,24 @@
 import * as React from "react";
 import type { NextPage } from "next";
+import { useRouter } from "next/router"; // Import useRouter
 import Head from "next/head";
-import { useRecoilState } from "recoil";
 import CommonLayout from "components/Layout";
 import JsonFormat from "components/JsonFormat/JsonFormat";
+import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 import ComponentA from "components/DefaultComponent";
-import { homePageQueryState } from "atoms"; // เพิ่มการใช้ Recoil
 
 const Home: NextPage = () => {
-  const [homePageQueryData] = useRecoilState(homePageQueryState);
+  const router = useRouter();
+  const { type } = router.query; // ดึง query parameter จาก URL
 
-  // ฟังก์ชันเลือก Component ที่จะแสดงตามประเภท
+  // ฟังก์ชันเลือก Component ที่จะแสดงตาม query parameter
   const renderComponent = () => {
-    switch (homePageQueryData.type) {
-      case "UnSerialized":
+    switch (type) {
+      case "JsonFormat":
         return <JsonFormat />;
-      case "xxx":
+      case "JsonFormatVertical":
+        return <JsonFormatVertical />;
+      case "ComponentA":
         return <ComponentA />;
       default:
         return <JsonFormat />;
@@ -26,7 +29,10 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
-        <meta name="description" content="รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ" />
+        <meta
+          name="description"
+          content="รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ"
+        />
         <link rel="icon" href="/favicon.ico" />
         <script
           type="application/ld+json"
@@ -34,17 +40,19 @@ const Home: NextPage = () => {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "url": "https://devtoolshub.vercel.app/",
-              "name": "DevToolsHub",
-              "description": "ศูนย์รวมเครื่องมือสำหรับนักพัฒนา",
+              url: "https://devtoolshub.vercel.app/",
+              name: "DevToolsHub",
+              description: "ศูนย์รวมเครื่องมือสำหรับนักพัฒนา",
             }),
           }}
         />
       </Head>
 
       <CommonLayout>
-        {/* แสดง Component ที่เลือก */}
-        <div className="mt-4">{renderComponent()}</div>
+        <div className="mt-4">
+          {/* Render Component ตาม query parameter */}
+          {renderComponent()}
+        </div>
       </CommonLayout>
     </>
   );

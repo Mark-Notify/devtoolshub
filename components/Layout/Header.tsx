@@ -5,11 +5,9 @@ import {
   CodeBracketIcon,
   MoonIcon,
   SunIcon,
-  ArrowsPointingOutIcon,
-  ArrowsPointingInIcon
 } from "@heroicons/react/24/outline";
 
-import SettingMenu from "components/Layout/Menu";
+import { useRouter } from "next/router"; // ใช้สำหรับจัดการ Routing
 import Head from "next/head";
 import { useState, useEffect } from "react";
 
@@ -20,6 +18,8 @@ export interface HeaderProps {
 
 export default function Header(props: HeaderProps) {
   const [theme, setTheme] = useState<string | null>(null); // Initial state includes null for SSR safety
+  const router = useRouter();
+  const { type } = router.query; // ดึง query parameter จาก URL
 
   // Runs after the component is mounted (client-side only)
   useEffect(() => {
@@ -32,7 +32,6 @@ export default function Header(props: HeaderProps) {
         ? "dark"
         : "light";
       setTheme(systemTheme); // Apply system theme
-      console.log(systemTheme);
     }
 
     // Cleanup function to reset theme on unmount or if necessary
@@ -46,9 +45,6 @@ export default function Header(props: HeaderProps) {
     if (theme) {
       document.documentElement.setAttribute("data-theme", theme);
       localStorage.setItem("theme", theme);
-
-      // Notify parent component of theme change, if provided
-      if (onratechange) onratechange;
     }
   }, [theme]);
 
@@ -60,6 +56,11 @@ export default function Header(props: HeaderProps) {
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
     window.monaco.editor.setTheme(theme === "dark" ? "vs-light" : "vs-dark");
+  };
+
+  // ฟังก์ชันเปลี่ยน URL และ Component
+  const handleNavigation = (componentType: string) => {
+    router.push(`/?type=${componentType}`, undefined, { shallow: true });
   };
 
   return (
@@ -79,7 +80,36 @@ export default function Header(props: HeaderProps) {
             >
               <Bars3Icon className="w-6 h-6" />
             </label>
-            <SettingMenu />
+            <ul
+              tabIndex={0}
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-80"
+            >
+              {/* เพิ่มเมนูสำหรับเลือก Component */}
+              <li>
+                <button
+                  onClick={() => handleNavigation("JsonFormat")}
+                  className={type === "JsonFormat" ? "active" : ""}
+                >
+                  JSON Format
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavigation("JsonFormatVertical")}
+                  className={type === "JsonFormatVertical" ? "active" : ""}
+                >
+                  JSON Format Vertical
+                </button>
+              </li>
+              {/* <li>
+                <button
+                  onClick={() => handleNavigation("ComponentA")}
+                  className={type === "ComponentA" ? "active" : ""}
+                >
+                  Component A
+                </button>
+              </li> */}
+            </ul>
           </div>
         </div>
         <div className="navbar-center">
