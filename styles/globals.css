@@ -1,0 +1,82 @@
+/* Tailwind base styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Define light mode colors by default */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* If theme is dark, override the variables */
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+/* If theme is light, override the variables */
+[data-theme="light"] {
+  --background: #dfe6e9;
+  --foreground: #171717;
+}
+
+/* Apply background and foreground variables globally */
+:root,
+[data-theme] {
+  background-color: var(--background) !important;
+}
+
+/* Apply background and text colors based on the defined CSS variables */
+body {
+  @apply bg-fixed bg-center bg-no-repeat bg-cover;
+  color: var(--foreground);
+  font-family: "Playfair Display", serif;
+  background-color: var(--background);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 900;
+}
+
+/* Additional styling for input area and editor */
+.input-area {
+  width: 100%;
+  height: 250px;
+  font-size: 18px;
+  padding: 10px;
+  color: var(--foreground);
+  /* background-color: var(--background); */
+  border: 2px solid var(--foreground);
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+#editor {
+  width: 100%;
+  min-height: 300px;
+  height: calc(100vh - 400px);
+  border: 3px solid var(--foreground);
+  border-radius: 4px;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+button {
+  border: 2px solid var(--foreground);
+}
+
+footer {
+  border-top: 1px solid var(--foreground);
+  bottom: 0;
+  /* position: fixed; */
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
