@@ -47,7 +47,7 @@ h5 {
 /* Additional styling for input area and editor */
 .input-area {
   width: 100%;
-  height: 250px;
+  height: 130px;
   font-size: 18px;
   padding: 10px;
   color: var(--foreground);
@@ -79,4 +79,8 @@ footer {
   bottom: 0;
   width: 100%;
   text-align: center;
+}
+
+.navbar-start > .dropdown > ul > li {
+  margin-top: 5px;
 }

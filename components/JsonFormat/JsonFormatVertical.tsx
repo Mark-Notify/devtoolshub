@@ -14,6 +14,7 @@ export default function HomePage() {
   const [outputData, setOutputData] = useState<string>("");
   const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
   const [theme, setTheme] = useState<string | null>(null); // State to store theme
+  const [isVertical, setIsVertical] = useState(true);
 
   useEffect(() => {
     // Get theme from localStorage once the component is mounted
@@ -126,6 +127,11 @@ export default function HomePage() {
     localStorage.setItem("isFullScreen", newFullScreenState.toString());
   };
 
+  // Toggle layout orientation
+  const toggleOrientation = () => {
+    setIsVertical(!isVertical);
+  };
+
   const alertCopy: (title?: string) => void = (title) => {
     Swal.fire({
       toast: true,
@@ -168,70 +174,75 @@ export default function HomePage() {
         isFullScreen ? "min-w-screen" : "max-w-7xl"
       }`}
     >
-      <div className="form-group">
-        <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
-        <div className="float-right">
-          {/* <button
-            className="rounded-md rounded-r-none py-2 px-4 border bg-base-100"
-            type="button"
-            onClick={processData}
-          >
-            Process
-          </button> */}
-          <button
-            className="rounded-md py-2 px-4 border bg-base-100"
-            type="button"
-            onClick={toggleFullScreen}
-          >
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Input Section - Smaller Width */}
+        <div className="w-full lg:w-1/3 flex flex-col">
+          <label htmlFor="inputData" className="text-lg font-semibold mb-2">
+            Input Data (JSON or Serialized)
+          </label>
+          <div className="flex justify-end mt-2 gap-2">
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
+              onClick={toggleOrientation}
+            >
+              {isVertical ? "Horizontal" : "Vertical"}
+            </button>
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
+              onClick={toggleFullScreen}
+            >
               {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+            </button>
+          </div>
+          <textarea
+            id="inputData"
+            className="input-area mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Paste your JSON or Serialized data here..."
+            value={inputData}
+            onChange={(e) => setInputData(e.target.value)}
+            style={{
+              minHeight: "200px",
+              resize: "vertical",
+            }}
+          />
+          <button className="btn btn-accent" onClick={processData}>
+            Process
           </button>
         </div>
-        <textarea
-          id="inputData"
-          className="input-area"
-          placeholder="Paste your JSON or Serialized data here..."
-          value={inputData}
-          onChange={(e) => setInputData(e.target.value)}
-          style={{
-            border: "1px solid #555",
-            padding: "10px",
-            borderRadius: "5px",
-          }}
-        ></textarea>
-        <button className="btn btn-block mb-3 btn-accent" onClick={processData}>
-          Process
-        </button>
-      </div>
 
-      <label htmlFor="outputData">Formatted Output</label>
-      <div className="float-right">
-        <button
-          className="rounded-md rounded-r-none py-2 px-4 border bg-base-100"
-          type="button"
-          onClick={copyToInlineClipboard}
-        >
-          Copy Inline
-        </button>
-        <button
-          className="rounded-md rounded-l-none py-2 px-4 border bg-base-100"
-          type="button"
-          onClick={copyToClipboard}
-        >
-          Copy
-        </button>
-      </div>
-      <div className="max-w-sm rounded overflow-hidden shadow-lg w-full lg:max-w-full lg:flex">
-        <Editor
-          height="80vh"
-          language="json"
-          value={outputData}
-          theme={theme === "dark" ? "vs-dark" : "vs-light"} // Use the theme from state
-          onChange={handleEditorChange}
-          options={{
-            readOnly: false,
-            automaticLayout: true,
-          }}
-        />
+        {/* Output Section - Larger Width */}
+        <div className="w-full lg:w-2/3 flex flex-col">
+          <label htmlFor="outputData" className="text-lg font-semibold mb-2">
+            Formatted Output
+          </label>
+          <div className="flex justify-end gap-2 mb-2">
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
+              onClick={copyToInlineClipboard}
+            >
+              Copy Inline
+            </button>
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
+              onClick={copyToClipboard}
+            >
+              Copy
+            </button>
+          </div>
+          <div className="editor-container mt-2 border rounded-md shadow-md">
+            <Editor
+              height="70vh"
+              language="json"
+              value={outputData}
+              theme={theme === "dark" ? "vs-dark" : "vs-light"}
+              onChange={handleEditorChange}
+              options={{
+                readOnly: false,
+                automaticLayout: true,
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

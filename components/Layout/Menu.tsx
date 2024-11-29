@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 export default function SettingMenu() {
   // ใช้ข้อมูลแบบสแตติกแทนการดึงข้อมูลจากฐานข้อมูลหรือ API
-  const menuList = ["UnSerialized", "xxx"];
+  const menuList = ["Json Format", "Json Format Vertical"];
 
   const [homePageQueryData, setHomePageQueryData] =
     useRecoilState(homePageQueryState);
@@ -14,7 +14,7 @@ export default function SettingMenu() {
     <div>
       <ul
         tabIndex={0}
-        className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+        className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-80"
       >
         <li>
           <div className="menu-title">Menu</div>

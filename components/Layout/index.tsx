@@ -25,7 +25,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
     <div className="flex flex-col min-h-screen" style={{ fontFamily: "Courier Prime, serif" }}>
       <Header {...headerProps} onThemeChange={handleThemeChange} />
       <main>
-        <div key={refreshKey} className="mx-auto min-h-7xl max-w-7xl pb-7">
+        <div key={refreshKey} className="">
           {/* การเพิ่ม key ให้กับ children เพื่อให้ React รีเรนเดอร์ใหม่ทุกครั้งที่ refreshKey เปลี่ยน */}
           {children}
         </div>
