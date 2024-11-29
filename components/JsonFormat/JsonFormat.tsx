@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize } from "php-serialize";
 import Swal from "sweetalert2";
+import {
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon,
+} from "@heroicons/react/24/outline";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
@@ -19,6 +23,10 @@ export default function HomePage() {
     } else {
       // Default to light theme if no stored theme
       setTheme("dark");
+    }
+    const storedFullScreen = localStorage.getItem("isFullScreen");
+    if (storedFullScreen) {
+      setIsFullScreen(storedFullScreen === "true"); // Convert string to boolean
     }
   }, []); // Run only once after the component mounts
 
@@ -70,8 +78,8 @@ export default function HomePage() {
   const copyToClipboard = () => {
     if (outputData.trim() === "") {
       console.error("Failed to copy output: empty");
-      alertError('Output is empty');
-      return '';
+      alertError("Output is empty");
+      return "";
     }
     navigator.clipboard.writeText(outputData).catch((err) => {
       console.error("Failed to copy output: ", err);
@@ -85,13 +93,13 @@ export default function HomePage() {
       // Check if outputData is a valid JSON string
       if (outputData.trim() === "") {
         console.error("Failed to copy output: empty");
-        alertError('Output is empty');
-        return '';
+        alertError("Output is empty");
+        return "";
       }
       if (outputData.trim() === "") {
         console.error("Failed to copy output: empty");
-        alertError('Output is empty');
-        return '';
+        alertError("Output is empty");
+        return "";
       }
       const jsonObject = JSON.parse(outputData);
       const inlineJSON = JSON.stringify(jsonObject);
@@ -99,7 +107,7 @@ export default function HomePage() {
         console.error("Failed to copy output: ", err);
         alertError("Failed to copy output!");
       });
-      alertCopy('Copied inline to clipboard!');
+      alertCopy("Copied inline to clipboard!");
     } catch (error) {
       alertError("Invalid JSON format.");
     }
@@ -112,56 +120,76 @@ export default function HomePage() {
   };
 
   const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
+    // setIsFullScreen(!isFullScreen);
+    const newFullScreenState = !isFullScreen;
+    setIsFullScreen(newFullScreenState);
+    localStorage.setItem("isFullScreen", newFullScreenState.toString());
   };
 
   const alertCopy: (title?: string) => void = (title) => {
     Swal.fire({
       toast: true,
-      position: 'top-end',
-      icon: 'success',
-      iconColor: '#dfe6e9',
-      title: title || 'Copied to clipboard!', // Use default text if no title is provided
+      position: "top-end",
+      icon: "success",
+      iconColor: "#dfe6e9",
+      title: title || "Copied to clipboard!", // Use default text if no title is provided
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
-      background: '#4caf50',
-      color: '#fff',
+      background: "#4caf50",
+      color: "#fff",
       width: 300,
-      padding: '10px',
+      padding: "10px",
     });
   };
 
   const alertError: (message?: string) => void = (message) => {
     Swal.fire({
       toast: true,
-      position: 'top-end',
-      icon: 'error',
-      iconColor: '#dfe6e9',
+      position: "top-end",
+      icon: "error",
+      iconColor: "#dfe6e9",
       // title: 'Oops...',
-      title: message || 'Something went wrong!',
+      title: message || "Something went wrong!",
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
       // confirmButtonText: 'Close',
-      background: '#fd79a8', // Red background for error
-      color: '#fff', // White text
+      background: "#fd79a8", // Red background for error
+      color: "#fff", // White text
       width: 300,
-      padding: '10px',
+      padding: "10px",
     });
   };
 
   return (
-    <div className={`container mt-4 ${isFullScreen ? "fullscreen" : ""}`}>
+    <div
+      className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${
+        isFullScreen ? "min-w-screen" : "max-w-7xl"
+      }`}
+    >
       <div className="form-group">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
         <div className="float-right">
           <button
-            className="rounded-md py-2 px-4 border bg-base-100"
+            className="rounded-md rounded-r-none py-2 px-4 border bg-base-100"
             type="button"
             onClick={processData}
           >
             Process
+          </button>
+          <button
+            className="rounded-md rounded-l-none py-2 px-4 border bg-base-100"
+            type="button"
+            onClick={toggleFullScreen}
+          >
+            {isFullScreen ? (
+              // <ArrowsPointingOutIcon className="w-6 h-6" />
+              "Exit"
+            ) : (
+              // <ArrowsPointingInIcon className="w-6 h-6" />
+              "Full"
+            )}
           </button>
         </div>
         <textarea
@@ -194,17 +222,10 @@ export default function HomePage() {
         >
           Copy
         </button>
-        {/* <button
-          className="rounded-md rounded-l-none py-2 px-4 border"
-          type="button"
-          onClick={toggleFullScreen}
-        >
-          Full
-        </button> */}
       </div>
       <div className="max-w-sm rounded overflow-hidden shadow-lg w-full lg:max-w-full lg:flex">
         <Editor
-          height={isFullScreen ? "100vh" : "80vh"}
+          height="80vh"
           language="json"
           value={outputData}
           theme={theme === "dark" ? "vs-dark" : "vs-light"} // Use the theme from state
@@ -215,18 +236,6 @@ export default function HomePage() {
           }}
         />
       </div>
-
-      <style jsx>{`
-        .fullscreen {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 1000;
-          background: #1e1e1e; /* Dark background for fullscreen */
-        }
-      `}</style>
     </div>
   );
 }

@@ -5,6 +5,8 @@ import {
   CodeBracketIcon,
   MoonIcon,
   SunIcon,
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon
 } from "@heroicons/react/24/outline";
 
 import SettingMenu from "components/Layout/Menu";
