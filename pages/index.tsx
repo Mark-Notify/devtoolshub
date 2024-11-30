@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router"; // Import useRouter
 import Head from "next/head";
 import CommonLayout from "components/Layout";
+import QRCodeGen from "components/QRCode/QRCodeGen";
 import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 import ComponentA from "components/DefaultComponent";
@@ -18,8 +19,8 @@ const Home: NextPage = () => {
         return <JsonFormat />;
       case "JsonFormatVertical":
         return <JsonFormatVertical />;
-      case "ComponentA":
-        return <ComponentA />;
+      case "qr-code-generator":
+        return <QRCodeGen />;
       default:
         return <JsonFormat />;
     }

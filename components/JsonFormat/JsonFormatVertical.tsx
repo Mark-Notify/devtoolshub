@@ -183,12 +183,6 @@ export default function HomePage() {
           <div className="flex justify-end mt-2 gap-2">
             <button
               className="rounded-md py-2 px-4 border bg-base-100"
-              onClick={toggleOrientation}
-            >
-              {isVertical ? "Horizontal" : "Vertical"}
-            </button>
-            <button
-              className="rounded-md py-2 px-4 border bg-base-100"
               onClick={toggleFullScreen}
             >
               {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
