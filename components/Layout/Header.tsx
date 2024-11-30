@@ -59,8 +59,12 @@ export default function Header(props: HeaderProps) {
   };
 
   // ฟังก์ชันเปลี่ยน URL และ Component
-  const handleNavigation = (componentType: string) => {
-    router.push(`/?type=${componentType}`, undefined, { shallow: true });
+  // const handleNavigation = (componentType: string) => {
+  //   router.push(`/?type=${componentType}`, undefined, { shallow: true });
+  // };
+
+  const handleNavigation = (slug: string) => {
+    router.push(`/${slug}`, undefined, { shallow: true });
   };
 
   return (
@@ -84,32 +88,32 @@ export default function Header(props: HeaderProps) {
               tabIndex={0}
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-80"
             >
-              {/* เพิ่มเมนูสำหรับเลือก Component */}
               <li>
                 <button
-                  onClick={() => handleNavigation("JsonFormat")}
-                  className={type === "JsonFormat" ? "active" : ""}
+                  onClick={() => handleNavigation("json-format")}
+                  className={type === "json-format" ? "active" : ""}
                 >
                   JSON Format
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => handleNavigation("JsonFormatVertical")}
-                  className={type === "JsonFormatVertical" ? "active" : ""}
+                  onClick={() => handleNavigation("json-format-vertical")}
+                  className={type === "json-format-vertical" ? "active" : ""}
                 >
                   JSON Format Vertical
                 </button>
               </li>
               {/* <li>
                 <button
-                  onClick={() => handleNavigation("ComponentA")}
-                  className={type === "ComponentA" ? "active" : ""}
+                  onClick={() => handleNavigation("component-a")}
+                  className={type === "component-a" ? "active" : ""}
                 >
                   Component A
                 </button>
               </li> */}
             </ul>
+
           </div>
         </div>
         <div className="navbar-center">
