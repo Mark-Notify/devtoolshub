@@ -25,7 +25,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
 
   // ฟังก์ชันย่อยสำหรับ Analytics
   const RenderAnalytics = () => {
-    return <Analytics />;
+    return <Analytics debug={true} />;
   };
 
   // ฟังก์ชันย่อยสำหรับ SpeedInsights
