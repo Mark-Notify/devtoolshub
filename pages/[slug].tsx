@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
 import React from "react";
 import Head from "next/head";
-import QRCodeGen from "components/QRCode/QRCodeGen";
-import JsonToXml from "components/JsonFormat/JsonToXml";
-import JsonFormat from "components/JsonFormat/JsonFormat";
-import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
-import ComponentA from "components/DefaultComponent";
-import CommonLayout from "components/Layout";
+import QRCodeGen from "../components/QRCode/QRCodeGen";
+import JsonToXml from "../components/JsonFormat/JsonToXml";
+import JsonFormat from "../components/JsonFormat/JsonFormat";
+import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
+import ComponentA from "../components/DefaultComponent";
+import CommonLayout from "../components/Layout";
 
 const SlugPage = () => {
   const router = useRouter();
