@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import Header, { HeaderProps } from "components/Layout/Header";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 
 export interface CommonLayoutProps {
   children?: any;
