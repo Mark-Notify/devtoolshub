@@ -29,6 +29,7 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <SpeedInsights/>
       <Head>
         <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
         <meta
