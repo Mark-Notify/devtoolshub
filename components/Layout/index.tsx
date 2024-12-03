@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import Header, { HeaderProps } from "components/Layout/Header";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export interface CommonLayoutProps {
   children?: any;
