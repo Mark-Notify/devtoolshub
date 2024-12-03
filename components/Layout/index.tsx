@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import Header, { HeaderProps } from "components/Layout/Header";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from '@vercel/analytics/next';
 
 export interface CommonLayoutProps {
   children?: any;
@@ -29,6 +30,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
         <div key={refreshKey} className="">
           {/* การเพิ่ม key ให้กับ children เพื่อให้ React รีเรนเดอร์ใหม่ทุกครั้งที่ refreshKey เปลี่ยน */}
           {children}
+          <Analytics />
           <SpeedInsights />
         </div>
         <footer className="p-4 shadow bg-base-100">
