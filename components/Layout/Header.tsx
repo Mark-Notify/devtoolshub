@@ -55,7 +55,11 @@ export default function Header(props: HeaderProps) {
   // Toggle between light and dark themes
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
-    window.monaco.editor.setTheme(theme === "dark" ? "vs-light" : "vs-dark");
+    try {
+      window.monaco.editor.setTheme(theme === "dark" ? "vs-light" : "vs-dark");
+    } catch (error) {
+
+    }
   };
 
   // ฟังก์ชันเปลี่ยน URL และ Component
@@ -86,7 +90,7 @@ export default function Header(props: HeaderProps) {
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-80"
+              className="menu menu-compact dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box w-80 border border-white"
             >
               <li>
                 <button
@@ -102,6 +106,14 @@ export default function Header(props: HeaderProps) {
                   className={type === "json-format-vertical" ? "active" : ""}
                 >
                   JSON Format Vertical
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavigation("qr-code-generator")}
+                  className={type === "qr-code-generator" ? "active" : ""}
+                >
+                  QR Code Generator
                 </button>
               </li>
               {/* <li>

@@ -1,5 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
+import Head from "next/head";
+import QRCodeGen from "components/QRCode/QRCodeGen";
 import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 import ComponentA from "components/DefaultComponent";
@@ -16,6 +18,8 @@ const SlugPage = () => {
         return <JsonFormat />;
       case "json-format-vertical":
         return <JsonFormatVertical />;
+      case "qr-code-generator":
+        return <QRCodeGen />;
       case "component-a":
         return <ComponentA />;
       default:
@@ -24,9 +28,31 @@ const SlugPage = () => {
   };
 
   return (
-    <CommonLayout>
-      <div className="mt-4">{renderComponent()}</div>
-    </CommonLayout>
+    <>
+      <Head>
+        <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
+        <meta
+          name="description"
+          content="รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ"
+        />
+        <link rel="icon" href="/favicon.ico" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              url: "https://devtoolshub.vercel.app/",
+              name: "DevToolsHub",
+              description: "ศูนย์รวมเครื่องมือสำหรับนักพัฒนา",
+            }),
+          }}
+        />
+      </Head>
+      <CommonLayout>
+        <div className="mt-4">{renderComponent()}</div>
+      </CommonLayout>
+    </>
   );
 };
 

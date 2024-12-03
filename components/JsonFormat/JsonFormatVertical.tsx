@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { unserialize } from "php-serialize";
+import { unserialize, serialize } from "php-serialize";
 import Swal from "sweetalert2";
 import {
   ArrowsPointingOutIcon,
@@ -114,6 +114,25 @@ export default function HomePage() {
     }
   };
 
+  const copySerializedOutput = () => {
+    try {
+      if (outputData.trim() === "") {
+        alertError("Output is empty");
+        return;
+      }
+      const jsonObject = JSON.parse(outputData);
+      const serializedData = serialize(jsonObject); // Serialize the JSON output
+      navigator.clipboard.writeText(serializedData).catch((err) => {
+        console.error("Failed to copy serialized output: ", err);
+        alertError("Failed to copy serialized output!");
+      });
+      alertCopy("Serialized output copied to clipboard!");
+    } catch (error) {
+      console.error("Serialization error:", error);
+      alertError("Failed to serialize output!");
+    }
+  };
+
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setOutputData(value);
@@ -170,9 +189,8 @@ export default function HomePage() {
 
   return (
     <div
-      className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${
-        isFullScreen ? "min-w-screen" : "max-w-7xl"
-      }`}
+      className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
+        }`}
     >
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Input Section - Smaller Width */}
@@ -183,15 +201,9 @@ export default function HomePage() {
           <div className="flex justify-end mt-2 gap-2">
             <button
               className="rounded-md py-2 px-4 border bg-base-100"
-              onClick={toggleOrientation}
-            >
-              {isVertical ? "Horizontal" : "Vertical"}
-            </button>
-            <button
-              className="rounded-md py-2 px-4 border bg-base-100"
               onClick={toggleFullScreen}
             >
-              {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+              {isFullScreen ? <ArrowsPointingInIcon className="w-6 h-6" /> : <ArrowsPointingOutIcon className="w-6 h-6" />}
             </button>
           </div>
           <textarea
@@ -216,6 +228,14 @@ export default function HomePage() {
             Formatted Output
           </label>
           <div className="flex justify-end gap-2 mb-2">
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
+              type="button"
+              onClick={copySerializedOutput}
+            >
+              Copy Serialized
+            </button>
+
             <button
               className="rounded-md py-2 px-4 border bg-base-100"
               onClick={copyToInlineClipboard}
