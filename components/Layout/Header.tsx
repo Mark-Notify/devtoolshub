@@ -108,6 +108,14 @@ export default function Header(props: HeaderProps) {
                   JSON Format Vertical
                 </button>
               </li>
+              {/* <li>
+                <button
+                  onClick={() => handleNavigation("xml-to-json")}
+                  className={type === "xml-to-json" ? "active" : ""}
+                >
+                  XML to JSON
+                </button>
+              </li> */}
               <li>
                 <button
                   onClick={() => handleNavigation("qr-code-generator")}
