@@ -25,12 +25,12 @@ export default function CommonLayout(props: CommonLayoutProps) {
 
   // ฟังก์ชันย่อยสำหรับ Analytics
   const RenderAnalytics = () => {
-    return process.env.NODE_ENV === "production" ? <Analytics /> : null;
+    return <Analytics />;
   };
 
   // ฟังก์ชันย่อยสำหรับ SpeedInsights
   const RenderSpeedInsights = () => {
-    return process.env.NODE_ENV === "production" ? <SpeedInsights /> : null;
+    return <SpeedInsights />;
   };
 
   return (
