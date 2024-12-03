@@ -13,6 +13,61 @@ const Home: NextPage = () => {
   const router = useRouter();
   const { type } = router.query; // ดึง query parameter จาก URL
 
+  // จัดการข้อมูล SEO เฉพาะสำหรับแต่ละ type
+  const [seoData, setSeoData] = React.useState({
+    title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
+    description: "รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ",
+    url: "https://www.devtoolshub.org",
+  });
+
+  React.useEffect(() => {
+    if (type) {
+      switch (type) {
+        case "json-format":
+          setSeoData({
+            title: "JSON Formatter - จัดระเบียบและอ่าน JSON ได้ง่าย",
+            description: "เครื่องมือช่วยจัดระเบียบ JSON ให้เป็นระเบียบ และอ่านข้อมูล JSON ได้ง่ายขึ้น",
+            url: "https://www.devtoolshub.org/json-format",
+          });
+          break;
+        case "json-format-vertical":
+          setSeoData({
+            title: "JSON Formatter Vertical - มุมมองแนวตั้ง",
+            description: "เครื่องมือ JSON Formatter แบบแนวตั้ง สำหรับดูข้อมูล JSON ในมุมมองใหม่",
+            url: "https://www.devtoolshub.org/json-format-vertical",
+          });
+          break;
+        case "xml-to-json":
+          setSeoData({
+            title: "XML to JSON Converter - แปลง XML เป็น JSON",
+            description: "เครื่องมือแปลงไฟล์ XML ให้เป็น JSON ได้ง่ายและรวดเร็ว",
+            url: "https://www.devtoolshub.org/xml-to-json",
+          });
+          break;
+        case "qr-code-generator":
+          setSeoData({
+            title: "QR Code Generator - สร้าง QR Code ฟรี",
+            description: "เครื่องมือสร้าง QR Code พร้อมปรับแต่งและดาวน์โหลดได้ฟรี",
+            url: "https://www.devtoolshub.org/qr-code-generator",
+          });
+          break;
+        case "component-a":
+          setSeoData({
+            title: "Component A - ตัวอย่าง Component",
+            description: "Component ตัวอย่างที่แสดงฟีเจอร์เฉพาะสำหรับหน้านี้",
+            url: "https://www.devtoolshub.org/component-a",
+          });
+          break;
+        default:
+          setSeoData({
+            title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
+            description: "รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ",
+            url: "https://www.devtoolshub.org",
+          });
+      }
+    }
+  }, [type]);
+
   // ฟังก์ชันเลือก Component ที่จะแสดงตาม query parameter
   const renderComponent = () => {
     switch (type) {
@@ -34,21 +89,23 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
-        <meta
-          name="description"
-          content="รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ"
-        />
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        <meta property="og:title" content={seoData.title} />
+        <meta property="og:description" content={seoData.description} />
+        <meta property="og:url" content={seoData.url} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={seoData.url} />
         <link rel="icon" href="/favicon.ico" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebSite",
-              url: "https://devtoolshub.vercel.app/",
-              name: "DevToolsHub",
-              description: "ศูนย์รวมเครื่องมือสำหรับนักพัฒนา",
+              "@type": "WebPage",
+              url: seoData.url,
+              name: seoData.title,
+              description: seoData.description,
             }),
           }}
         />
