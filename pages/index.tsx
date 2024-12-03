@@ -7,7 +7,6 @@ import QRCodeGen from "components/QRCode/QRCodeGen";
 import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 import ComponentA from "components/DefaultComponent";
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -29,7 +28,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <SpeedInsights/>
       <Head>
         <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
         <meta
