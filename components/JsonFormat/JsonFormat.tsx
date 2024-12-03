@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { unserialize } from "php-serialize";
+import { unserialize, serialize } from "php-serialize";
 import Swal from "sweetalert2";
 import {
   ArrowsPointingOutIcon,
@@ -16,19 +16,17 @@ export default function HomePage() {
   const [theme, setTheme] = useState<string | null>(null); // State to store theme
 
   useEffect(() => {
-    // Get theme from localStorage once the component is mounted
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
-      setTheme(storedTheme); // Set the stored theme if available
+      setTheme(storedTheme);
     } else {
-      // Default to light theme if no stored theme
       setTheme("dark");
     }
     const storedFullScreen = localStorage.getItem("isFullScreen");
     if (storedFullScreen) {
-      setIsFullScreen(storedFullScreen === "true"); // Convert string to boolean
+      setIsFullScreen(storedFullScreen === "true");
     }
-  }, []); // Run only once after the component mounts
+  }, []);
 
   useEffect(() => {
     processData();
@@ -77,9 +75,8 @@ export default function HomePage() {
 
   const copyToClipboard = () => {
     if (outputData.trim() === "") {
-      console.error("Failed to copy output: empty");
       alertError("Output is empty");
-      return "";
+      return;
     }
     navigator.clipboard.writeText(outputData).catch((err) => {
       console.error("Failed to copy output: ", err);
@@ -90,16 +87,9 @@ export default function HomePage() {
 
   const copyToInlineClipboard = () => {
     try {
-      // Check if outputData is a valid JSON string
       if (outputData.trim() === "") {
-        console.error("Failed to copy output: empty");
         alertError("Output is empty");
-        return "";
-      }
-      if (outputData.trim() === "") {
-        console.error("Failed to copy output: empty");
-        alertError("Output is empty");
-        return "";
+        return;
       }
       const jsonObject = JSON.parse(outputData);
       const inlineJSON = JSON.stringify(jsonObject);
@@ -113,6 +103,25 @@ export default function HomePage() {
     }
   };
 
+  const copySerializedOutput = () => {
+    try {
+      if (outputData.trim() === "") {
+        alertError("Output is empty");
+        return;
+      }
+      const jsonObject = JSON.parse(outputData);
+      const serializedData = serialize(jsonObject); // Serialize the JSON output
+      navigator.clipboard.writeText(serializedData).catch((err) => {
+        console.error("Failed to copy serialized output: ", err);
+        alertError("Failed to copy serialized output!");
+      });
+      alertCopy("Serialized output copied to clipboard!");
+    } catch (error) {
+      console.error("Serialization error:", error);
+      alertError("Failed to serialize output!");
+    }
+  };
+
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setOutputData(value);
@@ -120,19 +129,18 @@ export default function HomePage() {
   };
 
   const toggleFullScreen = () => {
-    // setIsFullScreen(!isFullScreen);
     const newFullScreenState = !isFullScreen;
     setIsFullScreen(newFullScreenState);
     localStorage.setItem("isFullScreen", newFullScreenState.toString());
   };
 
-  const alertCopy: (title?: string) => void = (title) => {
+  const alertCopy = (title?: string) => {
     Swal.fire({
       toast: true,
       position: "top-end",
       icon: "success",
       iconColor: "#dfe6e9",
-      title: title || "Copied to clipboard!", // Use default text if no title is provided
+      title: title || "Copied to clipboard!",
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
@@ -143,20 +151,18 @@ export default function HomePage() {
     });
   };
 
-  const alertError: (message?: string) => void = (message) => {
+  const alertError = (message?: string) => {
     Swal.fire({
       toast: true,
       position: "top-end",
       icon: "error",
       iconColor: "#dfe6e9",
-      // title: 'Oops...',
       title: message || "Something went wrong!",
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
-      // confirmButtonText: 'Close',
-      background: "#fd79a8", // Red background for error
-      color: "#fff", // White text
+      background: "#fd79a8",
+      color: "#fff",
       width: 300,
       padding: "10px",
     });
@@ -171,19 +177,16 @@ export default function HomePage() {
       <div className="form-group">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
         <div className="float-right">
-          {/* <button
-            className="rounded-md rounded-r-none py-2 px-4 border bg-base-100"
-            type="button"
-            onClick={processData}
-          >
-            Process
-          </button> */}
           <button
-            className="rounded-md py-2 px-4 border bg-base-100"
+            className="rounded-md py-2 px-4 mb-2 border bg-base-100"
             type="button"
             onClick={toggleFullScreen}
           >
-              {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+            {isFullScreen ? (
+              <ArrowsPointingInIcon className="w-6 h-6" />
+            ) : (
+              <ArrowsPointingOutIcon className="w-6 h-6" />
+            )}
           </button>
         </div>
         <textarea
@@ -203,29 +206,37 @@ export default function HomePage() {
         </button>
       </div>
 
-      <label htmlFor="outputData">Formatted Output</label>
       <div className="float-right">
         <button
-          className="rounded-md rounded-r-none py-2 px-4 border bg-base-100"
+          className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
+          type="button"
+          onClick={copySerializedOutput}
+        >
+          Copy Serialized
+        </button>
+        <button
+          className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
           type="button"
           onClick={copyToInlineClipboard}
         >
           Copy Inline
         </button>
         <button
-          className="rounded-md rounded-l-none py-2 px-4 border bg-base-100"
+          className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
           type="button"
           onClick={copyToClipboard}
         >
           Copy
         </button>
       </div>
+
+      <label htmlFor="outputData">Formatted Output</label>
       <div className="max-w-sm rounded overflow-hidden shadow-lg w-full lg:max-w-full lg:flex">
         <Editor
           height="80vh"
           language="json"
           value={outputData}
-          theme={theme === "dark" ? "vs-dark" : "vs-light"} // Use the theme from state
+          theme={theme === "dark" ? "vs-dark" : "vs-light"}
           onChange={handleEditorChange}
           options={{
             readOnly: false,

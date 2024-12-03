@@ -59,7 +59,7 @@ export default function Home() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="กรอกข้อความ"
+          placeholder="Text value"
           className="text-center mt-2 p-3 border border-base-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           style={{
             padding: '10px',
@@ -71,7 +71,7 @@ export default function Home() {
         />
         <br />
         <button
-          className="rounded-md py-2 px-4 border bg-blue-500 text-white hover:bg-blue-600"
+          className="btn btn-accent"
           onClick={generateQRCode}
           style={{ padding: '10px 20px', cursor: 'pointer', margin: '5px' }}
         >
@@ -79,7 +79,7 @@ export default function Home() {
         </button>
         {qrCode && (
           <div>
-            <h3 className="text-center font-semibold text-lg mb-4">ผลลัพธ์ QR Code</h3>
+            <h3 className="text-center font-semibold text-lg mb-4">Result QR Code</h3>
             <div className="relative flex justify-center items-center gap-2 mb-2">
               {/* QR Code Frame */}
               <div
