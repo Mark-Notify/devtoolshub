@@ -47,12 +47,12 @@ export default function CommonLayout(props: CommonLayoutProps) {
           <p className="text-lg">
             &copy; {new Date().getFullYear()} Dev Tools. All rights reserved. |{" "}
             <a
-              href="https://devtoolshub.vercel.app"
+              href="https://www.devtoolshub.org"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-blue-500"
             >
-              DevToolsHub.App
+              DevToolsHub.org
             </a>
           </p>
         </div>
