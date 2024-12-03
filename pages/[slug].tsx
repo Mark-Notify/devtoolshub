@@ -6,6 +6,7 @@ import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 import ComponentA from "components/DefaultComponent";
 import CommonLayout from "components/Layout";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const SlugPage = () => {
   const router = useRouter();
@@ -29,6 +30,7 @@ const SlugPage = () => {
 
   return (
     <>
+      <SpeedInsights/>
       <Head>
         <title>DevToolsHub - เครื่องมือสำหรับนักพัฒนา</title>
         <meta
