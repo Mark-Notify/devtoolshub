@@ -26,7 +26,7 @@ const SlugPage = () => {
       case "component-a":
         return <ComponentA />;
       default:
-        return <div>Page not found</div>; // แสดงข้อความหาก slug ไม่ถูกต้อง
+        return <JsonFormat />;
     }
   };
 
