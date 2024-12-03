@@ -4,6 +4,7 @@ import { useRouter } from "next/router"; // Import useRouter
 import Head from "next/head";
 import CommonLayout from "components/Layout";
 import QRCodeGen from "components/QRCode/QRCodeGen";
+import JsonToXml from "components/JsonFormat/JsonToXml";
 import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 import ComponentA from "components/DefaultComponent";
@@ -15,14 +16,18 @@ const Home: NextPage = () => {
   // ฟังก์ชันเลือก Component ที่จะแสดงตาม query parameter
   const renderComponent = () => {
     switch (type) {
-      case "JsonFormat":
+      case "json-format":
         return <JsonFormat />;
-      case "JsonFormatVertical":
+      case "json-format-vertical":
         return <JsonFormatVertical />;
+      case "xml-to-json":
+        return <JsonToXml />;
       case "qr-code-generator":
         return <QRCodeGen />;
+      case "component-a":
+        return <ComponentA />;
       default:
-        return <JsonFormat />;
+        return <div>Page not found</div>; // แสดงข้อความหาก slug ไม่ถูกต้อง
     }
   };
 
