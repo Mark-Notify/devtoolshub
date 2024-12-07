@@ -36,7 +36,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen" style={{ fontFamily: "Courier Prime, serif" }}>
       <Header {...headerProps} onThemeChange={handleThemeChange} />
-      <main>
+      <main style={{ minHeight: `calc(100vh - 141px)` }}>
         <RenderAnalytics />
         <div key={refreshKey} className="">
           {children}

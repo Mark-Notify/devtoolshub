@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router"; // Import useRouter
 import Head from "next/head";
 import CommonLayout from "components/Layout";
+import Jwtdecode from "../components/Jwt/Jwtdecode";
 import QRCodeGen from "components/QRCode/QRCodeGen";
 import JsonToXml from "components/JsonFormat/JsonToXml";
 import JsonToXmlVertical from "components/JsonFormat/JsonToXmlVertical";
@@ -24,6 +25,13 @@ const Home: NextPage = () => {
   React.useEffect(() => {
     if (type) {
       switch (type) {
+        case "jwt-decoder":
+          setSeoData({
+            title: "JWT Decoder - แยกและตรวจสอบ JWT Token",
+            description: "เครื่องมือสำหรับการแยก JWT Token และตรวจสอบข้อมูลในส่วนต่างๆ เช่น Header, Payload และ Signature",
+            url: "https://www.devtoolshub.org/jwt-decoder",
+          });
+          break;
         case "json-format":
           setSeoData({
             title: "JSON Formatter - จัดระเบียบและอ่าน JSON ได้ง่าย",
@@ -87,6 +95,8 @@ const Home: NextPage = () => {
         return <JsonToXml />;
       case "xml-to-json-vertical":
         return <JsonToXmlVertical />;
+      case "jwt-decode":
+        return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
       case "component-a":

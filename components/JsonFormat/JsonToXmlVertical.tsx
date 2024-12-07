@@ -265,7 +265,7 @@ export default function HomePage() {
           </div>
           <div className="editor-container mt-2 border rounded-md shadow-md">
             <Editor
-              height="70vh"
+              height="68vh"
               language={inputType === "xml" ? "xml" : "josn"}
               value={outputData}
               theme={theme === "dark" ? "vs-dark" : "vs-light"}

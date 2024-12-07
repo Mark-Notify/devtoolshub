@@ -94,26 +94,26 @@ export default function Header(props: HeaderProps) {
             >
               <li>
                 <button
-                  onClick={() => handleNavigation("json-format")}
+                  onClick={() => handleNavigation("json-format-vertical")}
                   className={type === "json-format" ? "active" : ""}
                 >
                   JSON Format
                 </button>
               </li>
-              {/* <li>
-                <button
-                  onClick={() => handleNavigation("json-format-vertical")}
-                  className={type === "json-format-vertical" ? "active" : ""}
-                >
-                  JSON Format Vertical
-                </button>
-              </li> */}
               <li>
                 <button
-                  onClick={() => handleNavigation("xml-to-json")}
+                  onClick={() => handleNavigation("xml-to-json-vertical")}
                   className={type === "xml-to-json" ? "active" : ""}
                 >
                   XML to JSON
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavigation("jwt-decode")}
+                  className={type === "jwt-decode" ? "active" : ""}
+                >
+                  JWT Decode
                 </button>
               </li>
               <li>

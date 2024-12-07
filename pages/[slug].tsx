@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
+import Jwtdecode from "../components/Jwt/Jwtdecode";
 import QRCodeGen from "../components/QRCode/QRCodeGen";
 import JsonToXml from "../components/JsonFormat/JsonToXml";
 import JsonToXmlVertical from "../components/JsonFormat/JsonToXmlVertical";
@@ -23,6 +24,13 @@ const SlugPage = () => {
   useEffect(() => {
     if (slug) {
       switch (slug) {
+        case "jwt-decoder":
+          setSeoData({
+            title: "JWT Decoder - แยกและตรวจสอบ JWT Token",
+            description: "เครื่องมือสำหรับการแยก JWT Token และตรวจสอบข้อมูลในส่วนต่างๆ เช่น Header, Payload และ Signature",
+            url: "https://www.devtoolshub.org/jwt-decoder",
+          });
+          break;
         case "json-format":
           setSeoData({
             title: "JSON Formatter - จัดระเบียบและอ่าน JSON ได้ง่าย",
@@ -86,6 +94,8 @@ const SlugPage = () => {
         return <JsonToXml />;
       case "xml-to-json-vertical":
         return <JsonToXmlVertical />;
+      case "jwt-decode":
+        return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
       case "component-a":
@@ -106,6 +116,7 @@ const SlugPage = () => {
         <meta property="og:type" content="website" />
         <link rel="canonical" href={seoData.url} />
         <link rel="icon" href="/favicon.ico" />
+        {/* Adding JSON-LD structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

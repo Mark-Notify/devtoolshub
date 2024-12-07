@@ -51,7 +51,7 @@ export default function Home() {
   };
 
   return (
-    <div className="mx-auto p-4 border bg-base-100 rounded-md shadow-md min-h-screen max-w-7xl">
+    <div className="mx-auto p-4 border bg-base-100 rounded-md shadow-md max-w-7xl">
       <div style={{ textAlign: 'center', padding: '20px' }}>
         <h1 className="text-2xl font-bold mb-4">QR Code Generator</h1>
         <input

@@ -57,6 +57,14 @@ h5 {
   margin-bottom: 20px;
 }
 
+.input {
+  color: var(--foreground);
+  /* background-color: var(--background); */
+  border: 2px solid var(--foreground);
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
 #editor {
   width: 100%;
   min-height: 300px;
@@ -81,7 +89,7 @@ footer {
   text-align: center;
 }
 
-.navbar-start > .dropdown > ul > li {
+.navbar-start>.dropdown>ul>li {
   margin-top: 5px;
 }
 
@@ -91,4 +99,12 @@ footer {
 
 [data-theme="light"] .svg-icon-theme {
   filter: invert(0);
+}
+
+pre {
+  color: var(--foreground);
+  /* background-color: var(--background); */
+  border: 2px solid var(--foreground);
+  border-radius: 4px;
+  margin-bottom: 20px;
 }
