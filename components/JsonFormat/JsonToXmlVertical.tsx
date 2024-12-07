@@ -1,7 +1,6 @@
 "use client"; // Ensures this code only runs on the client
 
 import Image from "next/image";
-import { useRouter } from "next/router"; // ใช้สำหรับจัดการ Routing
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
@@ -10,87 +9,79 @@ import {
   ArrowsPointingOutIcon,
   ArrowsPointingInIcon,
 } from "@heroicons/react/24/outline";
+import { xml2json, json2xml } from "xml-js"; // Correct import for xml-js
+import { XMLParser } from "fast-xml-parser"; // Ensure to install this library if not already included
+import { useRouter } from "next/router"; // ใช้สำหรับจัดการ Routing
 
 export default function HomePage() {
-  const [inputData, setInputData] = useState<string>("");
-  const [outputData, setOutputData] = useState<string>("");
+  const [inputData, setInputData] = useState<string>(""); // Input data state
+  const [outputData, setOutputData] = useState<string>(""); // Output data state
   const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
   const [theme, setTheme] = useState<string | null>(null); // State to store theme
-  const [isVertical, setIsVertical] = useState(true);
+  const [inputType, setInputType] = useState<"json" | "xml">("json"); // State for input type selection
   const router = useRouter();
   const { type } = router.query; // ดึง query parameter จาก URL
 
   useEffect(() => {
-    // Get theme from localStorage once the component is mounted
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
-      setTheme(storedTheme); // Set the stored theme if available
+      setTheme(storedTheme);
     } else {
-      // Default to light theme if no stored theme
       setTheme("dark");
     }
     const storedFullScreen = localStorage.getItem("isFullScreen");
     if (storedFullScreen) {
-      setIsFullScreen(storedFullScreen === "true"); // Convert string to boolean
+      setIsFullScreen(storedFullScreen === "true");
     }
-  }, []); // Run only once after the component mounts
+  }, []);
 
   useEffect(() => {
-    processData();
+    if (inputData) {
+      processData();
+    }
   }, [inputData]);
 
   const processData = () => {
-    let result = "";
-
-    const isJSON = (data: string): boolean => {
-      try {
-        JSON.parse(data);
-        return true;
-      } catch {
-        return false;
+    try {
+      if (isJSON(inputData)) {
+        setInputType("xml");
+        const parsed = JSON.parse(inputData);
+        // ใช้ json2xml สำหรับการแปลง JSON กลับเป็น XML หากต้องการ
+        const xml = json2xml(parsed, { compact: true, ignoreComment: true, spaces: 2 });
+        setOutputData(xml);
+      } else if (isXML(inputData)) {
+        setInputType("json");
+        // ใช้ xml2json เพื่อแปลง XML เป็น JSON
+        // const json = xml2json(inputData, { compact: true, spaces: 2 });
+        const parser = new XMLParser();
+        const parsed = parser.parse(inputData);
+        setOutputData(JSON.stringify(parsed, null, 2));
+      } else {
+        alertError("Invalid input format. Please provide valid JSON or XML data.");
       }
-    };
-
-    const isPHPSerialized = (data: string): boolean => {
-      return (
-        data.startsWith("a:") ||
-        data.startsWith("O:") ||
-        data.startsWith("s:") ||
-        data.startsWith("i:") ||
-        data.startsWith("b:") ||
-        data.startsWith("d:")
-      );
-    };
-
-    if (isJSON(inputData)) {
-      const jsonData = JSON.parse(inputData.trim());
-      result = JSON.stringify(jsonData, null, 4);
-      setOutputData(result);
-    } else if (isPHPSerialized(inputData)) {
-      try {
-        const unserializedData = unserialize(inputData.trim());
-        result = JSON.stringify(unserializedData, null, 4);
-        setOutputData(result);
-      } catch (error) {
-        console.error("Unserialization error:", error);
-        const errorMessage =
-          (error as Error).message || "Unknown error occurred";
-        setOutputData(`Error: Invalid PHP serialized data! ${errorMessage}`);
-      }
+    } catch (error) {
+      alertError("An error occurred while processing the data.");
     }
   };
 
-  const copyToClipboard = () => {
-    if (outputData.trim() === "") {
-      console.error("Failed to copy output: empty");
-      alertError("Output is empty");
-      return "";
+
+  const isJSON = (data: string): boolean => {
+    try {
+      JSON.parse(data);
+      return true;
+    } catch {
+      return false;
     }
-    navigator.clipboard.writeText(outputData).catch((err) => {
-      console.error("Failed to copy output: ", err);
-      alertError("Failed to copy output!");
-    });
-    alertCopy();
+  };
+
+  const isXML = (data: string): boolean => {
+    try {
+      // Use xml2json to test if it's valid XML
+      xml2json(data, { compact: true });
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const copyToInlineClipboard = () => {
@@ -137,6 +128,18 @@ export default function HomePage() {
     }
   };
 
+  const copyToClipboard = () => {
+    if (outputData.trim() === "") {
+      alertError("Output is empty");
+      return;
+    }
+    navigator.clipboard.writeText(outputData).catch((err) => {
+      console.error("Failed to copy output: ", err);
+      alertError("Failed to copy output!");
+    });
+    alertCopy();
+  };
+
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setOutputData(value);
@@ -144,24 +147,18 @@ export default function HomePage() {
   };
 
   const toggleFullScreen = () => {
-    // setIsFullScreen(!isFullScreen);
     const newFullScreenState = !isFullScreen;
     setIsFullScreen(newFullScreenState);
     localStorage.setItem("isFullScreen", newFullScreenState.toString());
   };
 
-  // Toggle layout orientation
-  const toggleOrientation = () => {
-    setIsVertical(!isVertical);
-  };
-
-  const alertCopy: (title?: string) => void = (title) => {
+  const alertCopy = (title?: string) => {
     Swal.fire({
       toast: true,
       position: "top-end",
       icon: "success",
       iconColor: "#dfe6e9",
-      title: title || "Copied to clipboard!", // Use default text if no title is provided
+      title: title || "Copied to clipboard!",
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
@@ -172,20 +169,18 @@ export default function HomePage() {
     });
   };
 
-  const alertError: (message?: string) => void = (message) => {
+  const alertError = (message?: string) => {
     Swal.fire({
       toast: true,
       position: "top-end",
       icon: "error",
       iconColor: "#dfe6e9",
-      // title: 'Oops...',
       title: message || "Something went wrong!",
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
-      // confirmButtonText: 'Close',
-      background: "#fd79a8", // Red background for error
-      color: "#fff", // White text
+      background: "#fd79a8",
+      color: "#fff",
       width: 300,
       padding: "10px",
     });
@@ -204,13 +199,13 @@ export default function HomePage() {
         {/* Input Section - Smaller Width */}
         <div className="w-full lg:w-1/3 flex flex-col">
           <label htmlFor="inputData" className="text-lg font-semibold mb-2">
-            Input Data (JSON or Serialized)
+            Input Data (JSON or XML)
           </label>
           <div className="flex justify-end mt-2 gap-2">
             <button
               title="Vertical"
-              className={`rounded-md py-2 px-4 border bg-base-100 text-white ${type === "json-format-vertical" ? "active" : ""}`}
-              onClick={() => handleNavigation("json-format")}
+              className={`rounded-md py-2 px-4 border bg-base-100 text-white`}
+              onClick={() => handleNavigation("xml-to-json")}
             >
               <Image
                 src="/horizontal-to-vertical.svg"
@@ -228,7 +223,7 @@ export default function HomePage() {
           <textarea
             id="inputData"
             className="input-area mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Paste your JSON or Serialized data here..."
+            placeholder="Paste your JSON or XML data here..."
             value={inputData}
             onChange={(e) => setInputData(e.target.value)}
             style={{
@@ -271,7 +266,7 @@ export default function HomePage() {
           <div className="editor-container mt-2 border rounded-md shadow-md">
             <Editor
               height="68vh"
-              language="json"
+              language={inputType === "xml" ? "xml" : "josn"}
               value={outputData}
               theme={theme === "dark" ? "vs-dark" : "vs-light"}
               onChange={handleEditorChange}

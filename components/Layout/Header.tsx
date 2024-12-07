@@ -94,7 +94,7 @@ export default function Header(props: HeaderProps) {
             >
               <li>
                 <button
-                  onClick={() => handleNavigation("json-format")}
+                  onClick={() => handleNavigation("json-format-vertical")}
                   className={type === "json-format" ? "active" : ""}
                 >
                   JSON Format
@@ -102,10 +102,18 @@ export default function Header(props: HeaderProps) {
               </li>
               <li>
                 <button
-                  onClick={() => handleNavigation("json-format-vertical")}
-                  className={type === "json-format-vertical" ? "active" : ""}
+                  onClick={() => handleNavigation("xml-to-json-vertical")}
+                  className={type === "xml-to-json" ? "active" : ""}
                 >
-                  JSON Format Vertical
+                  XML to JSON
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavigation("jwt-decode")}
+                  className={type === "jwt-decode" ? "active" : ""}
+                >
+                  JWT Decode
                 </button>
               </li>
               <li>

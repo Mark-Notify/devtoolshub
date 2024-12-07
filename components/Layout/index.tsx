@@ -1,6 +1,8 @@
 import * as React from "react";
 import { useState } from "react";
 import Header, { HeaderProps } from "components/Layout/Header";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 export interface CommonLayoutProps {
   children?: any;
@@ -21,31 +23,41 @@ export default function CommonLayout(props: CommonLayoutProps) {
     }
   };
 
+  // ฟังก์ชันย่อยสำหรับ Analytics
+  const RenderAnalytics = () => {
+    return <Analytics debug={true} />;
+  };
+
+  // ฟังก์ชันย่อยสำหรับ SpeedInsights
+  const RenderSpeedInsights = () => {
+    return <SpeedInsights />;
+  };
+
   return (
     <div className="flex flex-col min-h-screen" style={{ fontFamily: "Courier Prime, serif" }}>
       <Header {...headerProps} onThemeChange={handleThemeChange} />
-      <main>
+      <main style={{ minHeight: `calc(100vh - 141px)` }}>
+        <RenderAnalytics />
         <div key={refreshKey} className="">
-          {/* การเพิ่ม key ให้กับ children เพื่อให้ React รีเรนเดอร์ใหม่ทุกครั้งที่ refreshKey เปลี่ยน */}
           {children}
         </div>
-        <footer className="p-4 shadow bg-base-100">
-          <div className="text-center">
-            <p className="text-lg">
-              &copy; {new Date().getFullYear()} Dev Tools. All rights reserved.
-              |{" "}
-              <a
-                href="https://devtools2.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-blue-500"
-              >
-                devtools.app
-              </a>
-            </p>
-          </div>
-        </footer>
       </main>
+      <footer className="p-4 shadow bg-base-100">
+        <div className="text-center">
+          <p className="text-lg">
+            &copy; {new Date().getFullYear()} Dev Tools. All rights reserved. |{" "}
+            <a
+              href="https://www.devtoolshub.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-blue-500"
+            >
+              DevToolsHub.org
+            </a>
+          </p>
+        </div>
+        <RenderSpeedInsights />
+      </footer>
     </div>
   );
 }
