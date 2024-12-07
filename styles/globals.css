@@ -84,3 +84,7 @@ footer {
 .navbar-start > .dropdown > ul > li {
   margin-top: 5px;
 }
+
+.svg-white {
+  filter: invert(1); /* เปลี่ยนสีเป็นสีขาว */
+}

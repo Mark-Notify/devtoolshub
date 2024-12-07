@@ -1,5 +1,6 @@
 "use client"; // Ensures this code only runs on the client
-
+import Image from "next/image";
+import { useRouter } from "next/router"; // ใช้สำหรับจัดการ Routing
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
@@ -14,6 +15,8 @@ export default function HomePage() {
   const [outputData, setOutputData] = useState<string>("");
   const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
   const [theme, setTheme] = useState<string | null>(null); // State to store theme
+  const router = useRouter();
+  const { type } = router.query; // ดึง query parameter จาก URL
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -168,17 +171,30 @@ export default function HomePage() {
     });
   };
 
+  const handleNavigation = (slug: string) => {
+    router.push(`/${slug}`, undefined, { shallow: true });
+  };
+
   return (
     <div
-      className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${
-        isFullScreen ? "min-w-screen" : "max-w-7xl"
-      }`}
+      className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
+        }`}
     >
       <div className="form-group">
         <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
         <div className="float-right">
           <button
-            className="rounded-md py-2 px-4 mb-2 border bg-base-100"
+            title="Vertical"
+            className={`rounded-md py-2 px-4 mb-2 mr-2 border border-r-none bg-base-100 text-white ${type === "json-format-vertical" ? "active" : ""}`}
+            onClick={() => handleNavigation("json-format-vertical")}
+          >
+            <Image
+              src="/horizontal-to-vertical.svg"
+              className="svg-white" alt="Vertical Icon"
+              style={{ color: "#fff" }} width={24} height={24} />
+          </button>
+          <button
+            className="rounded-md py-2 px-4 mb-2 border border-l-none bg-base-100"
             type="button"
             onClick={toggleFullScreen}
           >

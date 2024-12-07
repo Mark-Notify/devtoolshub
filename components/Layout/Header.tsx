@@ -100,14 +100,14 @@ export default function Header(props: HeaderProps) {
                   JSON Format
                 </button>
               </li>
-              <li>
+              {/* <li>
                 <button
                   onClick={() => handleNavigation("json-format-vertical")}
                   className={type === "json-format-vertical" ? "active" : ""}
                 >
                   JSON Format Vertical
                 </button>
-              </li>
+              </li> */}
               <li>
                 <button
                   onClick={() => handleNavigation("xml-to-json")}
