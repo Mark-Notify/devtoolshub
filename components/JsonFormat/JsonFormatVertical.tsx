@@ -209,12 +209,12 @@ export default function HomePage() {
           <div className="flex justify-end mt-2 gap-2">
             <button
               title="Vertical"
-              className={`rounded-md py-2 px-4 mb-2 mr-2 border border-r-none bg-base-100 text-white ${type === "json-format-vertical" ? "active" : ""}`}
+              className={`rounded-md py-2 px-4 border bg-base-100 text-white ${type === "json-format-vertical" ? "active" : ""}`}
               onClick={() => handleNavigation("json-format")}
             >
               <Image
                 src="/horizontal-to-vertical.svg"
-                className="svg-white" alt="Vertical Icon"
+                className="svg-icon-theme" alt="Vertical Icon"
                 style={{ color: "#fff" }} width={24} height={24} />
             </button>
 

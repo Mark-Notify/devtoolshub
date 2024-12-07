@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import QRCodeGen from "../components/QRCode/QRCodeGen";
 import JsonToXml from "../components/JsonFormat/JsonToXml";
+import JsonToXmlVertical from "../components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "../components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
 import ComponentA from "../components/DefaultComponent";
@@ -43,6 +44,13 @@ const SlugPage = () => {
             url: "https://www.devtoolshub.org/xml-to-json",
           });
           break;
+        case "xml-to-json-vertical":
+          setSeoData({
+            title: "XML to JSON Converter - แปลง XML เป็น JSON",
+            description: "เครื่องมือแปลงไฟล์ XML ให้เป็น JSON ได้ง่ายและรวดเร็ว",
+            url: "https://www.devtoolshub.org/xml-to-json",
+          });
+          break;
         case "qr-code-generator":
           setSeoData({
             title: "QR Code Generator - สร้าง QR Code ฟรี",
@@ -76,6 +84,8 @@ const SlugPage = () => {
         return <JsonFormatVertical />;
       case "xml-to-json":
         return <JsonToXml />;
+      case "xml-to-json-vertical":
+        return <JsonToXmlVertical />;
       case "qr-code-generator":
         return <QRCodeGen />;
       case "component-a":

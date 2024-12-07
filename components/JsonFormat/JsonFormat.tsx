@@ -190,7 +190,7 @@ export default function HomePage() {
           >
             <Image
               src="/horizontal-to-vertical.svg"
-              className="svg-white" alt="Vertical Icon"
+              className="svg-icon-theme" alt="Vertical Icon"
               style={{ color: "#fff" }} width={24} height={24} />
           </button>
           <button

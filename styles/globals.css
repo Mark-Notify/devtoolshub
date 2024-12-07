@@ -85,6 +85,10 @@ footer {
   margin-top: 5px;
 }
 
-.svg-white {
-  filter: invert(1); /* เปลี่ยนสีเป็นสีขาว */
+[data-theme="dark"] .svg-icon-theme {
+  filter: invert(1);
+}
+
+[data-theme="light"] .svg-icon-theme {
+  filter: invert(0);
 }

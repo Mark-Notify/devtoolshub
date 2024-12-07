@@ -195,108 +195,88 @@ export default function HomePage() {
       className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
         }`}
     >
-      {/* UI elements remain the same */}
-      {/* <div className="form-group">
-        <label htmlFor="inputType">Select Input Type</label>
-        <div className="flex items-center">
-          <button
-            className={`px-4 py-2 mr-2 ${inputType === "json" ? "bg-blue-500" : "bg-gray-300"}`}
-            onClick={() => setInputType("json")}
-          >
-            JSON
-          </button>
-          <button
-            className={`px-4 py-2 ${inputType === "xml" ? "bg-blue-500" : "bg-gray-300"}`}
-            onClick={() => setInputType("xml")}
-          >
-            XML
-          </button>
-        </div>
-      </div> */}
-
-      <div className="form-group">
-        <label htmlFor="inputData">Input Data (JSON or XML)</label>
-        <div className="float-right">
-          <button
-            title="Vertical"
-            className={`rounded-md py-2 px-4 mb-2 mr-2 border border-r-none bg-base-100 text-white ${type === "xml-to-json-vertical" ? "active" : ""}`}
-            onClick={() => handleNavigation("xml-to-json-vertical")}
-          >
-            <Image
-              src="/horizontal-to-vertical.svg"
-              className="svg-icon-theme" alt="Vertical Icon"
-              style={{ color: "#fff" }} width={24} height={24} />
-          </button>
-          <button
-            className="rounded-md py-2 px-4 mb-2 border bg-base-100"
-            type="button"
-            onClick={toggleFullScreen}
-          >
-            {isFullScreen ? (
-              <ArrowsPointingInIcon className="w-6 h-6" />
-            ) : (
-              <ArrowsPointingOutIcon className="w-6 h-6" />
-            )}
-          </button>
-        </div>
-        <textarea
-          id="inputData"
-          className="input-area"
-          placeholder="Paste your JSON or XML data here..."
-          value={inputData}
-          onChange={(e) => setInputData(e.target.value)}
-          style={{
-            border: "1px solid #555",
-            padding: "10px",
-            borderRadius: "5px",
-          }}
-        ></textarea>
-        <button className="btn btn-block mb-3 btn-accent" onClick={processData}>
-          Process
-        </button>
-      </div>
-
-      <div className="float-right">
-        {inputType === "json" && (
-          <>
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Input Section - Smaller Width */}
+        <div className="w-full lg:w-1/3 flex flex-col">
+          <label htmlFor="inputData" className="text-lg font-semibold mb-2">
+            Input Data (JSON or XML)
+          </label>
+          <div className="flex justify-end mt-2 gap-2">
             <button
-              className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
+              title="Vertical"
+              className={`rounded-md py-2 px-4 border bg-base-100 text-white`}
+              onClick={() => handleNavigation("xml-to-json")}
+            >
+              <Image
+                src="/horizontal-to-vertical.svg"
+                className="svg-icon-theme" alt="Vertical Icon"
+                style={{ color: "#fff" }} width={24} height={24} />
+            </button>
+
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
+              onClick={toggleFullScreen}
+            >
+              {isFullScreen ? <ArrowsPointingInIcon className="w-6 h-6" /> : <ArrowsPointingOutIcon className="w-6 h-6" />}
+            </button>
+          </div>
+          <textarea
+            id="inputData"
+            className="input-area mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Paste your JSON or XML data here..."
+            value={inputData}
+            onChange={(e) => setInputData(e.target.value)}
+            style={{
+              minHeight: "200px",
+              resize: "vertical",
+            }}
+          />
+          <button className="btn btn-accent" onClick={processData}>
+            Process
+          </button>
+        </div>
+
+        {/* Output Section - Larger Width */}
+        <div className="w-full lg:w-2/3 flex flex-col">
+          <label htmlFor="outputData" className="text-lg font-semibold mb-2">
+            Formatted Output
+          </label>
+          <div className="flex justify-end gap-2 mb-2">
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
               type="button"
               onClick={copySerializedOutput}
             >
               Copy Serialized
             </button>
+
             <button
-              className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-              type="button"
+              className="rounded-md py-2 px-4 border bg-base-100"
               onClick={copyToInlineClipboard}
             >
               Copy Inline
             </button>
-          </>
-        )}
-        <button
-          className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-          type="button"
-          onClick={copyToClipboard}
-        >
-          Copy
-        </button>
-      </div>
-
-      <label htmlFor="outputData">Formatted Output</label>
-      <div className="max-w-sm rounded overflow-hidden shadow-lg w-full lg:max-w-full lg:flex">
-        <Editor
-          height="80vh"
-          language={inputType === "xml" ? "xml" : "josn"}
-          value={outputData}
-          theme={theme === "dark" ? "vs-dark" : "vs-light"}
-          onChange={handleEditorChange}
-          options={{
-            readOnly: false,
-            automaticLayout: true,
-          }}
-        />
+            <button
+              className="rounded-md py-2 px-4 border bg-base-100"
+              onClick={copyToClipboard}
+            >
+              Copy
+            </button>
+          </div>
+          <div className="editor-container mt-2 border rounded-md shadow-md">
+            <Editor
+              height="70vh"
+              language={inputType === "xml" ? "xml" : "josn"}
+              value={outputData}
+              theme={theme === "dark" ? "vs-dark" : "vs-light"}
+              onChange={handleEditorChange}
+              options={{
+                readOnly: false,
+                automaticLayout: true,
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
