@@ -25,11 +25,11 @@ const Home: NextPage = () => {
   React.useEffect(() => {
     if (type) {
       switch (type) {
-        case "jwt-decoder":
+        case "jwt-decode":
           setSeoData({
             title: "JWT Decoder - แยกและตรวจสอบ JWT Token",
             description: "เครื่องมือสำหรับการแยก JWT Token และตรวจสอบข้อมูลในส่วนต่างๆ เช่น Header, Payload และ Signature",
-            url: "https://www.devtoolshub.org/jwt-decoder",
+            url: "https://www.devtoolshub.org/jwt-decode",
           });
           break;
         case "json-format":
