@@ -102,6 +102,14 @@ export default function Header(props: HeaderProps) {
               </li>
               <li>
                 <button
+                  onClick={() => handleNavigation("json-to-array-vertical")}
+                  className={type === "json-to-array-vertical" ? "active" : ""}
+                >
+                  Json to Array
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => handleNavigation("xml-to-json-vertical")}
                   className={type === "xml-to-json" ? "active" : ""}
                 >

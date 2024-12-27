@@ -5,6 +5,7 @@ import Head from "next/head";
 import Jwtdecode from "../components/Jwt/Jwtdecode";
 import QRCodeGen from "../components/QRCode/QRCodeGen";
 import JsonToXml from "../components/JsonFormat/JsonToXml";
+import JsonToArrayVertical from "../components/JsonFormat/JsonToArrayVertical";
 import JsonToXmlVertical from "../components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "../components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
@@ -41,6 +42,8 @@ const SlugPage = ({ seoData }: SlugPageProps) => {
         return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
+      case "json-to-array-vertical":
+        return <JsonToArrayVertical />;
       case "component-a":
         return <ComponentA />;
       default:
@@ -81,21 +84,12 @@ const SlugPage = ({ seoData }: SlugPageProps) => {
 };
 
 // เพิ่ม type สำหรับ getServerSideProps
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { slug } = context.params || {}; // ใช้การตรวจสอบค่า null/undefined
+import { GetServerSidePropsContext } from "next";
 
-  if (typeof slug !== "string") {
-    // กรณีที่ไม่มี slug หรือไม่ใช่ string
-    return { notFound: true };
-  }
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { slug } = context.params || {};
+  let seoData;
 
-  let seoData: SeoData = {
-    title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
-    description: "รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ",
-    url: "https://www.devtoolshub.org",
-  };
-
-  // ตั้งค่า SEO Data ตาม slug
   if (slug === "jwt-decode") {
     seoData = {
       title: "JWT Decoder - แยกและตรวจสอบ JWT Token",
@@ -112,6 +106,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     seoData = {
       title: "JSON Formatter Vertical - มุมมองแนวตั้ง",
       description: "เครื่องมือ JSON Formatter แบบแนวตั้ง สำหรับดูข้อมูล JSON ในมุมมองใหม่",
+      url: `https://www.devtoolshub.org/${slug}`,
+    };
+  } else if (slug === "json-to-array") {
+    seoData = {
+      title: "JSON to Array - แปลง JSON เป็น Array",
+      description: "เครื่องมือสำหรับแปลง JSON เป็น Array ได้ง่ายและรวดเร็ว",
       url: `https://www.devtoolshub.org/${slug}`,
     };
   } else if (slug === "xml-to-json") {
@@ -149,6 +149,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: { seoData },
   };
-};
+}
 
 export default SlugPage;

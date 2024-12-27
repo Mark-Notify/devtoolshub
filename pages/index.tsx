@@ -9,6 +9,7 @@ import JsonToXml from "components/JsonFormat/JsonToXml";
 import JsonToXmlVertical from "components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
+import JsonToArrayVertical from "components/JsonFormat/JsonToArrayVertical";
 import ComponentA from "components/DefaultComponent";
 
 const Home: NextPage = () => {
@@ -74,6 +75,13 @@ const Home: NextPage = () => {
             url: "https://www.devtoolshub.org/component-a",
           });
           break;
+        case "json-to-array-vertical":
+          setSeoData({
+            title: "JSON to Array Vertical - แปลง JSON เป็น Array",
+            description: "เครื่องมือสำหรับแปลง JSON เป็น Array",
+            url: "https://www.devtoolshub.org/json-to-array-vertical",
+          });
+          break;
         default:
           setSeoData({
             title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
@@ -99,6 +107,8 @@ const Home: NextPage = () => {
         return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
+      case "json-to-array-vertical":
+        return <JsonToArrayVertical />;
       case "component-a":
         return <ComponentA />;
       default:
