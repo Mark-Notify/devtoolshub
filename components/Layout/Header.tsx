@@ -18,6 +18,7 @@ export interface HeaderProps {
 
 export default function Header(props: HeaderProps) {
   const [theme, setTheme] = useState<string | null>(null); // Initial state includes null for SSR safety
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const router = useRouter();
   const { type } = router.query; // ดึง query parameter จาก URL
 
@@ -68,6 +69,7 @@ export default function Header(props: HeaderProps) {
   // };
 
   const handleNavigation = (slug: string) => {
+    setDropdownOpen(false); // Hide dropdown after click
     router.push(`/${slug}`, undefined, { shallow: true });
   };
 
@@ -85,54 +87,56 @@ export default function Header(props: HeaderProps) {
             <label
               tabIndex={0}
               className="btn btn-ghost btn-circle content-center"
+              onClick={() => setDropdownOpen((open) => !open)}
             >
               <Bars3Icon className="w-6 h-6" />
             </label>
-            <ul
-              tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box w-80 border border-white"
-            >
-              <li>
-                <button
-                  onClick={() => handleNavigation("json-format-vertical")}
-                  className={type === "json-format" ? "active" : ""}
-                >
-                  JSON Format
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavigation("json-to-array-vertical")}
-                  className={type === "json-to-array-vertical" ? "active" : ""}
-                >
-                  Json to Array
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavigation("xml-to-json-vertical")}
-                  className={type === "xml-to-json" ? "active" : ""}
-                >
-                  XML to JSON
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavigation("jwt-decode")}
-                  className={type === "jwt-decode" ? "active" : ""}
-                >
-                  JWT Decode
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavigation("qr-code-generator")}
-                  className={type === "qr-code-generator" ? "active" : ""}
-                >
-                  QR Code Generator
-                </button>
-              </li>
-              {/* <li>
+            {dropdownOpen && (
+              <ul
+                tabIndex={0}
+                className="menu menu-compact dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box w-80 border border-white"
+              >
+                <li>
+                  <button
+                    onClick={() => handleNavigation("json-format-vertical")}
+                    className={type === "json-format" ? "active" : ""}
+                  >
+                    JSON Format
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavigation("json-to-array-vertical")}
+                    className={type === "json-to-array-vertical" ? "active" : ""}
+                  >
+                    Json to Array
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavigation("xml-to-json-vertical")}
+                    className={type === "xml-to-json" ? "active" : ""}
+                  >
+                    XML to JSON
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavigation("jwt-decode")}
+                    className={type === "jwt-decode" ? "active" : ""}
+                  >
+                    JWT Decode
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavigation("qr-code-generator")}
+                    className={type === "qr-code-generator" ? "active" : ""}
+                  >
+                    QR Code Generator
+                  </button>
+                </li>
+                {/* <li>
                 <button
                   onClick={() => handleNavigation("component-a")}
                   className={type === "component-a" ? "active" : ""}
@@ -140,7 +144,8 @@ export default function Header(props: HeaderProps) {
                   Component A
                 </button>
               </li> */}
-            </ul>
+              </ul>
+            )}
 
           </div>
         </div>
