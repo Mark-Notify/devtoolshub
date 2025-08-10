@@ -9,8 +9,9 @@ import JsonToXml from "components/JsonFormat/JsonToXml";
 import JsonToXmlVertical from "components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
-import ComponentA from "components/DefaultComponent";
+// import ComponentA from "components/DefaultComponent";
 import TermsAndConditions from "components/terms-and-conditions";
+import ProfilePage from "components/ProfilePage";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -102,8 +103,8 @@ const Home: NextPage = () => {
         return <QRCodeGen />;
       case "terms-and-conditions":
         return <TermsAndConditions />;
-      case "component-a":
-        return <ComponentA />;
+      case "profile":
+        return <ProfilePage />;
       default:
         return <JsonFormat />;
     }

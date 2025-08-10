@@ -7,7 +7,8 @@ import JsonToXml from "../components/JsonFormat/JsonToXml";
 import JsonToXmlVertical from "../components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "../components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
-import ComponentA from "../components/DefaultComponent";
+// import ComponentA from "../components/DefaultComponent";
+import ProfilePage from "../components/ProfilePage";
 import CommonLayout from "../components/Layout";
 import TermsAndConditions from "../components/terms-and-conditions";
 
@@ -100,8 +101,10 @@ const SlugPage = () => {
         return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
-      case "component-a":
-        return <ComponentA />;
+      // case "component-a":
+      //   return <ComponentA />;
+      case "profile":
+        return <ProfilePage />;
       case "terms-and-conditions":
         return <TermsAndConditions />;
       default:
