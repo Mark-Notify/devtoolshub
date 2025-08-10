@@ -1,8 +1,5 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { connectToDatabase } from "../../../lib/mongodb";
-import UserData from "../../../models/UserData";
-import { IUserData } from "../../../models/UserData";
 
 export default NextAuth({
   providers: [
@@ -12,10 +9,4 @@ export default NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async session({ session }) {
-      // ส่ง email ไปกับ session
-      return session;
-    },
-  },
 });
