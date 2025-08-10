@@ -106,7 +106,7 @@ const Home: NextPage = () => {
       case "profile":
         return <ProfilePage />;
       default:
-        return <JsonFormat />;
+        // return <JsonFormat />;
     }
   };
 

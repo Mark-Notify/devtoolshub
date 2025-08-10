@@ -108,7 +108,7 @@ const SlugPage = () => {
       case "terms-and-conditions":
         return <TermsAndConditions />;
       default:
-        return <JsonFormat />;
+        // return <JsonFormat />;
     }
   };
 
