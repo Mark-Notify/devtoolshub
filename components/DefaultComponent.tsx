@@ -63,9 +63,9 @@ const ComponentA: React.FC = () => {
             Format JSON
           </button>
 
-          {output && (
+          {session && (
             <pre className="bg-gray-100 p-3 rounded-md overflow-x-auto">
-              {output}
+              {JSON.stringify(session, null, 2)}
             </pre>
           )}
         </div>
