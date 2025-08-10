@@ -10,6 +10,7 @@ import JsonToXmlVertical from "components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 import ComponentA from "components/DefaultComponent";
+import TermsAndConditions from "components/terms-and-conditions";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -99,6 +100,8 @@ const Home: NextPage = () => {
         return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
+      case "terms-and-conditions":
+        return <TermsAndConditions />;
       case "component-a":
         return <ComponentA />;
       default:

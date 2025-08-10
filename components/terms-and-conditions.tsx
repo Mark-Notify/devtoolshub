@@ -28,7 +28,7 @@ const TermsAndConditions: React.FC = () => {
                             <p>
                                 Welcome to <strong>{COMPANY_NAME}</strong> ({DOMAIN}). By accessing or using our website,
                                 services, or tools (collectively, the “Service”), you agree to be bound by these Terms
-                                and Conditions ("Terms"). If you do not agree to these Terms, please do not use the Service.
+                                and Conditions (&quot;Terms&quot;). If you do not agree to these Terms, please do not use the Service.
                             </p>
 
                             <h2>1. Use of the Service</h2>
@@ -47,7 +47,7 @@ const TermsAndConditions: React.FC = () => {
 
                             <h2>3. User Content</h2>
                             <p>
-                                You retain ownership of content you submit to the Service ("User Content"). By submitting User Content you grant
+                                You retain ownership of content you submit to the Service (&quot;User Content&quot;). By submitting User Content you grant
                                 {` ${COMPANY_NAME} `} a non-exclusive, worldwide, royalty-free license to use, copy, modify, and display such content
                                 for the purpose of providing and improving the Service.
                             </p>
@@ -68,13 +68,13 @@ const TermsAndConditions: React.FC = () => {
 
                             <h2>6. Privacy</h2>
                             <p>
-                                Our <a href="/privacy">Privacy Policy</a> explains how we collect and use personal data. By using the Service you
+                                Our <a href="/terms-and-conditions">Privacy Policy</a> explains how we collect and use personal data. By using the Service you
                                 agree to the collection and use of information in accordance with that policy.
                             </p>
 
                             <h2>7. Disclaimers</h2>
                             <p>
-                                THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND. TO THE FULLEST EXTENT
+                                THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND. TO THE FULLEST EXTENT
                                 PERMITTED BY LAW, {COMPANY_NAME} DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY,
                                 FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
                             </p>
@@ -95,7 +95,7 @@ const TermsAndConditions: React.FC = () => {
                             <h2>10. Changes to These Terms</h2>
                             <p>
                                 We may update these Terms from time to time. When we do, we will post the updated Terms on this page with a new
-                                "Last updated" date. Your continued use of the Service after changes indicates your acceptance of the new Terms.
+                                &quot;Last updated&quot; date. Your continued use of the Service after changes indicates your acceptance of the new Terms.
                             </p>
 
                             <h2>11. Governing Law</h2>
