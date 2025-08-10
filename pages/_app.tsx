@@ -1,8 +1,9 @@
 import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import { RecoilRoot, useRecoilSnapshot } from "recoil";
 import { useEffect } from "react";
+import type { AppProps } from "next/app";
 import { SnackbarProvider } from "notistack";
+import { SessionProvider } from "next-auth/react";
+import { RecoilRoot, useRecoilSnapshot } from "recoil";
 
 function DebugObserver(): any {
   const snapshot = useRecoilSnapshot();
@@ -22,9 +23,12 @@ function MyApp({ Component, pageProps }: AppProps) {
     <RecoilRoot>
       <DebugObserver />
       <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
-        <Component {...pageProps} />
+        <SessionProvider session={(pageProps as any).session}>
+          <Component {...pageProps} />
+        </SessionProvider>
       </SnackbarProvider>
     </RecoilRoot>
+
   );
 }
 
