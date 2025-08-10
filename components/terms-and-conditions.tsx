@@ -1,6 +1,7 @@
 // /pages/terms.tsx
 import Head from "next/head";
 import React from "react";
+import Link from "next/link";
 
 const COMPANY_NAME = "DevToolsHub";
 const DOMAIN = "https://www.devtoolshub.org";
@@ -54,8 +55,8 @@ const TermsAndConditions: React.FC = () => {
 
                             <h2>4. Prohibited Conduct</h2>
                             <p>
-                                You must not submit content or take actions that: infringe others' rights, are unlawful, harmful, abusive, obscene,
-                                or otherwise objectionable; attempt to reverse engineer the Service; interfere with the Service’s operation; or
+                                You must not submit content or take actions that: infringe others&apos; rights, are unlawful, harmful, abusive, obscene,
+                                or otherwise objectionable; attempt to reverse engineer the Service; interfere with the Service&apos;s operation; or
                                 bypass any access controls.
                             </p>
 
@@ -68,7 +69,7 @@ const TermsAndConditions: React.FC = () => {
 
                             <h2>6. Privacy</h2>
                             <p>
-                                Our <a href="/terms-and-conditions">Privacy Policy</a> explains how we collect and use personal data. By using the Service you
+                                Our <Link href="/terms-and-conditions">Privacy Policy</Link> explains how we collect and use personal data. By using the Service you
                                 agree to the collection and use of information in accordance with that policy.
                             </p>
 
