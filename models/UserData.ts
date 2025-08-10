@@ -1,11 +1,22 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-const UserDataSchema = new mongoose.Schema({
+export interface IUserData extends Document {
+  userEmail: string;
+  tool?: string;
+  inputData?: string;
+  outputData?: string;
+  createdAt: Date;
+}
+
+const UserDataSchema: Schema<IUserData> = new Schema({
   userEmail: { type: String, required: true },
-  tool: String,         // ชื่อเครื่องมือที่ใช้ เช่น JSON Formatter
-  inputData: String,    // ข้อมูลต้นฉบับ
-  outputData: String,   // ข้อมูลที่แปลงแล้ว
+  tool: { type: String },
+  inputData: { type: String },
+  outputData: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.models.UserData || mongoose.model("UserData", UserDataSchema);
+const UserData: Model<IUserData> =
+  mongoose.models.UserData || mongoose.model<IUserData>("UserData", UserDataSchema);
+
+export default UserData;

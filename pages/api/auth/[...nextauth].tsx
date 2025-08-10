@@ -1,5 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { connectToDatabase } from "../../../lib/mongodb";
+import UserData from "../../../models/UserData";
+import { IUserData } from "../../../models/UserData";
 
 export default NextAuth({
   providers: [
