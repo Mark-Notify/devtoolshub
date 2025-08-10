@@ -9,6 +9,7 @@ import JsonFormat from "../components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
 import ComponentA from "../components/DefaultComponent";
 import CommonLayout from "../components/Layout";
+import TermsAndConditions from "../components/terms-and-conditions";
 
 const SlugPage = () => {
   const router = useRouter();
@@ -101,6 +102,8 @@ const SlugPage = () => {
         return <QRCodeGen />;
       case "component-a":
         return <ComponentA />;
+      case "terms-and-conditions":
+        return <TermsAndConditions />;
       default:
         return <JsonFormat />;
     }
