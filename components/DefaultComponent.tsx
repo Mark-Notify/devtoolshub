@@ -56,7 +56,7 @@ const ComponentA: React.FC = () => {
             rows={6}
             placeholder="Paste your JSON here..."
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => setInput(JSON.stringify(session, null, 2))}
           />
 
           <button className="btn btn-primary mb-4" onClick={handleFormat}>

@@ -150,9 +150,10 @@ export default function Header(props: HeaderProps) {
           </div>
         </div>
         <div className="navbar-center">
-          <NextLink href="/" className="btn btn-ghost normal-case text-xl">
+          <NextLink href="/" className="btn btn-ghost normal-case text-xl flex items-center">
             <CodeBracketIcon className="w-8 h-8" />
-            Programmer Helper Tool
+            <span className="hidden sm:inline ml-2">Programmer Helper Tools</span>
+            <span className="inline sm:hidden ml-2">Programmer Tools</span>
           </NextLink>
         </div>
         <div className="navbar-end">
