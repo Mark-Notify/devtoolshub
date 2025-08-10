@@ -136,14 +136,14 @@ export default function Header(props: HeaderProps) {
                     QR Code Generator
                   </button>
                 </li>
-                {/* <li>
+                <li>
                 <button
                   onClick={() => handleNavigation("component-a")}
                   className={type === "component-a" ? "active" : ""}
                 >
                   Component A
                 </button>
-              </li> */}
+              </li>
               </ul>
             )}
 
