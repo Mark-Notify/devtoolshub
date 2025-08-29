@@ -45,7 +45,7 @@ A collection of free, fast, and developer-friendly online tools.
 # Clone the repo
 git clone https://github.com/Mark-Notify/next.git
 
-cd devtoolshub
+cd next
 
 # Install dependencies
 npm install
@@ -55,4 +55,5 @@ npm run dev
 
 # Build for production
 npm run build
+
 
