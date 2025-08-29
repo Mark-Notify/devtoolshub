@@ -43,7 +43,7 @@ A collection of free, fast, and developer-friendly online tools.
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/devtoolshub.git
+git clone https://github.com/Mark-Notify/next.git
 
 cd devtoolshub
 
@@ -55,3 +55,4 @@ npm run dev
 
 # Build for production
 npm run build
+
