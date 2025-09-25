@@ -5,7 +5,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 // NOTE: In earlier draft we used values like frame13/ball14 (those are for QRCode Monkey, not this lib) -> hence no visual change.
 // This version maps to VALID shapes for qr-code-styling.
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import QRCodeStylingDefault, { QRCodeStyling as QRCodeStylingNamed } from "qr-code-styling";
 const QRCodeStyling = (QRCodeStylingNamed || QRCodeStylingDefault) as any;
@@ -145,6 +144,7 @@ export default function QRStudio() {
   useEffect(() => setMounted(true), []);
 
   // init
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!mounted || !containerRef.current || !QRCodeStyling) return;
     if (!qrRef.current) {
