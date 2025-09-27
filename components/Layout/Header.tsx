@@ -130,6 +130,14 @@ export default function Header(props: HeaderProps) {
                 </li>
                 <li>
                   <button
+                    onClick={() => handleNavigation("base64")}
+                    className={type === "base64" ? "active" : ""}
+                  >
+                    Base 64
+                  </button>
+                </li>
+                <li>
+                  <button
                     onClick={() => handleNavigation("qr-code-generator")}
                     className={type === "qr-code-generator" ? "active" : ""}
                   >

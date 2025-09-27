@@ -12,6 +12,7 @@ import JsonFormatVertical from "components/JsonFormat/JsonFormatVertical";
 // import ComponentA from "components/DefaultComponent";
 import TermsAndConditions from "components/terms-and-conditions";
 import ProfilePage from "components/ProfilePage";
+import Base64 from "../components/base64";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -69,6 +70,13 @@ const Home: NextPage = () => {
             url: "https://www.devtoolshub.org/qr-code-generator",
           });
           break;
+        case "base64":
+          setSeoData({
+            title: "Base64 Encode/Decode - เข้ารหัสและถอดรหัส Base64 ออนไลน์",
+            description: "เครื่องมือเข้ารหัส (Encode) และถอดรหัส (Decode) ข้อความด้วย Base64 ฟรี ใช้ง่ายและรวดเร็ว",
+            url: "https://www.devtoolshub.org/base64",
+          });
+          break;
         case "component-a":
           setSeoData({
             title: "Component A - ตัวอย่าง Component",
@@ -101,6 +109,8 @@ const Home: NextPage = () => {
         return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
+      case "base64":
+        return <Base64 />;
       case "terms-and-conditions":
         return <TermsAndConditions />;
       case "profile":

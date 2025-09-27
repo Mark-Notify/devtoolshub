@@ -11,6 +11,7 @@ import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
 import ProfilePage from "../components/ProfilePage";
 import CommonLayout from "../components/Layout";
 import TermsAndConditions from "../components/terms-and-conditions";
+import Base64 from "../components/base64";
 
 const SlugPage = () => {
   const router = useRouter();
@@ -24,7 +25,7 @@ const SlugPage = () => {
   });
 
   useEffect(() => {
-    
+
     if (slug) {
       switch (slug) {
         case "jwt-decode":
@@ -69,6 +70,13 @@ const SlugPage = () => {
             url: "https://www.devtoolshub.org/qr-code-generator",
           });
           break;
+        case "base64":
+          setSeoData({
+            title: "Base64 Encode/Decode - เข้ารหัสและถอดรหัส Base64 ออนไลน์",
+            description: "เครื่องมือเข้ารหัส (Encode) และถอดรหัส (Decode) ข้อความด้วย Base64 ฟรี ใช้ง่ายและรวดเร็ว",
+            url: "https://www.devtoolshub.org/base64",
+          });
+          break;
         case "component-a":
           setSeoData({
             title: "Component A - ตัวอย่าง Component",
@@ -101,8 +109,8 @@ const SlugPage = () => {
         return <Jwtdecode />;
       case "qr-code-generator":
         return <QRCodeGen />;
-      // case "component-a":
-      //   return <ComponentA />;
+      case "base64":
+        return <Base64 />;
       case "profile":
         return <ProfilePage />;
       case "terms-and-conditions":

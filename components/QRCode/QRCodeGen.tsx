@@ -428,6 +428,31 @@ export default function QRStudio() {
             </div>
           </div>
 
+          {/* API Usage Guide */}
+          <div className="mt-12 p-6 rounded-2xl bg-gray-900 text-gray-100 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Usage Guide</h2>
+            <p className="text-sm mb-3 text-gray-400">
+              API Endpoint (ฟรีใช้งานผ่าน URL)
+            </p>
+
+            <pre className="bg-black/40 p-4 rounded-lg overflow-x-auto text-sm">
+              <code>
+                <a
+                  href="https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 underline hover:text-blue-300"
+                >
+                  https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono
+                </a>
+              </code>
+            </pre>
+
+            {/* <p className="mt-3 text-xs text-gray-400">
+              📌 คุณสามารถ copy JSON ด้านบนไปใช้เรียกผ่าน <code>qr-code-styling</code> หรือ API server-side ได้โดยตรง
+            </p> */}
+          </div>
+
           {/* <footer className="mt-8 text-sm text-gray-500">
             Built with <code>qr-code-styling</code> (valid shape names only). Drop in <code>app/page.tsx</code>.
           </footer> */}
