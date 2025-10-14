@@ -6,42 +6,37 @@ import {
   MoonIcon,
   SunIcon,
 } from "@heroicons/react/24/outline";
-
-import { useRouter } from "next/router"; // ใช้สำหรับจัดการ Routing
+import { useRouter } from "next/router";
 import Head from "next/head";
 import { useState, useEffect } from "react";
 
 export interface HeaderProps {
   hideMenu?: boolean;
-  onThemeChange?: () => void; // Callback to notify parent of theme change
+  onThemeChange?: () => void;
 }
 
 export default function Header(props: HeaderProps) {
-  const [theme, setTheme] = useState<string | null>(null); // Initial state includes null for SSR safety
+  const [theme, setTheme] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const router = useRouter();
-  const { type } = router.query; // ดึง query parameter จาก URL
+  const { type } = router.query;
 
-  // Runs after the component is mounted (client-side only)
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
-      setTheme(storedTheme); // Apply saved theme
+      setTheme(storedTheme);
     } else {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light";
-      setTheme(systemTheme); // Apply system theme
+      setTheme(systemTheme);
     }
-
-    // Cleanup function to reset theme on unmount or if necessary
     return () => {
       document.documentElement.removeAttribute("data-theme");
     };
   }, []);
 
-  // Sync theme changes to HTML root element and localStorage
   useEffect(() => {
     if (theme) {
       document.documentElement.setAttribute("data-theme", theme);
@@ -53,25 +48,30 @@ export default function Header(props: HeaderProps) {
     return <div style={{ visibility: "hidden" }}>Loading...</div>;
   }
 
-  // Toggle between light and dark themes
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
     try {
       window.monaco.editor.setTheme(theme === "dark" ? "vs-light" : "vs-dark");
-    } catch (error) {
-
-    }
+    } catch { }
   };
-
-  // ฟังก์ชันเปลี่ยน URL และ Component
-  // const handleNavigation = (componentType: string) => {
-  //   router.push(`/?type=${componentType}`, undefined, { shallow: true });
-  // };
 
   const handleNavigation = (slug: string) => {
-    setDropdownOpen(false); // Hide dropdown after click
+    setDropdownOpen(false);
     router.push(`/${slug}`, undefined, { shallow: true });
   };
+
+  // 🧭 รายการเมนูทั้งหมด (เพิ่ม/ลดได้เลย)
+  const menuItems = [
+    { slug: "json-format-vertical", label: "JSON Format" },
+    { slug: "json-to-array-vertical", label: "JSON → Array" },
+    { slug: "xml-to-json-vertical", label: "XML → JSON" },
+    { slug: "jwt-decode", label: "JWT Decode" },
+    { slug: "base64", label: "Base64" },
+    { slug: "morse-code-decoder", label: "Morse Code" },
+    { slug: "qr-code-generator", label: "QR Code" },
+    // { slug: "component-a", label: "Component A" },
+    // ถ้ามีมากกว่านี้จะ wrap ลงแถวใหม่อัตโนมัติ
+  ];
 
   return (
     <>
@@ -81,7 +81,9 @@ export default function Header(props: HeaderProps) {
           rel="stylesheet"
         />
       </Head>
+
       <div className="navbar bg-base-100 mx-auto max-w-7xl mt-4 shadow-xl rounded-box">
+        {/* START */}
         <div className="navbar-start">
           <div className="dropdown">
             <label
@@ -91,89 +93,44 @@ export default function Header(props: HeaderProps) {
             >
               <Bars3Icon className="w-6 h-6" />
             </label>
-            {dropdownOpen && (
-              <ul
-                tabIndex={0}
-                className="menu menu-compact dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box w-80 border border-white"
-              >
-                <li>
-                  <button
-                    onClick={() => handleNavigation("json-format-vertical")}
-                    className={type === "json-format" ? "active" : ""}
-                  >
-                    JSON Format
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavigation("json-to-array-vertical")}
-                    className={type === "json-to-array-vertical" ? "active" : ""}
-                  >
-                    Json to Array
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavigation("xml-to-json-vertical")}
-                    className={type === "xml-to-json" ? "active" : ""}
-                  >
-                    XML to JSON
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavigation("jwt-decode")}
-                    className={type === "jwt-decode" ? "active" : ""}
-                  >
-                    JWT Decode
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavigation("base64")}
-                    className={type === "base64" ? "active" : ""}
-                  >
-                    Base 64
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavigation("morse-code-decoder")}
-                    className={type === "morse-code-decoder" ? "active" : ""}
-                  >
-                    Morse Code
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavigation("qr-code-generator")}
-                    className={type === "qr-code-generator" ? "active" : ""}
-                  >
-                    QR Code Generator
-                  </button>
-                </li>
-                <li>
-                <button
-                  onClick={() => handleNavigation("component-a")}
-                  className={type === "component-a" ? "active" : ""}
-                >
-                  Component A
-                </button>
-              </li>
-              </ul>
-            )}
 
+            {dropdownOpen && (
+              <div
+                tabIndex={0}
+                className="dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box w-[420px] border border-white"
+              >
+                {/* เมนูแบบ grid 4 คอลัมน์, เพิ่มแถวอัตโนมัติ */}
+                <div className="grid grid-cols-4 gap-3">
+                  {menuItems.map((item) => (
+                    <button
+                      key={item.slug}
+                      onClick={() => handleNavigation(item.slug)}
+                      className={`btn btn-sm whitespace-normal ${type === item.slug ? "btn-primary" : "btn-outline"
+                        }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* CENTER */}
         <div className="navbar-center">
-          <NextLink href="/" className="btn btn-ghost normal-case text-xl flex items-center">
+          <NextLink
+            href="/"
+            className="btn btn-ghost normal-case text-xl flex items-center"
+          >
             <CodeBracketIcon className="w-8 h-8" />
             <span className="hidden sm:inline ml-2">Programmer Helper Tools</span>
-            <span className="inline sm:hidden ml-2">Programmer Tools</span>
+            <span className="inline sm:hidden ml-2">Dev Tools</span>
           </NextLink>
         </div>
+
+        {/* END */}
         <div className="navbar-end">
-          {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             className="btn btn-ghost btn-circle p-2"
