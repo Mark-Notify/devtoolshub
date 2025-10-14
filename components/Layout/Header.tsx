@@ -138,6 +138,14 @@ export default function Header(props: HeaderProps) {
                 </li>
                 <li>
                   <button
+                    onClick={() => handleNavigation("morse-code-decoder")}
+                    className={type === "morse-code-decoder" ? "active" : ""}
+                  >
+                    Morse Code
+                  </button>
+                </li>
+                <li>
+                  <button
                     onClick={() => handleNavigation("qr-code-generator")}
                     className={type === "qr-code-generator" ? "active" : ""}
                   >

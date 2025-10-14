@@ -12,6 +12,7 @@ import ProfilePage from "../components/ProfilePage";
 import CommonLayout from "../components/Layout";
 import TermsAndConditions from "../components/terms-and-conditions";
 import Base64 from "../components/base64";
+import MorseCode from "../components/MorseCode";
 
 const SlugPage = () => {
   const router = useRouter();
@@ -77,6 +78,14 @@ const SlugPage = () => {
             url: "https://www.devtoolshub.org/base64",
           });
           break;
+        case "morse-code-decoder":
+          setSeoData({
+            title: "Morse Code Decoder - แปลงรหัสมอร์สเป็นข้อความ | DevToolsHub",
+            description:
+              "แปลงรหัสมอร์สเป็นข้อความหรือข้อความเป็นรหัสมอร์ส รองรับตัวอักษรภาษาอังกฤษและตัวเลข ใช้งานฟรี พร้อมเสียงและ animation",
+            url: "https://www.devtoolshub.org/morse-code-decoder",
+          });
+          break;
         case "component-a":
           setSeoData({
             title: "Component A - ตัวอย่าง Component",
@@ -111,6 +120,8 @@ const SlugPage = () => {
         return <QRCodeGen />;
       case "base64":
         return <Base64 />;
+      case "morse-code-decoder":
+        return <MorseCode />;
       case "profile":
         return <ProfilePage />;
       case "terms-and-conditions":
