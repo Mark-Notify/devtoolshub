@@ -60,7 +60,7 @@ export default function Header(props: HeaderProps) {
     router.push(`/${slug}`, undefined, { shallow: true });
   };
 
-  // 🧭 รายการเมนูทั้งหมด (เพิ่ม/ลดได้เลย)
+  // 🧭 รายการเมนู
   const menuItems = [
     { slug: "json-format-vertical", label: "JSON Format" },
     { slug: "json-to-array-vertical", label: "JSON → Array" },
@@ -70,7 +70,6 @@ export default function Header(props: HeaderProps) {
     { slug: "morse-code-decoder", label: "Morse Code" },
     { slug: "qr-code-generator", label: "QR Code" },
     // { slug: "component-a", label: "Component A" },
-    // ถ้ามีมากกว่านี้จะ wrap ลงแถวใหม่อัตโนมัติ
   ];
 
   return (
@@ -97,10 +96,15 @@ export default function Header(props: HeaderProps) {
             {dropdownOpen && (
               <div
                 tabIndex={0}
-                className="dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box w-[420px] border border-white"
+                className="dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box border border-white"
+                style={{
+                  width: "auto",
+                  maxWidth: "90vw",
+                  minWidth: "400px",
+                }}
               >
-                {/* เมนูแบบ grid 4 คอลัมน์, เพิ่มแถวอัตโนมัติ */}
-                <div className="grid grid-cols-4 gap-3">
+                {/* ✅ เรียงลงล่างครบ 4 ปุ่ม แล้วค่อยขยับขวา */}
+                <div className="grid grid-rows-4 grid-flow-col gap-3">
                   {menuItems.map((item) => (
                     <button
                       key={item.slug}
