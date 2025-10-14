@@ -24,6 +24,7 @@ export default function MorseCodeTool() {
     const gainRef = useRef<GainNode | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
     const stopFlag = useRef(false);
+    const streamRef = useRef<MediaStream | null>(null);
 
     /** ตรวจจับว่า input เป็นรหัสมอร์สหรือข้อความปกติ */
     const detectMode = (text: string) =>
@@ -79,7 +80,6 @@ export default function MorseCodeTool() {
             return;
         }
 
-        // ต้องสร้าง context หลังจากมี user gesture
         const audioCtx = new (window.AudioContext ||
             (window as any).webkitAudioContext)();
         const gain = audioCtx.createGain();
@@ -96,7 +96,7 @@ export default function MorseCodeTool() {
         stopFlag.current = false;
         setIsPlaying(true);
 
-        const dot = 100; // 100 ms unit
+        const dot = 100; // 100ms per dot
         const pattern = output.split("");
 
         for (const symbol of pattern) {
@@ -132,6 +132,52 @@ export default function MorseCodeTool() {
         } catch { }
     };
 
+    /** 💡 เปิดแฟลชไฟ (Android Chrome เท่านั้น) */
+    const toggleFlash = async () => {
+        try {
+            if (!streamRef.current) {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" },
+                });
+                streamRef.current = stream;
+            }
+
+            const track = streamRef.current.getVideoTracks()[0];
+            const cap = track.getCapabilities() as MediaTrackCapabilities & {
+                torch?: boolean;
+            };
+
+            if (!cap.torch) {
+                Swal.fire("⚠️", "อุปกรณ์นี้ไม่รองรับแฟลช", "info");
+                return;
+            }
+
+            const setTorch = async (on: boolean) => {
+                await track.applyConstraints({ advanced: [{ torch: on }] as any });
+            };
+
+            const pattern = output.split("");
+
+            for (const symbol of pattern) {
+                if (symbol === ".") {
+                    await setTorch(true);
+                    await sleep(150);
+                    await setTorch(false);
+                    await sleep(150);
+                } else if (symbol === "-") {
+                    await setTorch(true);
+                    await sleep(400);
+                    await setTorch(false);
+                    await sleep(200);
+                } else {
+                    await sleep(300);
+                }
+            }
+        } catch (err) {
+            Swal.fire("Error", "ไม่สามารถเปิดแฟลชได้", "error");
+        }
+    };
+
     /** 🧹 ล้างข้อมูล */
     const clearAll = () => {
         setInput("");
@@ -149,7 +195,7 @@ export default function MorseCodeTool() {
 
     return (
         <div className="p-6 max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl font-bold mb-4">Morse Code</h1>
+            <h1 className="text-3xl font-bold mb-4">Morse Code Encoder / Decoder</h1>
             <p className="text-gray-400 mb-6">
                 พิมพ์ข้อความหรือรหัสมอร์ส ระบบจะตรวจจับอัตโนมัติและแปลงให้ทันที
             </p>
@@ -184,12 +230,21 @@ export default function MorseCodeTool() {
                         ⏹️ หยุดเสียง
                     </button>
                 )}
+
+                <button
+                    onClick={toggleFlash}
+                    className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition"
+                >
+                    💡 แฟลชไฟ
+                </button>
+
                 <button
                     onClick={copyLink}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
                 >
                     🔗 Copy Link
                 </button>
+
                 <button
                     onClick={clearAll}
                     className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition"
