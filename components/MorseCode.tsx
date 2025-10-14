@@ -70,50 +70,80 @@ export default function MorseCodeTool() {
 
     /** 🔊 เล่นเสียงมอร์ส */
     const playMorse = async () => {
-        if (!output.trim()) return Swal.fire("Error", "ไม่มีข้อความให้เล่น", "warning");
-        setIsPlaying(true);
+        if (!output.trim()) {
+            Swal.fire("Error", "ไม่มีข้อความให้เล่น", "warning");
+            return;
+        }
+
+        // ปิดเสียงเก่าก่อนถ้ามี
+        if (audioCtxRef.current) {
+            audioCtxRef.current.close();
+        }
 
         const audioCtx = new (window.AudioContext ||
             (window as any).webkitAudioContext)();
         audioCtxRef.current = audioCtx;
 
-        const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.frequency.value = 600;
-        osc.connect(gain).connect(audioCtx.destination);
+        gain.connect(audioCtx.destination);
+        gain.gain.value = 0; // เริ่มต้นปิดเสียงไว้ก่อน
+
+        const osc = audioCtx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = 600; // ความถี่เสียง beep
+        osc.connect(gain);
         osc.start();
         oscRef.current = osc;
 
-        const dot = 100;
-        let t = audioCtx.currentTime;
+        setIsPlaying(true);
+
+        const dot = 0.1; // 100 ms
+        let currentTime = audioCtx.currentTime;
 
         for (const symbol of output) {
-            if (!isPlaying) break; // หยุดได้กลางทาง
-            if (symbol === ".") {
-                gain.gain.setValueAtTime(1, t);
-                t += dot / 1000;
-                gain.gain.setValueAtTime(0, t);
-                t += dot / 1000;
-            } else if (symbol === "-") {
-                gain.gain.setValueAtTime(1, t);
-                t += (dot * 3) / 1000;
-                gain.gain.setValueAtTime(0, t);
-                t += dot / 1000;
-            } else {
-                t += (dot * 3) / 1000;
+            if (!audioCtxRef.current || !isPlaying) break;
+
+            switch (symbol) {
+                case ".":
+                    gain.gain.setValueAtTime(1, currentTime);
+                    currentTime += dot;
+                    gain.gain.setValueAtTime(0, currentTime);
+                    currentTime += dot;
+                    break;
+                case "-":
+                    gain.gain.setValueAtTime(1, currentTime);
+                    currentTime += dot * 3;
+                    gain.gain.setValueAtTime(0, currentTime);
+                    currentTime += dot;
+                    break;
+                case " ":
+                    currentTime += dot * 2;
+                    break;
+                default:
+                    currentTime += dot * 2;
+                    break;
             }
         }
 
-        osc.stop(t);
-        setTimeout(() => setIsPlaying(false), (t - audioCtx.currentTime) * 1000);
+        // หยุดเสียงหลังจากเล่นจบ
+        osc.stop(currentTime);
+        setTimeout(() => setIsPlaying(false), (currentTime - audioCtx.currentTime) * 1000);
     };
 
     /** 🔇 หยุดเสียง */
     const stopMorse = () => {
         setIsPlaying(false);
-        if (oscRef.current) oscRef.current.stop();
-        if (audioCtxRef.current) audioCtxRef.current.close();
+        if (oscRef.current) {
+            try {
+                oscRef.current.stop();
+            } catch { }
+        }
+        if (audioCtxRef.current) {
+            audioCtxRef.current.close();
+            audioCtxRef.current = null;
+        }
     };
+
 
     /** 💡 เปิดแฟลชไฟ (Android Chrome เท่านั้น) */
     const toggleFlash = async () => {
