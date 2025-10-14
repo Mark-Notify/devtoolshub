@@ -16,50 +16,60 @@ const reverseMap = Object.fromEntries(
   Object.entries(morseMap).map(([k, v]) => [v, k])
 );
 
-export default function MorseTool() {
+export default function MorseCodeTool() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const detectMode = (text: string) => /^[.\-\s/]+$/.test(text.trim()) ? "decode" : "encode";
+  /** ตรวจจับว่า input เป็นรหัสมอร์สหรือข้อความปกติ */
+  const detectMode = (text: string) =>
+    /^[.\-\s/]+$/.test(text.trim()) ? "decode" : "encode";
 
+  /** ฟังก์ชันประมวลผล encode/decode */
   const process = (text: string) => {
     if (!text.trim()) {
       setOutput("");
       return;
     }
+
     const mode = detectMode(text);
+
     if (mode === "encode") {
       const encoded = text
         .toUpperCase()
         .split("")
-        .map(ch => morseMap[ch] || ch)
+        .map((ch) => morseMap[ch] || ch)
         .join(" ");
       setOutput(encoded);
     } else {
       const decoded = text
         .split(" ")
-        .map(code => reverseMap[code] || code)
+        .map((code) => reverseMap[code] || code)
         .join("");
       setOutput(decoded);
     }
   };
 
-  // 🧠 Auto encode/decode เมื่อพิมพ์หรือวาง
+  /** Auto encode/decode เมื่อพิมพ์หรือวางข้อความ */
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setInput(value);
     process(value);
   };
 
-  // 🔊 เล่นเสียงมอร์ส
+  /** 🔊 เล่นเสียงรหัสมอร์ส */
   const playMorse = async () => {
-    if (!output.trim()) return Swal.fire("Error", "ไม่มีข้อความให้เล่น", "warning");
+    if (!output.trim()) {
+      Swal.fire("Error", "ไม่มีข้อความให้เล่น", "warning");
+      return;
+    }
+
     setIsPlaying(true);
 
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const dot = 100; // ms
+    const audioCtx = new (window.AudioContext ||
+      (window as any).webkitAudioContext)();
+    const dot = 100; // หน่วยเวลา (มิลลิวินาที)
     let t = audioCtx.currentTime;
 
     const osc = audioCtx.createOscillator();
@@ -80,7 +90,7 @@ export default function MorseTool() {
         gain.gain.setValueAtTime(0, t);
         t += dot / 1000;
       } else {
-        t += (dot * 3) / 1000; // ช่องว่าง
+        t += (dot * 3) / 1000; // เว้นระยะช่องว่าง
       }
     }
 
@@ -88,31 +98,41 @@ export default function MorseTool() {
     setTimeout(() => setIsPlaying(false), (t - audioCtx.currentTime) * 1000);
   };
 
-  // 💡 เปิดแฟลช (Android Chrome เท่านั้น)
+  /** 💡 เปิดแฟลชไฟตามรหัสมอร์ส (เฉพาะ Android Chrome) */
   const toggleFlash = async () => {
     try {
       if (!streamRef.current) {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+        });
         streamRef.current = stream;
       }
+
       const track = streamRef.current.getVideoTracks()[0];
-      const cap = track.getCapabilities();
-      if (!cap.torch) return Swal.fire("⚠️", "อุปกรณ์นี้ไม่รองรับแฟลช", "info");
+      // 👇 เพิ่ม cast ให้ TS เข้าใจ property torch
+      const cap = track.getCapabilities() as MediaTrackCapabilities & {
+        torch?: boolean;
+      };
+
+      if (!cap.torch) {
+        Swal.fire("⚠️", "อุปกรณ์นี้ไม่รองรับแฟลช", "info");
+        return;
+      }
 
       const pattern = output.split("");
       for (const symbol of pattern) {
         if (symbol === ".") {
           await track.applyConstraints({ advanced: [{ torch: true }] });
-          await new Promise(r => setTimeout(r, 150));
+          await new Promise((r) => setTimeout(r, 150));
           await track.applyConstraints({ advanced: [{ torch: false }] });
-          await new Promise(r => setTimeout(r, 150));
+          await new Promise((r) => setTimeout(r, 150));
         } else if (symbol === "-") {
           await track.applyConstraints({ advanced: [{ torch: true }] });
-          await new Promise(r => setTimeout(r, 400));
+          await new Promise((r) => setTimeout(r, 400));
           await track.applyConstraints({ advanced: [{ torch: false }] });
-          await new Promise(r => setTimeout(r, 200));
+          await new Promise((r) => setTimeout(r, 200));
         } else {
-          await new Promise(r => setTimeout(r, 300));
+          await new Promise((r) => setTimeout(r, 300));
         }
       }
     } catch (err) {
@@ -120,14 +140,29 @@ export default function MorseTool() {
     }
   };
 
+  /** 🧹 รีเซ็ตค่า */
+  const clearAll = () => {
+    setInput("");
+    setOutput("");
+  };
+
+  /** 📋 คัดลอกผลลัพธ์ */
+  const copyResult = () => {
+    if (!output) return;
+    navigator.clipboard.writeText(output);
+    Swal.fire("Copied!", "คัดลอกผลลัพธ์แล้ว", "success");
+  };
+
   return (
     <div className="p-6 max-w-3xl mx-auto text-center">
-      <h1 className="text-3xl font-bold mb-4">Morse Code Encoder / Decoder</h1>
+      <h1 className="text-3xl font-bold mb-4">
+        Morse Code Encoder / Decoder
+      </h1>
       <p className="text-gray-400 mb-6">
         พิมพ์ข้อความหรือรหัสมอร์ส ระบบจะตรวจจับอัตโนมัติและแปลงให้ทันที
       </p>
 
-      {/* Input Box */}
+      {/* ช่อง Input */}
       <textarea
         value={input}
         onChange={handleChange}
@@ -135,7 +170,7 @@ export default function MorseTool() {
         className="w-full h-40 p-4 mb-4 rounded-xl bg-gray-900 text-gray-100 border border-gray-700 focus:ring-2 focus:ring-blue-500 resize-none font-mono"
       />
 
-      {/* Output Box */}
+      {/* ช่อง Output */}
       <textarea
         value={output}
         readOnly
@@ -143,7 +178,7 @@ export default function MorseTool() {
         className="w-full h-40 p-4 mb-4 rounded-xl bg-gray-800 text-gray-200 border border-gray-700 font-mono"
       />
 
-      {/* Control Buttons */}
+      {/* ปุ่มควบคุม */}
       <div className="flex flex-wrap justify-center gap-3 mt-2">
         <button
           onClick={playMorse}
@@ -152,26 +187,23 @@ export default function MorseTool() {
         >
           🔊 เล่นเสียง
         </button>
+
         <button
           onClick={toggleFlash}
           className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition"
         >
           💡 แฟลชไฟ
         </button>
+
         <button
-          onClick={() => {
-            navigator.clipboard.writeText(output);
-            Swal.fire("Copied!", "คัดลอกผลลัพธ์แล้ว", "success");
-          }}
+          onClick={copyResult}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
         >
           📋 คัดลอกผลลัพธ์
         </button>
+
         <button
-          onClick={() => {
-            setInput("");
-            setOutput("");
-          }}
+          onClick={clearAll}
           className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition"
         >
           🧹 ล้าง
