@@ -169,7 +169,7 @@ export default function MorseCodeTool() {
     /** 📋 คัดลอกลิงก์ auto decode */
     const copyLink = () => {
         if (!input.trim()) return;
-        const baseUrl = "https://www.devtoolshub.org/morse-code";
+        const baseUrl = "https://www.devtoolshub.org/morse-code-decoder";
         const url = `${baseUrl}?text=${encodeURIComponent(input.trim())}`;
         navigator.clipboard.writeText(url);
         Swal.fire("Copied!", "คัดลอกลิงก์สำเร็จ", "success");
