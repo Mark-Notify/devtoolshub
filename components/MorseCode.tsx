@@ -20,9 +20,10 @@ export default function MorseCodeTool() {
     const [input, setInput] = useState("");
     const [output, setOutput] = useState("");
     const [isPlaying, setIsPlaying] = useState(false);
-    const streamRef = useRef<MediaStream | null>(null);
     const audioCtxRef = useRef<AudioContext | null>(null);
+    const gainRef = useRef<GainNode | null>(null);
     const oscRef = useRef<OscillatorNode | null>(null);
+    const stopFlag = useRef(false);
 
     /** ตรวจจับว่า input เป็นรหัสมอร์สหรือข้อความปกติ */
     const detectMode = (text: string) =>
@@ -68,6 +69,9 @@ export default function MorseCodeTool() {
         }
     }, []);
 
+    /** Helper: delay */
+    const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
     /** 🔊 เล่นเสียงมอร์ส */
     const playMorse = async () => {
         if (!output.trim()) {
@@ -75,119 +79,57 @@ export default function MorseCodeTool() {
             return;
         }
 
-        // ปิดเสียงเก่าก่อนถ้ามี
-        if (audioCtxRef.current) {
-            audioCtxRef.current.close();
-        }
-
+        // ต้องสร้าง context หลังจากมี user gesture
         const audioCtx = new (window.AudioContext ||
             (window as any).webkitAudioContext)();
-        audioCtxRef.current = audioCtx;
-
         const gain = audioCtx.createGain();
-        gain.connect(audioCtx.destination);
-        gain.gain.value = 0; // เริ่มต้นปิดเสียงไว้ก่อน
-
         const osc = audioCtx.createOscillator();
+        osc.frequency.value = 600;
         osc.type = "sine";
-        osc.frequency.value = 600; // ความถี่เสียง beep
         osc.connect(gain);
+        gain.connect(audioCtx.destination);
         osc.start();
-        oscRef.current = osc;
 
+        audioCtxRef.current = audioCtx;
+        gainRef.current = gain;
+        oscRef.current = osc;
+        stopFlag.current = false;
         setIsPlaying(true);
 
-        const dot = 0.1; // 100 ms
-        let currentTime = audioCtx.currentTime;
+        const dot = 100; // 100 ms unit
+        const pattern = output.split("");
 
-        for (const symbol of output) {
-            if (!audioCtxRef.current || !isPlaying) break;
+        for (const symbol of pattern) {
+            if (stopFlag.current) break;
 
-            switch (symbol) {
-                case ".":
-                    gain.gain.setValueAtTime(1, currentTime);
-                    currentTime += dot;
-                    gain.gain.setValueAtTime(0, currentTime);
-                    currentTime += dot;
-                    break;
-                case "-":
-                    gain.gain.setValueAtTime(1, currentTime);
-                    currentTime += dot * 3;
-                    gain.gain.setValueAtTime(0, currentTime);
-                    currentTime += dot;
-                    break;
-                case " ":
-                    currentTime += dot * 2;
-                    break;
-                default:
-                    currentTime += dot * 2;
-                    break;
+            if (symbol === ".") {
+                gain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.01);
+                await sleep(dot);
+                gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.01);
+                await sleep(dot);
+            } else if (symbol === "-") {
+                gain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.01);
+                await sleep(dot * 3);
+                gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.01);
+                await sleep(dot);
+            } else {
+                await sleep(dot * 2);
             }
         }
 
-        // หยุดเสียงหลังจากเล่นจบ
-        osc.stop(currentTime);
-        setTimeout(() => setIsPlaying(false), (currentTime - audioCtx.currentTime) * 1000);
+        osc.stop();
+        audioCtx.close();
+        setIsPlaying(false);
     };
 
     /** 🔇 หยุดเสียง */
     const stopMorse = () => {
+        stopFlag.current = true;
         setIsPlaying(false);
-        if (oscRef.current) {
-            try {
-                oscRef.current.stop();
-            } catch { }
-        }
-        if (audioCtxRef.current) {
-            audioCtxRef.current.close();
-            audioCtxRef.current = null;
-        }
-    };
-
-
-    /** 💡 เปิดแฟลชไฟ (Android Chrome เท่านั้น) */
-    const toggleFlash = async () => {
         try {
-            if (!streamRef.current) {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "environment" },
-                });
-                streamRef.current = stream;
-            }
-
-            const track = streamRef.current.getVideoTracks()[0];
-            const cap = track.getCapabilities() as MediaTrackCapabilities & {
-                torch?: boolean;
-            };
-
-            if (!cap.torch) {
-                Swal.fire("⚠️", "อุปกรณ์นี้ไม่รองรับแฟลช", "info");
-                return;
-            }
-
-            const pattern = output.split("");
-            const setTorch = async (on: boolean) => {
-                await track.applyConstraints({ advanced: [{ torch: on }] as any });
-            };
-
-            for (const symbol of pattern) {
-                if (symbol === ".") {
-                    await setTorch(true);
-                    await new Promise((r) => setTimeout(r, 150));
-                    await setTorch(false);
-                    await new Promise((r) => setTimeout(r, 150));
-                } else if (symbol === "-") {
-                    await setTorch(true);
-                    await new Promise((r) => setTimeout(r, 400));
-                    await setTorch(false);
-                    await new Promise((r) => setTimeout(r, 200));
-                } else {
-                    await new Promise((r) => setTimeout(r, 300));
-                }
-            }
-        } catch (err) {
-            Swal.fire("Error", "ไม่สามารถเปิดแฟลชได้", "error");
-        }
+            if (oscRef.current) oscRef.current.stop();
+            if (audioCtxRef.current) audioCtxRef.current.close();
+        } catch { }
     };
 
     /** 🧹 ล้างข้อมูล */
@@ -207,12 +149,11 @@ export default function MorseCodeTool() {
 
     return (
         <div className="p-6 max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl font-bold mb-4">Morse Code Encoder / Decoder</h1>
+            <h1 className="text-3xl font-bold mb-4">Morse Code</h1>
             <p className="text-gray-400 mb-6">
                 พิมพ์ข้อความหรือรหัสมอร์ส ระบบจะตรวจจับอัตโนมัติและแปลงให้ทันที
             </p>
 
-            {/* Input */}
             <textarea
                 value={input}
                 onChange={handleChange}
@@ -220,7 +161,6 @@ export default function MorseCodeTool() {
                 className="w-full h-40 p-4 mb-4 rounded-xl bg-gray-900 text-gray-100 border border-gray-700 focus:ring-2 focus:ring-blue-500 resize-none font-mono"
             />
 
-            {/* Output */}
             <textarea
                 value={output}
                 readOnly
@@ -244,21 +184,12 @@ export default function MorseCodeTool() {
                         ⏹️ หยุดเสียง
                     </button>
                 )}
-
-                <button
-                    onClick={toggleFlash}
-                    className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition"
-                >
-                    💡 แฟลชไฟ
-                </button>
-
                 <button
                     onClick={copyLink}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
                 >
                     🔗 Copy Link
                 </button>
-
                 <button
                     onClick={clearAll}
                     className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition"
