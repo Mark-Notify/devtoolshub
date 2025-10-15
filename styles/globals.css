@@ -108,3 +108,7 @@ pre {
   border-radius: 4px;
   margin-bottom: 20px;
 }
+
+.dropdown:is(:not(details)) .dropdown-content {
+  z-index: 999999;
+}
