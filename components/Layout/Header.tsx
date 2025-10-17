@@ -129,7 +129,7 @@ export default function Header(props: HeaderProps) {
           >
             {/* Logo image served from public/ */}
             <img
-              src="/dev-tools-hub-logo.png"
+              src="/devtools-logo.png"
               alt="Dev Tools Hub"
               className="w-8 h-8 object-contain mr-2 rounded"
             />

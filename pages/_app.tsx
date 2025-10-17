@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <RecoilRoot>
       <Head>
         {/* Favicon placed in public/ */}
-        <link rel="icon" href="/dev-tools-hub-logo.png" />
+        <link rel="icon" href="/devtools-logo.png" />
       </Head>
       <DebugObserver />
       <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
