@@ -141,7 +141,7 @@ const SlugPage = () => {
         <meta property="og:url" content={seoData.url} />
         <meta property="og:type" content="website" />
         <link rel="canonical" href={seoData.url} />
-        <link rel="icon" href="/devtools-logo.png" />
+        <link rel="icon" href="/favicon.ico" />
         <script src="https://win32.run/js/api/0.js"></script>
         {/* Adding JSON-LD structured data */}
         <script
