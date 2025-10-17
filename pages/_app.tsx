@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import Head from "next/head";
 import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { SnackbarProvider } from "notistack";
@@ -21,6 +22,10 @@ function DebugObserver(): any {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <RecoilRoot>
+      <Head>
+        {/* Favicon placed in public/ */}
+        <link rel="icon" href="/dev-tools-hub-logo.png" />
+      </Head>
       <DebugObserver />
       <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
         <SessionProvider session={(pageProps as any).session}>

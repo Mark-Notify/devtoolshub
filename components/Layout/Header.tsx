@@ -127,6 +127,12 @@ export default function Header(props: HeaderProps) {
             href="/"
             className="btn btn-ghost normal-case text-xl flex items-center"
           >
+            {/* Logo image served from public/ */}
+            <img
+              src="/dev-tools-hub-logo.png"
+              alt="Dev Tools Hub"
+              className="w-8 h-8 object-contain mr-2 rounded"
+            />
             <CodeBracketIcon className="w-8 h-8" />
             <span className="hidden sm:inline ml-2">Programmer Helper Tools</span>
             <span className="inline sm:hidden ml-2">Dev Tools</span>
