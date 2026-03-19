@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
 import Swal from "sweetalert2";
+import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
@@ -39,17 +40,6 @@ export default function HomePage() {
       }
     };
 
-    const isPHPSerialized = (data: string): boolean => {
-      return (
-        data.startsWith("a:") ||
-        data.startsWith("O:") ||
-        data.startsWith("s:") ||
-        data.startsWith("i:") ||
-        data.startsWith("b:") ||
-        data.startsWith("d:")
-      );
-    };
-
     if (isJSON(inputData)) {
       const jsonData = JSON.parse(inputData.trim());
       result = JSON.stringify(jsonData, null, 4);
@@ -57,7 +47,8 @@ export default function HomePage() {
     } else if (isPHPSerialized(inputData)) {
       try {
         const unserializedData = unserialize(inputData.trim());
-        result = JSON.stringify(unserializedData, null, 4);
+        const deepResult = deepUnserialize(unserializedData);
+        result = JSON.stringify(deepResult, null, 4);
         setOutputData(result);
       } catch (error) {
         console.error("Unserialization error:", error);
