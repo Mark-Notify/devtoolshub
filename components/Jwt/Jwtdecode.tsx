@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import {
-  ArrowsPointingOutIcon,
-  ArrowsPointingInIcon,
-} from "@heroicons/react/24/outline";
-import { log } from "util";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>(""); // JWT Token
@@ -14,8 +9,7 @@ export default function HomePage() {
   const [payload, setPayload] = useState<string | object>({});
   const [signature, setSignature] = useState<string>("");
   const [secretKey, setSecretKey] = useState<string>(""); // Secret Key
-  const [isVerified, setIsVerified] = useState<boolean | null>(null); // State สำหรับผลการตรวจสอบ
-  const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
+  const [isVerified, setIsVerified] = useState<boolean | null>(null);
 
   // useEffect ที่จะทำงานเมื่อ JWT Token หรือ Secret Key มีการเปลี่ยนแปลง
   useEffect(() => {
@@ -108,103 +102,75 @@ export default function HomePage() {
     }
   };
 
-  // ฟังก์ชันสำหรับ Full Screen Toggle
-  const toggleFullScreen = () => {
-    const newFullScreenState = !isFullScreen;
-    setIsFullScreen(newFullScreenState);
-    localStorage.setItem("isFullScreen", newFullScreenState.toString());
-  };
-
   return (
-    <div
-      className={`min-h-fit mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
-        }`}
-    >
-      <div className="flex flex-grow flex-col lg:flex-row gap-6">
+    <div className="h-full p-4 overflow-y-auto">
+      <div className="flex flex-col lg:flex-row gap-4 h-full">
         {/* Input Section */}
         <div className="w-full lg:w-1/3 flex flex-col">
-          <div className="flex mt-2 gap-2 items-center justify-between">
-            <label htmlFor="inputData" className="text-lg font-semibold mb-2">
-              JWT Token Input
-            </label>
-            {/* <button
-              className="rounded-md py-2 px-4 border bg-base-100"
-              onClick={toggleFullScreen}
-            >
-              {isFullScreen ? (
-                <ArrowsPointingInIcon className="w-6 h-6" />
-              ) : (
-                <ArrowsPointingOutIcon className="w-6 h-6" />
-              )}
-            </button> */}
-          </div>
+          <label htmlFor="inputData" className="text-sm font-semibold mb-1">
+            JWT Token Input
+          </label>
           <textarea
             id="inputData"
-            className="input-area mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-area mt-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Paste your JWT Token here..."
             value={inputData}
             onChange={(e) => setInputData(e.target.value)}
             style={{
-              minHeight: "200px",
+              minHeight: "150px",
               resize: "vertical",
             }}
           />
 
-          {/* Secret Key Section */}
           <label
             htmlFor="secretKey"
-            className="text-lg font-semibold mb-2 mt-4"
+            className="text-sm font-semibold mb-1 mt-2"
           >
             Secret Key (signature verification)
           </label>
           <input
             id="secretKey"
             type="text"
-            className="input p-3 border border-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input p-2 border border-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             placeholder="Enter secret key for signature verification..."
             value={secretKey}
             onChange={(e) => setSecretKey(e.target.value)}
           />
 
-          {/* Process JWT Button */}
-          <button className="btn btn-accent mt-2 mb-2" onClick={processData}>
+          <button className="btn btn-sm btn-accent mt-2 mb-2" onClick={processData}>
             Process JWT
           </button>
 
-          {/* Verification Result */}
           <div>
-            <h1 className={`text-2xl ${isVerified ? "text-green-500" : "text-red-500"}`}>
-              {isVerified ? "Signature verified!" : "Invalid Signature!"}
-            </h1>
+            <span className={`text-sm font-semibold ${isVerified ? "text-green-500" : "text-red-500"}`}>
+              {isVerified ? "✓ Signature verified!" : "✗ Invalid Signature"}
+            </span>
           </div>
         </div>
 
         {/* Output Section */}
-        <div className="w-full lg:w-2/3 flex flex-col">
-          <label htmlFor="outputData" className="text-lg font-semibold mb-2">
+        <div className="w-full lg:w-2/3 flex flex-col overflow-y-auto">
+          <label className="text-sm font-semibold mb-1">
             JWT Parts (Header, Payload, Signature)
           </label>
 
-          {/* Header Section */}
           <div>
-            <h3 className="font-semibold text-lg">Header</h3>
-            <pre className="p-3 bg-base-100 rounded-md">
+            <h3 className="font-semibold text-sm">Header</h3>
+            <pre className="p-3 bg-base-100 rounded-md text-sm">
               {JSON.stringify(header, null, 4)}
             </pre>
           </div>
 
-          {/* Payload Section */}
           <div>
-            <h3 className="font-semibold text-lg">Payload</h3>
-            <pre className="p-3 bg-base-100 rounded-md">
+            <h3 className="font-semibold text-sm">Payload</h3>
+            <pre className="p-3 bg-base-100 rounded-md text-sm">
               {JSON.stringify(payload, null, 4)}
             </pre>
           </div>
 
-          {/* Signature Section */}
           <div>
-            <h3 className="font-semibold text-lg">Signature</h3>
-            <pre className="p-3 bg-base-100 rounded-md">
+            <h3 className="font-semibold text-sm">Signature</h3>
+            <pre className="p-3 bg-base-100 rounded-md text-sm">
               {signature || `""`}
             </pre>
           </div>

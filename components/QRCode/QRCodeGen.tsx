@@ -31,7 +31,6 @@ export default function QRStudio() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const qrRef = useRef<any>(null);
   const [mounted, setMounted] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
 
   // Core
   const [data, setData] = useState("https://www.devtoolshub.org");
@@ -248,21 +247,10 @@ export default function QRStudio() {
   };
 
 
-  // ฟังก์ชันสำหรับ Full Screen Toggle
-  const toggleFullScreen = () => {
-    const newFullScreenState = !isFullScreen;
-    setIsFullScreen(newFullScreenState);
-    localStorage.setItem("isFullScreen", newFullScreenState.toString());
-  };
-
   return (
-    <div
-      className={`min-h-fit mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
-        }`}
-    >
-      <div className="flex flex-grow flex-col lg:flex-row gap-6"></div>
-      <div className="min-h-screen w-full bg-gradient-to-b ">
-        <div className="max-w-6xl mx-auto pt-6">
+    <div className="h-full p-4 overflow-y-auto">
+      <div className="w-full">
+        <div className="max-w-6xl mx-auto">
           <header className="flex items-center justify-between gap-4 mb-6">
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">QR Studio — Custom QR Code Generator</h1>
             <div className="flex items-center gap-2">

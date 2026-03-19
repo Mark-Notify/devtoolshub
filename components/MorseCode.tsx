@@ -194,7 +194,8 @@ export default function MorseCodeTool() {
     };
 
     return (
-        <div className="p-6 max-w-3xl mx-auto text-center">
+        <div className="h-full p-4 overflow-y-auto">
+            <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl font-bold mb-4">Morse Code</h1>
             <p className="text-gray-400 mb-6">
                 พิมพ์ข้อความหรือรหัสมอร์ส ระบบจะตรวจจับอัตโนมัติและแปลงให้ทันที
@@ -251,6 +252,7 @@ export default function MorseCodeTool() {
                 >
                     🧹 ล้าง
                 </button>
+            </div>
             </div>
         </div>
     );
