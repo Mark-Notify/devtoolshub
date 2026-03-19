@@ -31,6 +31,7 @@ export default function QRStudio() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const qrRef = useRef<any>(null);
   const [mounted, setMounted] = useState(false);
+  const PREVIEW_MAX_HEIGHT = 320;
 
   // Core
   const [data, setData] = useState("https://www.devtoolshub.org");
@@ -142,57 +143,17 @@ export default function QRStudio() {
 
   useEffect(() => setMounted(true), []);
 
-  // init
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Recreate instance on every config change so preview AND download always
+  // reflect the current configuration (the library's .update() has known
+  // limitations with nested options like gradients, corners, and image).
   useEffect(() => {
     if (!mounted || !containerRef.current || !QRCodeStyling) return;
-    if (!qrRef.current) {
-      qrRef.current = new QRCodeStyling({
-        width: size,
-        height: size,
-        type: fileType,
-        data,
-        qrOptions: { errorCorrectionLevel: ecc, margin },
-        dotsOptions: {
-          type: dotType,
-          color: fg1,
-          gradient: useGradient
-            ? {
-              type: gradType,
-              rotation: gradType === "linear" ? (gradRotation * Math.PI) / 180 : 0,
-              colorStops: [
-                { offset: 0, color: fg1 },
-                { offset: 1, color: fg2 },
-              ],
-            }
-            : undefined,
-        },
-        cornersSquareOptions: { type: cornerSquare, color: eyeColor },
-        cornersDotOptions: { type: cornerDot, color: eyeDotColor },
-        backgroundOptions: { color: transparentBg ? "rgba(0,0,0,0)" : bgColor },
-        image: logoDataUrl,
-        imageOptions: {
-          crossOrigin: "anonymous",
-          margin: logoMargin,
-          hideBackgroundDots: hideBgDotsBehindLogo,
-          imageSize: logoRatio,
-        },
-      });
-      containerRef.current.innerHTML = "";
-      qrRef.current.append(containerRef.current);
-    }
-  }, [mounted]);
-
-  // update
-  useEffect(() => {
-    if (!qrRef.current) return;
-    const update: any = {
+    const options = {
       width: size,
       height: size,
-      data,
       type: fileType,
+      data,
       qrOptions: { errorCorrectionLevel: ecc, margin },
-      backgroundOptions: { color: transparentBg ? "rgba(0,0,0,0)" : bgColor },
       dotsOptions: {
         type: dotType,
         color: fg1,
@@ -209,15 +170,20 @@ export default function QRStudio() {
       },
       cornersSquareOptions: { type: cornerSquare, color: eyeColor },
       cornersDotOptions: { type: cornerDot, color: eyeDotColor },
+      backgroundOptions: { color: transparentBg ? "rgba(0,0,0,0)" : bgColor },
       image: logoDataUrl,
       imageOptions: {
+        crossOrigin: "anonymous",
         margin: logoMargin,
         hideBackgroundDots: hideBgDotsBehindLogo,
         imageSize: logoRatio,
       },
     };
-    qrRef.current.update(update);
-  }, [data, size, fileType, margin, ecc, dotType, cornerSquare, cornerDot, fg1, fg2, useGradient, gradType, gradRotation, eyeColor, eyeDotColor, bgColor, transparentBg, logoDataUrl, logoMargin, logoRatio, hideBgDotsBehindLogo]);
+    const instance = new QRCodeStyling(options);
+    containerRef.current.innerHTML = "";
+    instance.append(containerRef.current);
+    qrRef.current = instance;
+  }, [mounted, data, size, fileType, margin, ecc, dotType, cornerSquare, cornerDot, fg1, fg2, useGradient, gradType, gradRotation, eyeColor, eyeDotColor, bgColor, transparentBg, logoDataUrl, logoMargin, logoRatio, hideBgDotsBehindLogo]);
 
   const onDownload = async () => {
     if (!qrRef.current) return;
@@ -251,11 +217,11 @@ export default function QRStudio() {
     <div className="h-full p-4 overflow-y-auto">
       <div className="w-full">
         <div className="max-w-6xl mx-auto">
-          <header className="flex items-center justify-between gap-4 mb-6">
-            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">QR Studio — Custom QR Code Generator</h1>
-            <div className="flex items-center gap-2">
+          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight">QR Studio — Custom QR Code Generator</h1>
+            <div className="flex flex-wrap items-center gap-2">
               {presets.map((p) => (
-                <button key={p.key} onClick={p.apply} className="px-3 py-2 rounded-xl shadow text-sm">
+                <button key={p.key} onClick={p.apply} className="px-3 py-1.5 sm:py-2 rounded-xl shadow text-xs sm:text-sm">
                   {p.label}
                 </button>
               ))}
@@ -264,9 +230,12 @@ export default function QRStudio() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Preview */}
-            <div className="rounded-2xl shadow p-5 flex flex-col items-center">
-              <div className="w-full flex items-center justify-center" style={{ minHeight: size + 24 }}>
-                <div ref={containerRef} className="[&_img]:mx-auto [&_svg]:mx-auto" />
+            <div className="rounded-2xl shadow p-4 sm:p-5 flex flex-col items-center">
+              <div className="w-full flex items-center justify-center overflow-hidden" style={{ minHeight: Math.min(size + 24, PREVIEW_MAX_HEIGHT) }}>
+                <div
+                  ref={containerRef}
+                  className="max-w-full [&_canvas]:mx-auto [&_canvas]:max-w-full [&_canvas]:h-auto [&_img]:mx-auto [&_img]:max-w-full [&_img]:h-auto [&_svg]:mx-auto [&_svg]:max-w-full [&_svg]:h-auto"
+                />
               </div>
               <div className="mt-4 flex items-center gap-3">
                 <select value={fileType} onChange={(e) => setFileType(e.target.value as FileType)} className="px-3 py-2 rounded-xl border">
@@ -279,13 +248,13 @@ export default function QRStudio() {
             </div>
 
             {/* Controls */}
-            <div className="rounded-2xl shadow p-5 space-y-4">
+            <div className="rounded-2xl shadow p-4 sm:p-5 space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Data / URL</label>
                 <input value={data} onChange={(e) => setData(e.target.value)} className="w-full px-3 py-2 rounded-xl border" placeholder="https://example.com" />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium mb-1">Size (px)</label>
                   <input type="number" min={128} max={2048} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full px-3 py-2 rounded-xl border" />
@@ -305,7 +274,7 @@ export default function QRStudio() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium mb-1">Dots (Body)</label>
                   <select value={dotType} onChange={(e) => setDotType(e.target.value as DotType)} className="w-full px-3 py-2 rounded-xl border">
@@ -337,7 +306,7 @@ export default function QRStudio() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                 <div>
                   <label className="block text-sm font-medium mb-1">Foreground #1</label>
                   <input type="color" value={fg1} onChange={(e) => setFg1(e.target.value)} className="w-full h-10 rounded-xl border" />
@@ -352,7 +321,7 @@ export default function QRStudio() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                 <div>
                   <label className="block text-sm font-medium mb-1">Gradient Type</label>
                   <select value={gradType} onChange={(e) => setGradType(e.target.value as GradientType)} className="w-full px-3 py-2 rounded-xl border">
@@ -369,7 +338,7 @@ export default function QRStudio() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-3 items-end">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
                 <div>
                   <label className="block text-sm font-medium mb-1">Eye Frame Color</label>
                   <input type="color" value={eyeColor} onChange={(e) => setEyeColor(e.target.value)} className="w-full h-10 rounded-xl border" />
@@ -388,8 +357,8 @@ export default function QRStudio() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 items-end">
-                <div className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                <div className="sm:col-span-2">
                   <label className="block text-sm font-medium mb-1">Logo (PNG/SVG/JPEG)</label>
                   <input type="file" accept="image/*,image/svg+xml" onChange={(e) => onLogoFile(e.target.files?.[0])} className="w-full px-3 py-2 rounded-xl border" />
                 </div>
@@ -399,12 +368,12 @@ export default function QRStudio() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                 <div>
                   <label className="block text-sm font-medium mb-1">Logo margin</label>
                   <input type="number" min={0} max={32} value={logoMargin} onChange={(e) => setLogoMargin(Number(e.target.value))} className="w-full px-3 py-2 rounded-xl border" />
                 </div>
-                <div className="flex items-center gap-2 col-span-2">
+                <div className="flex items-center gap-2 sm:col-span-2">
                   <input id="hideBgDots" type="checkbox" checked={hideBgDotsBehindLogo} onChange={(e) => setHideBgDotsBehindLogo(e.target.checked)} />
                   <label htmlFor="hideBgDots" className="text-sm">Hide background dots behind logo</label>
                 </div>
@@ -417,19 +386,19 @@ export default function QRStudio() {
           </div>
 
           {/* API Usage Guide */}
-          <div className="mt-12 p-6 rounded-2xl bg-gray-900 text-gray-100 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Usage Guide</h2>
+          <div className="mt-8 sm:mt-12 p-4 sm:p-6 rounded-2xl bg-gray-900 text-gray-100 shadow-lg">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">Usage Guide</h2>
             <p className="text-sm mb-3 text-gray-400">
               API Endpoint (ฟรีใช้งานผ่าน URL)
             </p>
 
-            <pre className="bg-black/40 p-4 rounded-lg overflow-x-auto text-sm">
+            <pre className="bg-black/40 p-3 sm:p-4 rounded-lg overflow-x-auto text-xs sm:text-sm">
               <code>
                 <a
                   href="https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 underline hover:text-blue-300"
+                  className="text-blue-400 underline hover:text-blue-300 break-all"
                 >
                   https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono
                 </a>
