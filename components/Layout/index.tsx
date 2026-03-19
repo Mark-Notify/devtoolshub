@@ -63,7 +63,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
 
         {/* Main content */}
         <main className="flex-1 overflow-y-auto">
-          <Analytics debug={false} />
+          <Analytics debug={process.env.NODE_ENV === "development"} />
           <div key={refreshKey} className="h-full">
             {children}
           </div>
