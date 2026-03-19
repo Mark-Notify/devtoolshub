@@ -5,9 +5,10 @@ const ProfilePage: React.FC = () => {
   const { data: session } = useSession();
 
   return (
-    <div
-      className={`min-h-fit mx-auto p-4 border bg-base-100 rounded-md shadow-md max-w-7xl`}
-    >
+    <div className="h-full p-4 overflow-y-auto">
+      <div
+        className={`max-w-xl mx-auto p-4 border bg-base-100 rounded-md shadow-md`}
+      >
       <h2 className="text-2xl font-bold mb-6 text-center">Profile</h2>
       {!session ? (
         <div className="flex flex-col items-center">
@@ -41,6 +42,7 @@ const ProfilePage: React.FC = () => {
           </pre>
         </div>
       )}
+      </div>
     </div>
   );
 };

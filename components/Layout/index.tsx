@@ -1,63 +1,75 @@
 import * as React from "react";
 import { useState } from "react";
-import Header, { HeaderProps } from "components/Layout/Header";
+import { useRouter } from "next/router";
+import Header, { HeaderProps, menuItems } from "components/Layout/Header";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 
 export interface CommonLayoutProps {
   children?: any;
   headerProps?: HeaderProps;
-  onThemeChange?: () => void; // Optional callback for theme change
+  onThemeChange?: () => void;
 }
 
 export default function CommonLayout(props: CommonLayoutProps) {
   const { headerProps, children, onThemeChange } = props;
-  // State เพื่อกระตุ้นการ re-render ของ children เมื่อธีมเปลี่ยน
   const [refreshKey, setRefreshKey] = useState(0);
+  const router = useRouter();
+  const currentSlug = router.query.slug || router.query.type || "";
 
-  // ฟังก์ชันเพื่อจัดการการเปลี่ยนแปลงธีม
   const handleThemeChange = () => {
-    setRefreshKey((prev) => prev + 1); // เพิ่ม refreshKey เพื่อกระตุ้น re-render
+    setRefreshKey((prev) => prev + 1);
     if (onThemeChange) {
-      onThemeChange(); // ตรวจสอบว่า onThemeChange ถูกกำหนดแล้วจึงเรียกใช้
+      onThemeChange();
     }
   };
 
-  // ฟังก์ชันย่อยสำหรับ Analytics
-  const RenderAnalytics = () => {
-    return <Analytics debug={true} />;
-  };
-
-  // ฟังก์ชันย่อยสำหรับ SpeedInsights
-  const RenderSpeedInsights = () => {
-    return <SpeedInsights />;
+  const handleNavigation = (slug: string) => {
+    router.push(`/${slug}`, undefined, { shallow: true });
   };
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ fontFamily: "Courier Prime, serif" }}>
+    <div className="flex flex-col h-screen overflow-hidden" style={{ fontFamily: "'Inter', 'JetBrains Mono', sans-serif" }}>
       <Header {...headerProps} onThemeChange={handleThemeChange} />
-      <main style={{ minHeight: `calc(100vh - 141px)` }}>
-        <RenderAnalytics />
-        <div key={refreshKey} className="">
-          {children}
-        </div>
-      </main>
-      <footer className="p-4 shadow bg-base-100">
-        <div className="text-center">
-          <p className="text-lg">
-            &copy; {new Date().getFullYear()} Dev Tools. All rights reserved. |{" "}
-            <a
-              href="https://www.devtoolshub.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-blue-500"
-            >
-              DevToolsHub.org
-            </a>
-          </p>
-        </div>
-        <RenderSpeedInsights />
-      </footer>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop sidebar */}
+        <aside className="hidden lg:flex flex-col w-48 shrink-0 border-r border-gray-700/30 bg-base-100 overflow-y-auto">
+          <nav className="p-2 space-y-0.5 flex-1">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentSlug === item.slug;
+              return (
+                <button
+                  key={item.slug}
+                  onClick={() => handleNavigation(item.slug)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-500/10"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+          <div className="p-2 border-t border-gray-700/30 text-center">
+            <p className="text-[10px] opacity-40">
+              &copy; {new Date().getFullYear()} DevToolsHub
+            </p>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <main className="flex-1 overflow-y-auto">
+          <Analytics debug={false} />
+          <div key={refreshKey} className="h-full">
+            {children}
+          </div>
+          <SpeedInsights />
+        </main>
+      </div>
     </div>
   );
 }

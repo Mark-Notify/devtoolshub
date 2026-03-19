@@ -5,21 +5,38 @@ import {
   CodeBracketIcon,
   MoonIcon,
   SunIcon,
+  XMarkIcon,
+  CodeBracketSquareIcon,
+  KeyIcon,
+  LockClosedIcon,
+  SignalIcon,
+  QrCodeIcon,
+  DocumentTextIcon,
+  ArrowsRightLeftIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export interface HeaderProps {
   hideMenu?: boolean;
   onThemeChange?: () => void;
 }
 
+export const menuItems = [
+  { slug: "json-format-vertical", label: "JSON Format", icon: CodeBracketSquareIcon },
+  { slug: "xml-to-json-vertical", label: "XML ↔ JSON", icon: ArrowsRightLeftIcon },
+  { slug: "jwt-decode", label: "JWT Decode", icon: KeyIcon },
+  { slug: "base64", label: "Base64", icon: LockClosedIcon },
+  { slug: "morse-code-decoder", label: "Morse Code", icon: SignalIcon },
+  { slug: "qr-code-generator", label: "QR Code", icon: QrCodeIcon },
+];
+
 export default function Header(props: HeaderProps) {
   const [theme, setTheme] = useState<string | null>(null);
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
-  const { type } = router.query;
+  const currentSlug = router.query.slug || router.query.type || "";
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -56,104 +73,98 @@ export default function Header(props: HeaderProps) {
   };
 
   const handleNavigation = (slug: string) => {
-    setDropdownOpen(false);
+    setSidebarOpen(false);
     router.push(`/${slug}`, undefined, { shallow: true });
   };
-
-  // 🧭 รายการเมนู
-  const menuItems = [
-    { slug: "json-format-vertical", label: "JSON Format" },
-    { slug: "json-to-array-vertical", label: "JSON → Array" },
-    { slug: "xml-to-json-vertical", label: "XML → JSON" },
-    { slug: "jwt-decode", label: "JWT Decode" },
-    { slug: "base64", label: "Base64" },
-    { slug: "morse-code-decoder", label: "Morse Code" },
-    { slug: "qr-code-generator", label: "QR Code" },
-    // { slug: "component-a", label: "Component A" },
-  ];
 
   return (
     <>
       <Head>
         <link
-          href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
       </Head>
 
-      <div className="navbar bg-base-100 mx-auto max-w-7xl mt-4 shadow-xl rounded-box">
-        {/* START */}
-        <div className="navbar-start">
-          <div className="dropdown">
-            <label
-              tabIndex={0}
-              className="btn btn-ghost btn-circle content-center"
-              onClick={() => setDropdownOpen((open) => !open)}
-            >
-              <Bars3Icon className="w-6 h-6" />
-            </label>
-
-            {dropdownOpen && (
-              <div
-                tabIndex={0}
-                className="dropdown-content mt-3 p-5 shadow bg-base-100 rounded-box border border-white"
-                style={{
-                  width: "auto",
-                  maxWidth: "90vw",
-                  minWidth: "400px",
-                }}
-              >
-                {/* ✅ เรียงลงล่างครบ 4 ปุ่ม แล้วค่อยขยับขวา */}
-                <div className="grid grid-rows-4 grid-flow-col gap-3">
-                  {menuItems.map((item) => (
-                    <button
-                      key={item.slug}
-                      onClick={() => handleNavigation(item.slug)}
-                      className={`btn btn-sm whitespace-normal ${type === item.slug ? "btn-primary" : "btn-outline"
-                        }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* CENTER */}
-        <div className="navbar-center">
-          <NextLink
-            href="/"
-            className="btn btn-ghost normal-case text-xl flex items-center"
+      {/* Top bar */}
+      <header className="h-12 flex items-center justify-between px-4 border-b border-gray-700/30 bg-base-100 shrink-0">
+        <div className="flex items-center gap-3">
+          <button
+            className="lg:hidden btn btn-ghost btn-sm btn-square"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label="Toggle menu"
           >
-            {/* Logo image served from public/ */}
+            <Bars3Icon className="w-5 h-5" />
+          </button>
+          <NextLink href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img
               src="/devtools-logo-full.png"
-              alt="Dev Tools Hub"
-              className="w-8 h-8 object-contain mr-2 rounded"
+              alt="DevToolsHub"
+              className="w-6 h-6 object-contain rounded"
             />
-            <CodeBracketIcon className="w-8 h-8" />
-            <span className="hidden sm:inline ml-2">Programmer Helper Tools</span>
-            <span className="inline sm:hidden ml-2">Dev Tools</span>
+            <CodeBracketIcon className="w-5 h-5" />
+            <span className="font-semibold text-sm tracking-tight hidden sm:inline">DevToolsHub</span>
           </NextLink>
         </div>
-
-        {/* END */}
-        <div className="navbar-end">
+        <div className="flex items-center gap-1">
           <button
             onClick={toggleTheme}
-            className="btn btn-ghost btn-circle p-2"
+            className="btn btn-ghost btn-sm btn-square"
             aria-label="Toggle theme"
           >
             {theme === "dark" ? (
-              <SunIcon className="w-8 h-8 text-yellow-500" />
+              <SunIcon className="w-5 h-5 text-yellow-400" />
             ) : (
-              <MoonIcon className="w-8 h-8 text-blue-500" />
+              <MoonIcon className="w-5 h-5 text-blue-500" />
             )}
           </button>
         </div>
-      </div>
+      </header>
+
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - mobile drawer */}
+      <aside
+        className={`fixed top-0 left-0 z-50 h-full w-56 bg-base-100 border-r border-gray-700/30 transform transition-transform duration-200 lg:hidden ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between p-3 border-b border-gray-700/30">
+          <span className="font-semibold text-sm">Tools</span>
+          <button
+            className="btn btn-ghost btn-sm btn-square"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <XMarkIcon className="w-5 h-5" />
+          </button>
+        </div>
+        <nav className="p-2 space-y-0.5">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentSlug === item.slug;
+            return (
+              <button
+                key={item.slug}
+                onClick={() => handleNavigation(item.slug)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  isActive
+                    ? "bg-blue-600 text-white"
+                    : "hover:bg-gray-500/10"
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
     </>
   );
 }

@@ -7,7 +7,6 @@ import JsonToXml from "../components/JsonFormat/JsonToXml";
 import JsonToXmlVertical from "../components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "../components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
-// import ComponentA from "../components/DefaultComponent";
 import ProfilePage from "../components/ProfilePage";
 import CommonLayout from "../components/Layout";
 import TermsAndConditions from "../components/terms-and-conditions";
@@ -86,13 +85,6 @@ const SlugPage = () => {
             url: "https://www.devtoolshub.org/morse-code-decoder",
           });
           break;
-        case "component-a":
-          setSeoData({
-            title: "Component A - ตัวอย่าง Component",
-            description: "Component ตัวอย่างที่แสดงฟีเจอร์เฉพาะสำหรับหน้านี้",
-            url: "https://www.devtoolshub.org/component-a",
-          });
-          break;
         default:
           setSeoData({
             title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
@@ -142,7 +134,6 @@ const SlugPage = () => {
         <meta property="og:type" content="website" />
         <link rel="canonical" href={seoData.url} />
         <link rel="icon" href="/favicon.ico" />
-        <script src="https://win32.run/js/api/0.js"></script>
         {/* Adding JSON-LD structured data */}
         <script
           type="application/ld+json"
@@ -158,7 +149,7 @@ const SlugPage = () => {
         />
       </Head>
       <CommonLayout>
-        <div className="mt-4">{renderComponent()}</div>
+        <div className="h-full">{renderComponent()}</div>
       </CommonLayout>
     </>
   );
