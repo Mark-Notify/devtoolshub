@@ -31,6 +31,7 @@ export default function QRStudio() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const qrRef = useRef<any>(null);
   const [mounted, setMounted] = useState(false);
+  const PREVIEW_MAX_HEIGHT = 320;
 
   // Core
   const [data, setData] = useState("https://www.devtoolshub.org");
@@ -142,49 +143,46 @@ export default function QRStudio() {
 
   useEffect(() => setMounted(true), []);
 
-  // Build full options for QR code – used for both preview and download
-  const buildOptions = () => ({
-    width: size,
-    height: size,
-    type: fileType,
-    data,
-    qrOptions: { errorCorrectionLevel: ecc, margin },
-    dotsOptions: {
-      type: dotType,
-      color: fg1,
-      gradient: useGradient
-        ? {
-          type: gradType,
-          rotation: gradType === "linear" ? (gradRotation * Math.PI) / 180 : 0,
-          colorStops: [
-            { offset: 0, color: fg1 },
-            { offset: 1, color: fg2 },
-          ],
-        }
-        : undefined,
-    },
-    cornersSquareOptions: { type: cornerSquare, color: eyeColor },
-    cornersDotOptions: { type: cornerDot, color: eyeDotColor },
-    backgroundOptions: { color: transparentBg ? "rgba(0,0,0,0)" : bgColor },
-    image: logoDataUrl,
-    imageOptions: {
-      crossOrigin: "anonymous",
-      margin: logoMargin,
-      hideBackgroundDots: hideBgDotsBehindLogo,
-      imageSize: logoRatio,
-    },
-  });
-
   // Recreate instance on every config change so preview AND download always
   // reflect the current configuration (the library's .update() has known
   // limitations with nested options like gradients, corners, and image).
   useEffect(() => {
     if (!mounted || !containerRef.current || !QRCodeStyling) return;
-    const instance = new QRCodeStyling(buildOptions());
+    const options = {
+      width: size,
+      height: size,
+      type: fileType,
+      data,
+      qrOptions: { errorCorrectionLevel: ecc, margin },
+      dotsOptions: {
+        type: dotType,
+        color: fg1,
+        gradient: useGradient
+          ? {
+            type: gradType,
+            rotation: gradType === "linear" ? (gradRotation * Math.PI) / 180 : 0,
+            colorStops: [
+              { offset: 0, color: fg1 },
+              { offset: 1, color: fg2 },
+            ],
+          }
+          : undefined,
+      },
+      cornersSquareOptions: { type: cornerSquare, color: eyeColor },
+      cornersDotOptions: { type: cornerDot, color: eyeDotColor },
+      backgroundOptions: { color: transparentBg ? "rgba(0,0,0,0)" : bgColor },
+      image: logoDataUrl,
+      imageOptions: {
+        crossOrigin: "anonymous",
+        margin: logoMargin,
+        hideBackgroundDots: hideBgDotsBehindLogo,
+        imageSize: logoRatio,
+      },
+    };
+    const instance = new QRCodeStyling(options);
     containerRef.current.innerHTML = "";
     instance.append(containerRef.current);
     qrRef.current = instance;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, data, size, fileType, margin, ecc, dotType, cornerSquare, cornerDot, fg1, fg2, useGradient, gradType, gradRotation, eyeColor, eyeDotColor, bgColor, transparentBg, logoDataUrl, logoMargin, logoRatio, hideBgDotsBehindLogo]);
 
   const onDownload = async () => {
@@ -233,10 +231,10 @@ export default function QRStudio() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Preview */}
             <div className="rounded-2xl shadow p-4 sm:p-5 flex flex-col items-center">
-              <div className="w-full flex items-center justify-center overflow-hidden" style={{ minHeight: Math.min(size + 24, 320) }}>
+              <div className="w-full flex items-center justify-center overflow-hidden" style={{ minHeight: Math.min(size + 24, PREVIEW_MAX_HEIGHT) }}>
                 <div
                   ref={containerRef}
-                  className="[&_img]:mx-auto [&_svg]:mx-auto [&_canvas]:mx-auto [&_canvas]:max-w-full [&_canvas]:h-auto [&_img]:max-w-full [&_img]:h-auto [&_svg]:max-w-full [&_svg]:h-auto max-w-full"
+                  className="max-w-full [&_canvas]:mx-auto [&_canvas]:max-w-full [&_canvas]:h-auto [&_img]:mx-auto [&_img]:max-w-full [&_img]:h-auto [&_svg]:mx-auto [&_svg]:max-w-full [&_svg]:h-auto"
                 />
               </div>
               <div className="mt-4 flex items-center gap-3">
