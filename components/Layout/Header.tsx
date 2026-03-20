@@ -30,6 +30,7 @@ export const menuItems = [
   { slug: "base64", label: "Base64", icon: LockClosedIcon },
   { slug: "morse-code-decoder", label: "Morse Code", icon: SignalIcon },
   { slug: "qr-code-generator", label: "QR Code", icon: QrCodeIcon },
+  { slug: "html-render", label: "HTML Render", icon: DocumentTextIcon },
 ];
 
 export default function Header(props: HeaderProps) {

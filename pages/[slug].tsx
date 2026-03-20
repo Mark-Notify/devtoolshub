@@ -12,6 +12,7 @@ import CommonLayout from "../components/Layout";
 import TermsAndConditions from "../components/terms-and-conditions";
 import Base64 from "../components/base64";
 import MorseCode from "../components/MorseCode";
+import HtmlEditorPage from "../components/HtmlEditor";
 
 const SlugPage = () => {
   const router = useRouter();
@@ -85,6 +86,14 @@ const SlugPage = () => {
             url: "https://www.devtoolshub.org/morse-code-decoder",
           });
           break;
+        case "html-render":
+          setSeoData({
+            title: "HTML Online Render - เขียนและแสดงผล HTML แบบเรียลไทม์ | DevToolsHub",
+            description:
+              "เครื่องมือเขียน HTML แบบออนไลน์ พร้อมแสดงผลแบบเรียลไทม์ รองรับการปรับขนาดหน้าจอซ้าย-ขวา ใช้งานฟรี",
+            url: "https://www.devtoolshub.org/html-render",
+          });
+          break;
         default:
           setSeoData({
             title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
@@ -114,6 +123,8 @@ const SlugPage = () => {
         return <Base64 />;
       case "morse-code-decoder":
         return <MorseCode />;
+      case "html-render":
+        return <HtmlEditorPage />;
       case "profile":
         return <ProfilePage />;
       case "terms-and-conditions":
