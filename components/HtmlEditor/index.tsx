@@ -116,7 +116,9 @@ export default function HtmlEditorPage() {
           <button
             className="rounded-md py-1.5 px-3 border bg-base-100 text-xs hover:bg-gray-500/10 transition-colors"
             onClick={() => {
-              navigator.clipboard.writeText(html);
+              navigator.clipboard.writeText(html).catch(() => {
+                /* clipboard may be unavailable */
+              });
             }}
           >
             Copy HTML
