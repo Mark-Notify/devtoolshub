@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
-import Swal from "sweetalert2";
+import { toastSuccess, toastError } from "../../lib/swal";
 import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
 
 export default function HomePage() {
@@ -116,39 +116,11 @@ export default function HomePage() {
   };
 
   const alertCopy: (title?: string) => void = (title) => {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "success",
-      iconColor: "#dfe6e9",
-      title: title || "Copied to clipboard!", // Use default text if no title is provided
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      background: "#4caf50",
-      color: "#fff",
-      width: 300,
-      padding: "10px",
-    });
+    toastSuccess(title);
   };
 
   const alertError: (message?: string) => void = (message) => {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "error",
-      iconColor: "#dfe6e9",
-      // title: 'Oops...',
-      title: message || "Something went wrong!",
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      // confirmButtonText: 'Close',
-      background: "#fd79a8", // Red background for error
-      color: "#fff", // White text
-      width: 300,
-      padding: "10px",
-    });
+    toastError(message);
   };
 
   const handleNavigation = (slug: string) => {
