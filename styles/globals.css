@@ -3,6 +3,164 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ====== ANIMATION KEYFRAMES ====== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18); }
+}
+
+@keyframes ripple-out {
+  from {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* ====== ANIMATION UTILITY CLASSES ====== */
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Stagger delays for list items */
+.stagger-1 { animation-delay: 0.04s; }
+.stagger-2 { animation-delay: 0.08s; }
+.stagger-3 { animation-delay: 0.12s; }
+.stagger-4 { animation-delay: 0.16s; }
+.stagger-5 { animation-delay: 0.20s; }
+.stagger-6 { animation-delay: 0.24s; }
+.stagger-7 { animation-delay: 0.28s; }
+
+/* ====== BUTTON INTERACTION ANIMATIONS ====== */
+
+/* Apply smooth press feedback to DaisyUI btn variants */
+.btn:not(:disabled):not([aria-disabled="true"]) {
+  transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.15s ease,
+              background-color 0.15s ease,
+              color 0.15s ease,
+              border-color 0.15s ease,
+              opacity 0.15s ease;
+}
+
+.btn:not(:disabled):not([aria-disabled="true"]):hover {
+  transform: translateY(-1px);
+}
+
+.btn:not(:disabled):not([aria-disabled="true"]):active {
+  transform: scale(0.95) translateY(0);
+}
+
+/* Ripple overlay on .btn-accent and colored buttons */
+.btn-accent,
+.btn-primary,
+.btn-success,
+.btn-error,
+.btn-warning,
+.btn-info {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-accent::after,
+.btn-primary::after,
+.btn-success::after,
+.btn-error::after,
+.btn-warning::after,
+.btn-info::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.25) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.btn-accent:active::after,
+.btn-primary:active::after,
+.btn-success:active::after,
+.btn-error:active::after,
+.btn-warning:active::after,
+.btn-info:active::after {
+  opacity: 1;
+}
+
 /* Define light mode colors by default */
 :root {
   --background: #ffffff;

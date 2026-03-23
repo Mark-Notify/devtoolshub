@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import Swal from "sweetalert2";
+import { toastSuccess, toastError } from "../lib/swal";
 
 export default function Base64Page() {
     const [inputData, setInputData] = useState<string>("");
@@ -51,37 +51,11 @@ export default function Base64Page() {
     };
 
     const alertCopy = (title?: string) => {
-        Swal.fire({
-            toast: true,
-            position: "top-end",
-            icon: "success",
-            iconColor: "#dfe6e9",
-            title: title || "Copied to clipboard!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#4caf50",
-            color: "#fff",
-            width: 300,
-            padding: "10px",
-        });
+        toastSuccess(title);
     };
 
     const alertError = (message?: string) => {
-        Swal.fire({
-            toast: true,
-            position: "top-end",
-            icon: "error",
-            iconColor: "#dfe6e9",
-            title: message || "Something went wrong!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#fd79a8",
-            color: "#fff",
-            width: 300,
-            padding: "10px",
-        });
+        toastError(message);
     };
 
     return (
