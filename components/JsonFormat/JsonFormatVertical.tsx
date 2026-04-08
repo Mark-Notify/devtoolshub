@@ -7,12 +7,15 @@ import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
 import { toastSuccess, toastError } from "../../lib/swal";
 import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
+import { useToolHistory } from "../../hooks/useToolHistory";
+import SaveSnippetButton from "../SaveSnippetButton";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
   const [theme, setTheme] = useState<string | null>(null);
   const router = useRouter();
+  const { saveHistory } = useToolHistory("json-format-vertical");
 
   useEffect(() => {
     // Get theme from localStorage once the component is mounted
@@ -44,6 +47,7 @@ export default function HomePage() {
       const jsonData = JSON.parse(inputData.trim());
       result = JSON.stringify(jsonData, null, 4);
       setOutputData(result);
+      saveHistory(inputData, result);
     } else if (isPHPSerialized(inputData)) {
       try {
         const unserializedData = unserialize(inputData.trim());
@@ -169,6 +173,7 @@ export default function HomePage() {
             Formatted Output
           </label>
           <div className="flex justify-end gap-2 mb-1">
+            <SaveSnippetButton toolKey="json-format-vertical" content={outputData} disabled={!outputData} />
             <button
               className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
               type="button"

@@ -1,6 +1,7 @@
 .now
 node_modules/
 *.env*
+!.env.example
 
 .vercel
 package-lock.json
