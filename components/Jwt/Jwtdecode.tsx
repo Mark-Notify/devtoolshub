@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { useToolHistory } from "../../hooks/useToolHistory";
+import SaveSnippetButton from "../SaveSnippetButton";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>(""); // JWT Token
@@ -10,6 +12,7 @@ export default function HomePage() {
   const [signature, setSignature] = useState<string>("");
   const [secretKey, setSecretKey] = useState<string>(""); // Secret Key
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
+  const { saveHistory } = useToolHistory("jwt-decode");
 
   // useEffect ที่จะทำงานเมื่อ JWT Token หรือ Secret Key มีการเปลี่ยนแปลง
   useEffect(() => {
@@ -60,6 +63,9 @@ export default function HomePage() {
         setHeader(decodedHeader);
         setPayload(decodedPayload);
         setSignature(parts[2]);
+
+        const outputPreview = JSON.stringify({ header: decodedHeader, payload: decodedPayload }, null, 2);
+        saveHistory(inputData, outputPreview);
 
         if (secretKey) {
           const isValid = verifyJWTSignature(inputData, secretKey);
@@ -150,9 +156,16 @@ export default function HomePage() {
 
         {/* Output Section */}
         <div className="w-full lg:w-2/3 flex flex-col overflow-y-auto">
-          <label className="text-sm font-semibold mb-1">
-            JWT Parts (Header, Payload, Signature)
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-sm font-semibold">
+              JWT Parts (Header, Payload, Signature)
+            </label>
+            <SaveSnippetButton
+              toolKey="jwt-decode"
+              content={inputData ? JSON.stringify({ header, payload, signature }, null, 2) : ""}
+              disabled={!inputData}
+            />
+          </div>
 
           <div>
             <h3 className="font-semibold text-sm">Header</h3>

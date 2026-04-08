@@ -2,12 +2,15 @@
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { toastSuccess, toastError } from "../lib/swal";
+import { useToolHistory } from "../hooks/useToolHistory";
+import SaveSnippetButton from "./SaveSnippetButton";
 
 export default function Base64Page() {
     const [inputData, setInputData] = useState<string>("");
     const [outputData, setOutputData] = useState<string>("");
     const [theme, setTheme] = useState<string | null>(null);
     const [mode, setMode] = useState<"encode" | "decode">("encode");
+    const { saveHistory } = useToolHistory("base64");
 
     useEffect(() => {
         const storedTheme = localStorage.getItem("theme");
@@ -24,6 +27,7 @@ export default function Base64Page() {
                 result = btoa(inputData.trim());
             }
             setOutputData(result);
+            saveHistory(inputData, result);
         } catch (error) {
             console.error("Base64 Error:", error);
             setOutputData("Error: Invalid Base64 input!");
@@ -100,13 +104,16 @@ export default function Base64Page() {
 
             <div className="flex items-center justify-between mb-1">
                 <label htmlFor="outputData" className="text-sm font-semibold">Output</label>
-                <button
-                    className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
-                    type="button"
-                    onClick={copyToClipboard}
-                >
-                    Copy
-                </button>
+                <div className="flex items-center gap-1">
+                    <SaveSnippetButton toolKey="base64" content={outputData} disabled={!outputData} />
+                    <button
+                        className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
+                        type="button"
+                        onClick={copyToClipboard}
+                    >
+                        Copy
+                    </button>
+                </div>
             </div>
             <div className="w-full rounded overflow-hidden shadow-sm">
                 <Editor
