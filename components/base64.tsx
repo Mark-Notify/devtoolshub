@@ -63,8 +63,8 @@ export default function Base64Page() {
     };
 
     return (
-        <div className="h-full p-4">
-            <div className="flex justify-between items-center mb-2">
+        <div className="p-4">
+        <div className="flex justify-between items-center mb-2">
                 <h2 className="text-sm font-semibold">
                     Base64 {mode === "encode" ? "Encoder" : "Decoder"}
                 </h2>
@@ -115,9 +115,9 @@ export default function Base64Page() {
                     </button>
                 </div>
             </div>
-            <div className="w-full rounded overflow-hidden shadow-sm">
+            <div className="w-full rounded overflow-hidden shadow-sm" style={{ height: "clamp(250px, calc(100vh - 420px), 900px)" }}>
                 <Editor
-                    height="calc(100vh - 370px)"
+                    height="100%"
                     language="plaintext"
                     value={outputData}
                     theme={theme === "dark" ? "vs-dark" : "vs-light"}

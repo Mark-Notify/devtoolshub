@@ -132,8 +132,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-full p-4">
-      <div className="flex flex-col lg:flex-row gap-4 h-full">
+    <div className="p-4">
+      <div className="flex flex-col lg:flex-row gap-4 lg:h-[calc(100vh-80px)]">
         {/* Input Section */}
         <div className="w-full lg:w-1/3 flex flex-col">
           <label htmlFor="inputData" className="text-sm font-semibold mb-1">
@@ -195,9 +195,9 @@ export default function HomePage() {
               Copy
             </button>
           </div>
-          <div className="flex-1 border rounded-md shadow-sm" style={{ minHeight: "300px" }}>
+          <div className="border rounded-md shadow-sm" style={{ minHeight: "300px", height: "clamp(300px, calc(100vh - 220px), 900px)" }}>
             <Editor
-              height="calc(100vh - 180px)"
+              height="100%"
               language="json"
               value={outputData}
               theme={theme === "dark" ? "vs-dark" : "vs-light"}
