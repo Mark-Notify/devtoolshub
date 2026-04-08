@@ -113,9 +113,17 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const memberSince = session?.user
-    ? new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })
-    : "";
+  // Derive "member since" from the oldest history entry (first recorded activity,
+  // not exact account creation date which is not stored in the session)
+  const memberSince = (() => {
+    if (!session?.user) return "";
+    const sorted = [...history].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    const oldest = sorted[0];
+    if (!oldest) return "recently";
+    return new Date(oldest.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  })();
 
   const topTools = usageByTool(history);
   const recentHistory = history.slice(0, 5);

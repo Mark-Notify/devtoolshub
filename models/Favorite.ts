@@ -12,6 +12,7 @@ const FavoriteSchema: Schema<IFavorite> = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+// Compound unique index to prevent duplicate favorites
 FavoriteSchema.index({ userEmail: 1, toolKey: 1 }, { unique: true });
 
 const Favorite: Model<IFavorite> =

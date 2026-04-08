@@ -32,7 +32,9 @@ export default function CommonLayout(props: CommonLayoutProps) {
         const data = await res.json();
         setFavorites(data.map((f: { toolKey: string }) => f.toolKey));
       }
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error("[Layout] Failed to fetch favorites:", err);
+    }
   }, [session]);
 
   useEffect(() => { fetchFavorites(); }, [fetchFavorites]);
@@ -137,6 +139,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
               ) : (
                 <UserCircleIcon className="w-4 h-4 shrink-0" />
               )}
+              {/* Show first word of name; falls back to "Profile" for names without spaces */}
               <span className="truncate">{session?.user?.name?.split(" ")[0] ?? "Profile"}</span>
             </motion.button>
             <p className="text-[10px] opacity-40 text-center">

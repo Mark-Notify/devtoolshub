@@ -18,19 +18,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "POST") {
-    const { toolKey } = req.body;
+    const toolKey = typeof req.body?.toolKey === "string" ? req.body.toolKey : undefined;
     if (!toolKey) return res.status(400).json({ message: "toolKey required" });
     try {
       const fav = await Favorite.create({ userEmail, toolKey });
       return res.status(201).json(fav);
-    } catch {
-      // Already exists (duplicate key)
-      return res.status(409).json({ message: "Already favorited" });
+    } catch (err: unknown) {
+      const mongoErr = err as { code?: number };
+      if (mongoErr?.code === 11000) {
+        return res.status(409).json({ message: "Already favorited" });
+      }
+      console.error("Favorite create error:", err);
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
 
   if (req.method === "DELETE") {
-    const { toolKey } = req.body;
+    const toolKey = typeof req.body?.toolKey === "string" ? req.body.toolKey : undefined;
     if (!toolKey) return res.status(400).json({ message: "toolKey required" });
     await Favorite.deleteOne({ userEmail, toolKey });
     return res.status(200).json({ message: "Removed" });

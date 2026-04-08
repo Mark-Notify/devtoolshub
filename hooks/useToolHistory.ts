@@ -26,13 +26,14 @@ export function useToolHistory(toolKey: string) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               tool: toolKey,
+              // Truncate to 500 chars to avoid excessive DB storage on large inputs
               inputData: inputData.slice(0, 500),
               outputData: outputData.slice(0, 500),
             }),
           });
           lastSavedRef.current = key;
-        } catch {
-          // Silently ignore history save errors
+        } catch (err) {
+          console.error("[useToolHistory] Failed to save history:", err);
         }
       }, debounceMs);
     },
