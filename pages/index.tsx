@@ -149,7 +149,7 @@ const Home: NextPage = () => {
       </Head>
 
       <CommonLayout>
-        <div className="h-full">
+        <div className="min-h-full">
           {renderComponent()}
         </div>
       </CommonLayout>

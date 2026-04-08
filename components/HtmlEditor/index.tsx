@@ -43,7 +43,16 @@ export default function HtmlEditorPage() {
   const [html, setHtml] = useState(DEFAULT_HTML);
   const [splitPercent, setSplitPercent] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  /* ── Detect mobile ── */
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   /* ── Draggable divider logic (mouse) ── */
   const onMouseDown = useCallback((e: React.MouseEvent) => {
@@ -71,7 +80,7 @@ export default function HtmlEditorPage() {
     };
   }, [isDragging]);
 
-  /* ── Touch support for mobile ── */
+  /* ── Touch support for desktop drag ── */
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -126,63 +135,100 @@ export default function HtmlEditorPage() {
         </div>
       </div>
 
-      {/* Split pane container */}
-      <div
-        ref={containerRef}
-        className="flex flex-1 overflow-hidden relative"
-        style={{ cursor: isDragging ? "col-resize" : undefined }}
-      >
-        {/* Editor pane */}
-        <div
-          className="flex flex-col overflow-hidden"
-          style={{ width: `${splitPercent}%` }}
-        >
-          <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-            HTML Code
+      {isMobile ? (
+        /* ── Mobile: vertical stacked layout ── */
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {/* Editor pane - equal half */}
+          <div className="flex flex-col overflow-hidden flex-1">
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+              HTML Code
+            </div>
+            <textarea
+              className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
+              value={html}
+              onChange={(e) => setHtml(e.target.value)}
+              spellCheck={false}
+              placeholder="Type your HTML here..."
+            />
           </div>
-          <textarea
-            className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
-            value={html}
-            onChange={(e) => setHtml(e.target.value)}
-            spellCheck={false}
-            placeholder="Type your HTML here..."
-          />
-        </div>
 
-        {/* Draggable divider */}
-        <div
-          className="w-2 shrink-0 bg-gray-700/30 hover:bg-blue-500/60 active:bg-blue-500/80 transition-colors flex items-center justify-center"
-          style={{
-            cursor: "col-resize",
-            touchAction: "none",
-          }}
-          onMouseDown={onMouseDown}
-          onTouchStart={onTouchStart}
-        >
-          <div className="w-0.5 h-8 bg-gray-400/50 rounded-full" />
-        </div>
-
-        {/* Preview pane */}
-        <div
-          className="flex flex-col overflow-hidden"
-          style={{ width: `${100 - splitPercent}%` }}
-        >
-          <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-            Preview
+          {/* Horizontal divider */}
+          <div className="h-2 shrink-0 bg-gray-700/30 flex items-center justify-center">
+            <div className="h-0.5 w-8 bg-gray-400/50 rounded-full" />
           </div>
-          <iframe
-            className="flex-1 w-full bg-white"
-            srcDoc={srcDoc}
-            title="HTML Preview"
-            sandbox="allow-scripts"
-          />
-        </div>
 
-        {/* Transparent overlay while dragging to prevent iframe stealing events */}
-        {isDragging && (
-          <div className="absolute inset-0 z-10" style={{ cursor: "col-resize" }} />
-        )}
-      </div>
+          {/* Preview pane - equal half */}
+          <div className="flex flex-col overflow-hidden flex-1">
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+              Preview
+            </div>
+            <iframe
+              className="flex-1 w-full bg-white"
+              srcDoc={srcDoc}
+              title="HTML Preview"
+              sandbox="allow-scripts"
+            />
+          </div>
+        </div>
+      ) : (
+        /* ── Desktop: horizontal split pane ── */
+        <div
+          ref={containerRef}
+          className="flex flex-1 overflow-hidden relative"
+          style={{ cursor: isDragging ? "col-resize" : undefined }}
+        >
+          {/* Editor pane */}
+          <div
+            className="flex flex-col overflow-hidden"
+            style={{ width: `${splitPercent}%` }}
+          >
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+              HTML Code
+            </div>
+            <textarea
+              className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
+              value={html}
+              onChange={(e) => setHtml(e.target.value)}
+              spellCheck={false}
+              placeholder="Type your HTML here..."
+            />
+          </div>
+
+          {/* Draggable divider */}
+          <div
+            className="w-2 shrink-0 bg-gray-700/30 hover:bg-blue-500/60 active:bg-blue-500/80 transition-colors flex items-center justify-center"
+            style={{
+              cursor: "col-resize",
+              touchAction: "none",
+            }}
+            onMouseDown={onMouseDown}
+            onTouchStart={onTouchStart}
+          >
+            <div className="w-0.5 h-8 bg-gray-400/50 rounded-full" />
+          </div>
+
+          {/* Preview pane */}
+          <div
+            className="flex flex-col overflow-hidden"
+            style={{ width: `${100 - splitPercent}%` }}
+          >
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+              Preview
+            </div>
+            <iframe
+              className="flex-1 w-full bg-white"
+              srcDoc={srcDoc}
+              title="HTML Preview"
+              sandbox="allow-scripts"
+            />
+          </div>
+
+          {/* Transparent overlay while dragging to prevent iframe stealing events */}
+          {isDragging && (
+            <div className="absolute inset-0 z-10" style={{ cursor: "col-resize" }} />
+          )}
+        </div>
+      )}
     </div>
   );
 }

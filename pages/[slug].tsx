@@ -160,7 +160,7 @@ const SlugPage = () => {
         />
       </Head>
       <CommonLayout>
-        <div className="h-full">{renderComponent()}</div>
+        <div className="min-h-full">{renderComponent()}</div>
       </CommonLayout>
     </>
   );

@@ -109,8 +109,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-full p-4 overflow-y-auto">
-      <div className="flex flex-col lg:flex-row gap-4 h-full">
+    <div className="p-4 overflow-y-auto">
+      <div className="flex flex-col lg:flex-row gap-4 lg:h-[calc(100vh-80px)]">
         {/* Input Section */}
         <div className="w-full lg:w-1/3 flex flex-col">
           <label htmlFor="inputData" className="text-sm font-semibold mb-1">

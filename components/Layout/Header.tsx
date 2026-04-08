@@ -13,11 +13,13 @@ import {
   QrCodeIcon,
   DocumentTextIcon,
   ArrowsRightLeftIcon,
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 
 export interface HeaderProps {
   hideMenu?: boolean;
@@ -39,6 +41,7 @@ export default function Header(props: HeaderProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const currentSlug = router.query.slug || router.query.type || "";
+  const { data: session } = useSession();
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -191,9 +194,9 @@ export default function Header(props: HeaderProps) {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 z-50 h-full w-56 bg-base-100 border-r border-gray-700/30 lg:hidden"
+            className="fixed top-0 left-0 z-50 h-full w-56 bg-base-100 border-r border-gray-700/30 lg:hidden flex flex-col"
           >
-            <div className="flex items-center justify-between p-3 border-b border-gray-700/30">
+            <div className="flex items-center justify-between p-3 border-b border-gray-700/30 shrink-0">
               <span className="font-semibold text-sm">Tools</span>
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -204,7 +207,7 @@ export default function Header(props: HeaderProps) {
                 <XMarkIcon className="w-5 h-5" />
               </motion.button>
             </div>
-            <nav className="p-2 space-y-0.5">
+            <nav className="p-2 space-y-0.5 flex-1 overflow-y-auto">
               {menuItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = currentSlug === item.slug;
@@ -229,6 +232,32 @@ export default function Header(props: HeaderProps) {
                 );
               })}
             </nav>
+            <div className="p-2 border-t border-gray-700/30 shrink-0 space-y-1">
+              <motion.button
+                whileHover={{ x: 2 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => handleNavigation("profile")}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  currentSlug === "profile"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "hover:bg-gray-500/10"
+                }`}
+              >
+                {session?.user?.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="Profile"
+                    className="w-4 h-4 rounded-full shrink-0 object-cover"
+                  />
+                ) : (
+                  <UserCircleIcon className="w-4 h-4 shrink-0" />
+                )}
+                <span className="truncate">{session?.user?.name?.split(" ")[0] || "Profile"}</span>
+              </motion.button>
+              <p className="text-[10px] opacity-40 text-center">
+                &copy; {new Date().getFullYear()} DevToolsHub
+              </p>
+            </div>
           </motion.aside>
         )}
       </AnimatePresence>

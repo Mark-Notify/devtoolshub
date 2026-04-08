@@ -125,7 +125,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-full p-4">
+    <div className="p-4">
       <div className="form-group">
         <div className="flex items-center justify-between mb-1">
           <label htmlFor="inputData" className="text-sm font-semibold">Input Data (JSON or Serialized)</label>
@@ -178,9 +178,9 @@ export default function HomePage() {
           </button>
         </div>
       </div>
-      <div className="w-full rounded overflow-hidden shadow-sm">
+      <div className="w-full rounded overflow-hidden shadow-sm" style={{ height: "clamp(300px, calc(100vh - 410px), 900px)" }}>
         <Editor
-          height="calc(100vh - 360px)"
+          height="100%"
           language="json"
           value={outputData}
           theme={theme === "dark" ? "vs-dark" : "vs-light"}
