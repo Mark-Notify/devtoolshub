@@ -26,8 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     await connectToDatabase();
 
-    const cutoff = new Date();
-    cutoff.setMonth(cutoff.getMonth() - 1);
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     const result = await UserData.deleteMany({ createdAt: { $lt: cutoff } });
 

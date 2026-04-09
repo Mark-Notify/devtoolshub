@@ -74,7 +74,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### Build for Production
 
 ```bash
-npm run build     # runs: prisma generate && next build
+npm run build     # runs: next build
 npm run start
 ```
 
