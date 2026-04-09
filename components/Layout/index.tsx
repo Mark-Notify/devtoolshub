@@ -149,7 +149,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 flex flex-col overflow-hidden">
           <Analytics debug={process.env.NODE_ENV === "development"} />
           <AnimatePresence mode="wait">
             <motion.div
@@ -158,7 +158,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-              className="min-h-full"
+              className="flex-1 flex flex-col overflow-hidden"
             >
               {children}
             </motion.div>

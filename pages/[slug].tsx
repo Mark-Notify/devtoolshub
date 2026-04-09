@@ -160,7 +160,7 @@ const SlugPage = () => {
         />
       </Head>
       <CommonLayout>
-        <div className="min-h-full">{renderComponent()}</div>
+        <div className="flex-1 flex flex-col overflow-hidden">{renderComponent()}</div>
       </CommonLayout>
     </>
   );
