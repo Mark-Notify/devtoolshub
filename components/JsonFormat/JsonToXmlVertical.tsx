@@ -8,6 +8,7 @@ import { toastSuccess, toastError } from "../../lib/swal";
 import { xml2json, json2xml } from "xml-js";
 import { XMLParser } from "fast-xml-parser";
 import { useRouter } from "next/router";
+import SplitPane from "../SplitPane";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
@@ -47,10 +48,10 @@ export default function HomePage() {
         const parsed = parser.parse(inputData);
         setOutputData(JSON.stringify(parsed, null, 2));
       } else {
-        alertError("Invalid input format. Please provide valid JSON or XML data.");
+        toastError("Invalid input format. Please provide valid JSON or XML data.");
       }
     } catch (error) {
-      alertError("An error occurred while processing the data.");
+      toastError("An error occurred while processing the data.");
     }
   };
 
@@ -77,50 +78,50 @@ export default function HomePage() {
   const copyToInlineClipboard = () => {
     try {
       if (outputData.trim() === "") {
-        alertError("Output is empty");
+        toastError("Output is empty");
         return;
       }
       const jsonObject = JSON.parse(outputData);
       const inlineJSON = JSON.stringify(jsonObject);
       navigator.clipboard.writeText(inlineJSON).catch((err) => {
         console.error("Failed to copy output: ", err);
-        alertError("Failed to copy output!");
+        toastError("Failed to copy output!");
       });
-      alertCopy("Copied inline to clipboard!");
+      toastSuccess("Copied inline to clipboard!");
     } catch (error) {
-      alertError("Invalid JSON format.");
+      toastError("Invalid JSON format.");
     }
   };
 
   const copySerializedOutput = () => {
     try {
       if (outputData.trim() === "") {
-        alertError("Output is empty");
+        toastError("Output is empty");
         return;
       }
       const jsonObject = JSON.parse(outputData);
       const serializedData = serialize(jsonObject); // Serialize the JSON output
       navigator.clipboard.writeText(serializedData).catch((err) => {
         console.error("Failed to copy serialized output: ", err);
-        alertError("Failed to copy serialized output!");
+        toastError("Failed to copy serialized output!");
       });
-      alertCopy("Serialized output copied to clipboard!");
+      toastSuccess("Serialized output copied to clipboard!");
     } catch (error) {
       console.error("Serialization error:", error);
-      alertError("Failed to serialize output!");
+      toastError("Failed to serialize output!");
     }
   };
 
   const copyToClipboard = () => {
     if (outputData.trim() === "") {
-      alertError("Output is empty");
+      toastError("Output is empty");
       return;
     }
     navigator.clipboard.writeText(outputData).catch((err) => {
       console.error("Failed to copy output: ", err);
-      alertError("Failed to copy output!");
+      toastError("Failed to copy output!");
     });
-    alertCopy();
+    toastSuccess();
   };
 
   const handleEditorChange = (value: string | undefined) => {
@@ -129,95 +130,90 @@ export default function HomePage() {
     }
   };
 
-  const alertCopy = (title?: string) => {
-    toastSuccess(title);
-  };
-
-  const alertError = (message?: string) => {
-    toastError(message);
-  };
-
   const handleNavigation = (slug: string) => {
     router.push(`/${slug}`, undefined, { shallow: true });
   };
 
-  return (
-    <div className="p-4">
-      <div className="flex flex-col lg:flex-row gap-4 lg:h-[calc(100vh-80px)]">
-        {/* Input Section */}
-        <div className="w-full lg:w-1/3 flex flex-col">
-          <label htmlFor="inputData" className="text-sm font-semibold mb-1">
-            Input Data (JSON or XML)
-          </label>
-          <div className="flex justify-end gap-2">
-            <button
-              title="Horizontal"
-              className="rounded-md py-1.5 px-3 border bg-base-100 text-white"
-              onClick={() => handleNavigation("xml-to-json")}
-            >
-              <Image
-                src="/horizontal-to-vertical.svg"
-                className="svg-icon-theme" alt="Vertical Icon"
-                style={{ color: "#fff" }} width={20} height={20} />
-            </button>
-          </div>
-          <textarea
-            id="inputData"
-            className="input-area mt-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
-            placeholder="Paste your JSON or XML data here..."
-            value={inputData}
-            onChange={(e) => setInputData(e.target.value)}
-            style={{
-              minHeight: "150px",
-              resize: "vertical",
-            }}
-          />
-          <button className="btn btn-sm btn-accent" onClick={processData}>
-            Process
+  const leftPanel = (
+    <>
+      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+        Input (JSON or XML)
+      </div>
+      <textarea
+        id="inputData"
+        className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
+        placeholder="Paste your JSON or XML data here..."
+        value={inputData}
+        onChange={(e) => setInputData(e.target.value)}
+        spellCheck={false}
+      />
+      <div className="px-3 py-2 border-t border-gray-700/30 bg-base-100 shrink-0">
+        <button className="btn btn-block btn-sm btn-accent" onClick={processData}>
+          Process
+        </button>
+      </div>
+    </>
+  );
+
+  const rightPanel = (
+    <>
+      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0 flex items-center justify-between">
+        <span>Formatted Output</span>
+        <div className="flex items-center gap-1">
+          <button
+            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+            type="button"
+            onClick={copySerializedOutput}
+          >
+            Copy Serialized
+          </button>
+          <button
+            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+            onClick={copyToInlineClipboard}
+          >
+            Copy Inline
+          </button>
+          <button
+            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+            onClick={copyToClipboard}
+          >
+            Copy
           </button>
         </div>
-
-        {/* Output Section */}
-        <div className="w-full lg:w-2/3 flex flex-col">
-          <label htmlFor="outputData" className="text-sm font-semibold mb-1">
-            Formatted Output
-          </label>
-          <div className="flex justify-end gap-2 mb-1">
-            <button
-              className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
-              type="button"
-              onClick={copySerializedOutput}
-            >
-              Copy Serialized
-            </button>
-            <button
-              className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
-              onClick={copyToInlineClipboard}
-            >
-              Copy Inline
-            </button>
-            <button
-              className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
-              onClick={copyToClipboard}
-            >
-              Copy
-            </button>
-          </div>
-          <div className="border rounded-md shadow-sm" style={{ minHeight: "300px", height: "clamp(300px, calc(100vh - 220px), 900px)" }}>
-            <Editor
-              height="100%"
-              language={inputType === "xml" ? "xml" : "json"}
-              value={outputData}
-              theme={theme === "dark" ? "vs-dark" : "vs-light"}
-              onChange={handleEditorChange}
-              options={{
-                readOnly: false,
-                automaticLayout: true,
-              }}
-            />
-          </div>
-        </div>
       </div>
+      <div className="flex-1 overflow-hidden">
+        <Editor
+          height="100%"
+          language={inputType === "xml" ? "xml" : "json"}
+          value={outputData}
+          theme={theme === "dark" ? "vs-dark" : "vs-light"}
+          onChange={handleEditorChange}
+          options={{
+            readOnly: false,
+            automaticLayout: true,
+          }}
+        />
+      </div>
+    </>
+  );
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
+        <h2 className="text-sm font-semibold">XML ↔ JSON Converter</h2>
+        <button
+          title="Horizontal"
+          className="rounded-md py-1.5 px-3 border bg-base-100 text-white"
+          onClick={() => handleNavigation("xml-to-json")}
+        >
+          <Image
+            src="/horizontal-to-vertical.svg"
+            className="svg-icon-theme" alt="Vertical Icon"
+            style={{ color: "#fff" }} width={20} height={20} />
+        </button>
+      </div>
+      <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} />
     </div>
   );
 }
