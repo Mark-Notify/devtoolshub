@@ -7,6 +7,7 @@ export interface IUserPreferences {
   autoCopy: boolean;
   sidebarCollapsed: boolean;
   defaultTool: string;
+  menuOrder: string[];   // custom sort order (array of slugs)
   updatedAt: Date;
 }
 
@@ -17,6 +18,7 @@ const UserPreferencesSchema: Schema<IUserPreferences> = new Schema({
   autoCopy: { type: Boolean, default: false },
   sidebarCollapsed: { type: Boolean, default: false },
   defaultTool: { type: String, default: "json-format-vertical" },
+  menuOrder: { type: [String], default: [] },
   updatedAt: { type: Date, default: Date.now },
 });
 

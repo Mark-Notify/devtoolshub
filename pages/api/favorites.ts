@@ -1,19 +1,11 @@
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
 import { connectToDatabase } from "../../lib/mongodb";
 import Favorite from "../../models/Favorite";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getSession({ req });
-  // const session = {
-  //   "user": {
-  //     "name": "Mark Kritsana",
-  //     "email": "diaryads9@gmail.com",
-  //     "image": "https://lh3.googleusercontent.com/a/ACg8ocKmar-A5mNyPFjk0a6eN8vffi_mkYA8zy_eKkLamnSz2RoCtBET=s96-c"
-  //   },
-  //   "expires": "2026-05-09T09:02:49.551Z"
-  // }
-  console.log(session);
+  const session = await getServerSession(req, res, authOptions);
   if (!session || !session.user?.email) {
     return res.status(401).json({ message: "Unauthorized" });
   }
