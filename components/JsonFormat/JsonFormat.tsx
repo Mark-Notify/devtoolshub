@@ -38,9 +38,29 @@ export default function HomePage() {
       }
     };
 
+    const deepParseJSON = (value: unknown): unknown => {
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if ((trimmed.startsWith("{") || trimmed.startsWith("[")) && isJSON(trimmed)) {
+          return deepParseJSON(JSON.parse(trimmed));
+        }
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.map(deepParseJSON);
+      }
+      if (value !== null && typeof value === "object") {
+        return Object.fromEntries(
+          Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, deepParseJSON(v)])
+        );
+      }
+      return value;
+    };
+
     if (isJSON(inputData)) {
       const jsonData = JSON.parse(inputData.trim());
-      result = JSON.stringify(jsonData, null, 4);
+      const deepResult = deepParseJSON(jsonData);
+      result = JSON.stringify(deepResult, null, 4);
       setOutputData(result);
     } else if (isPHPSerialized(inputData)) {
       try {
