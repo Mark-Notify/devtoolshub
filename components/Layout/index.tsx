@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   StarIcon,
   ShareIcon,
-  Bars3Icon as GripIcon,
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
@@ -37,7 +36,7 @@ export interface CommonLayoutProps {
   onThemeChange?: () => void;
 }
 
-// ─── Sortable item ────────────────────────────────────────────────────────────
+// ─── Sortable item ─────────────────────────────────────────────────────────────
 interface SortableItemProps {
   slug: string;
   isActive: boolean;
@@ -59,7 +58,7 @@ function SortableItem({ slug, isActive, isFav, showControls, onNavigate, onToggl
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
+    opacity: isDragging ? 0.35 : 1,
     zIndex: isDragging ? 50 : undefined,
   };
 
@@ -67,57 +66,56 @@ function SortableItem({ slug, isActive, isFav, showControls, onNavigate, onToggl
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative flex items-center rounded-lg border-l-2 transition-all duration-150 ${
+      {...(showControls ? attributes : {})}
+      {...(showControls ? listeners : {})}
+      className={`group relative flex items-center gap-2 px-2.5 py-[7px] rounded-lg cursor-pointer select-none transition-all duration-150 ${
         isActive
-          ? `${cfg.activeBg} ${cfg.activeBorder} shadow-sm`
-          : `border-l-transparent ${cfg.hoverBg}`
-      }`}
+          ? `${cfg.activeBg} shadow-sm`
+          : `hover:bg-white/5`
+      } ${showControls ? "cursor-grab active:cursor-grabbing" : ""}`}
+      onClick={() => onNavigate(slug)}
     >
-      {/* Drag grip */}
-      {showControls && (
-        <button
-          {...attributes}
-          {...listeners}
-          className="shrink-0 pl-1.5 pr-0.5 py-2 opacity-0 group-hover:opacity-25 hover:!opacity-50 cursor-grab active:cursor-grabbing touch-none"
-          tabIndex={-1}
-        >
-          <GripIcon className="w-3 h-3" />
-        </button>
-      )}
+      {/* Colored indicator bar */}
+      <span
+        className={`absolute left-0 top-1/2 -translate-y-1/2 w-0.5 rounded-r-full transition-all duration-200 ${
+          isActive ? `${cfg.dot} h-5` : "h-0 bg-transparent"
+        }`}
+      />
 
-      {/* Nav button */}
-      <button
-        onClick={() => onNavigate(slug)}
-        className={`flex-1 flex items-center gap-2.5 py-2 text-[13px] font-medium min-w-0 text-left transition-colors ${
-          showControls ? "pl-1 pr-1" : "pl-3 pr-3"
-        } ${isActive ? cfg.activeText : "opacity-65 hover:opacity-100"}`}
-      >
-        <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? cfg.iconColor : ""}`} />
-        <span className="truncate">{item.label}</span>
-      </button>
+      {/* Icon */}
+      <span className={`shrink-0 transition-colors duration-150 ${isActive ? cfg.iconColor : "opacity-40 group-hover:opacity-70"}`}>
+        <Icon className="w-[15px] h-[15px]" />
+      </span>
 
-      {/* Star */}
+      {/* Label */}
+      <span className={`flex-1 text-[12.5px] font-medium truncate transition-colors duration-150 leading-none ${
+        isActive ? cfg.activeText : "opacity-60 group-hover:opacity-90"
+      }`}>
+        {item.label}
+      </span>
+
+      {/* Star — inside the button, right side */}
       {showControls && (
-        <button
-          onClick={(e) => onToggleFav(slug, e)}
-          className={`shrink-0 pr-2 py-2 transition-all ${
+        <span
+          onClick={(e) => { e.stopPropagation(); onToggleFav(slug, e); }}
+          className={`shrink-0 rounded p-0.5 transition-all duration-150 ${
             isFav
               ? "opacity-100"
-              : "opacity-0 group-hover:opacity-40 hover:!opacity-100"
+              : "opacity-0 group-hover:opacity-30 hover:!opacity-100"
           }`}
           title={isFav ? "Unstar" : "Star"}
         >
           {isFav
-            ? <StarSolidIcon className="w-3.5 h-3.5 text-yellow-400" />
-            : <StarIcon className="w-3.5 h-3.5 hover:text-yellow-400" />
+            ? <StarSolidIcon className="w-3 h-3 text-yellow-400" />
+            : <StarIcon className="w-3 h-3" />
           }
-        </button>
+        </span>
       )}
     </div>
   );
 }
 
-// ─── Layout ───────────────────────────────────────────────────────────────────
+// ─── Layout ────────────────────────────────────────────────────────────────────
 export default function CommonLayout(props: CommonLayoutProps) {
   const { headerProps, children, onThemeChange } = props;
   const [refreshKey, setRefreshKey] = useState(0);
@@ -131,31 +129,21 @@ export default function CommonLayout(props: CommonLayoutProps) {
   const currentSlug = (router.query.slug || router.query.type || "") as string;
   const { data: session } = useSession();
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   const fetchPrefs = useCallback(async () => {
     if (!session) { setFavorites([]); return; }
     try {
-      const [favRes, prefRes] = await Promise.all([
-        fetch("/api/favorites"),
-        fetch("/api/preferences"),
-      ]);
-      if (favRes.ok) {
-        const data = await favRes.json();
-        setFavorites(data.map((f: { toolKey: string }) => f.toolKey));
-      }
+      const [favRes, prefRes] = await Promise.all([fetch("/api/favorites"), fetch("/api/preferences")]);
+      if (favRes.ok) setFavorites((await favRes.json()).map((f: { toolKey: string }) => f.toolKey));
       if (prefRes.ok) {
         const prefs = await prefRes.json();
         if (Array.isArray(prefs.menuOrder) && prefs.menuOrder.length > 0) {
-          const saved: string[] = prefs.menuOrder;
           const all = menuItems.map((m) => m.slug);
-          const merged = [...saved.filter((s) => all.includes(s)), ...all.filter((s) => !saved.includes(s))];
-          setMenuOrder(merged);
+          setMenuOrder([...prefs.menuOrder.filter((s: string) => all.includes(s)), ...all.filter((s) => !prefs.menuOrder.includes(s))]);
         }
       }
-    } catch (err) {
-      console.error("[Layout] fetchPrefs error:", err);
-    }
+    } catch (err) { console.error("[Layout] fetchPrefs:", err); }
   }, [session]);
 
   useEffect(() => { fetchPrefs(); }, [fetchPrefs]);
@@ -164,11 +152,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
     if (!session) return;
     if (saveOrderTimer.current) clearTimeout(saveOrderTimer.current);
     saveOrderTimer.current = setTimeout(() => {
-      fetch("/api/preferences", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ menuOrder: order }),
-      }).catch(console.error);
+      fetch("/api/preferences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ menuOrder: order }) }).catch(console.error);
     }, 800);
   }, [session]);
 
@@ -186,11 +170,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
     const isFav = favorites.includes(toolKey);
     setFavorites((prev) => isFav ? prev.filter((k) => k !== toolKey) : [...prev, toolKey]);
     try {
-      const res = await fetch("/api/favorites", {
-        method: isFav ? "DELETE" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ toolKey }),
-      });
+      const res = await fetch("/api/favorites", { method: isFav ? "DELETE" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ toolKey }) });
       if (!res.ok) setFavorites((prev) => isFav ? [...prev, toolKey] : prev.filter((k) => k !== toolKey));
     } catch {
       setFavorites((prev) => isFav ? [...prev, toolKey] : prev.filter((k) => k !== toolKey));
@@ -201,99 +181,59 @@ export default function CommonLayout(props: CommonLayoutProps) {
     if (!session) return;
     setSharing(true);
     try {
-      const res = await fetch("/api/share-menu", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ menuOrder, pinnedSlugs: favorites }),
-      });
+      const res = await fetch("/api/share-menu", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ menuOrder, pinnedSlugs: favorites }) });
       if (res.ok) {
         const { shareId } = await res.json();
         await navigator.clipboard.writeText(`${window.location.origin}/shared/${shareId}`);
         setShareToast("✓ Link copied!");
-        setTimeout(() => setShareToast(""), 3000);
+        setTimeout(() => setShareToast(""), 2500);
       }
     } catch {
       setShareToast("Failed to share");
-      setTimeout(() => setShareToast(""), 3000);
-    } finally {
-      setSharing(false);
-    }
+      setTimeout(() => setShareToast(""), 2500);
+    } finally { setSharing(false); }
   };
 
-  const handleThemeChange = () => {
-    setRefreshKey((prev) => prev + 1);
-    if (onThemeChange) onThemeChange();
-  };
+  const handleThemeChange = () => { setRefreshKey((p) => p + 1); onThemeChange?.(); };
+  const handleNavigation = (slug: string) => router.push(`/${slug}`, undefined, { shallow: true });
 
-  const handleNavigation = (slug: string) => {
-    router.push(`/${slug}`, undefined, { shallow: true });
-  };
-
-  // Starred tools float to top; unstarred grouped by category
   const starredInOrder = menuOrder.filter((s) => favorites.includes(s));
   const unstarredInOrder = menuOrder.filter((s) => !favorites.includes(s));
-
-  // Build groups for unstarred
-  const groups = Array.from(new Set(
-    unstarredInOrder.map((s) => menuItems.find((m) => m.slug === s)?.group).filter(Boolean)
-  )) as GroupName[];
+  const groups = Array.from(new Set(unstarredInOrder.map((s) => menuItems.find((m) => m.slug === s)?.group).filter(Boolean))) as GroupName[];
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden" style={{ fontFamily: "'Inter', 'JetBrains Mono', sans-serif" }}>
+    <div className="flex flex-col h-screen overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
       <Header {...headerProps} onThemeChange={handleThemeChange} />
       <div className="flex flex-1 overflow-hidden">
 
-        {/* ── Desktop sidebar ─────────────────────────────────── */}
-        <aside className="hidden lg:flex flex-col w-52 shrink-0 border-r border-base-300/50 bg-base-100 overflow-hidden">
+        {/* ── Desktop sidebar ── */}
+        <aside className="hidden lg:flex flex-col w-[200px] shrink-0 border-r border-white/[0.06] bg-base-100 overflow-hidden">
 
-          {/* Scrollable nav */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={menuOrder} strategy={verticalListSortingStrategy}>
-                <nav className="px-2 py-3 space-y-4">
+                <nav className="px-2 pt-3 pb-2 flex flex-col gap-4">
 
-                  {/* ── Starred section ── */}
+                  {/* Starred */}
                   {session && starredInOrder.length > 0 && (
-                    <div>
-                      <SectionHeader emoji="⭐" label="Starred" />
-                      <div className="space-y-0.5 mt-1">
-                        {starredInOrder.map((slug) => (
-                          <SortableItem
-                            key={slug} slug={slug}
-                            isActive={currentSlug === slug}
-                            isFav={true}
-                            showControls={true}
-                            onNavigate={handleNavigation}
-                            onToggleFav={toggleFavorite}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                    <Section label="Starred" emoji="⭐">
+                      {starredInOrder.map((slug) => (
+                        <SortableItem key={slug} slug={slug} isActive={currentSlug === slug} isFav showControls onNavigate={handleNavigation} onToggleFav={toggleFavorite} />
+                      ))}
+                    </Section>
                   )}
 
-                  {/* ── Grouped tools ── */}
+                  {/* Grouped */}
                   {groups.map((group) => {
                     const cfg = groupConfig[group];
-                    const slugsInGroup = unstarredInOrder.filter(
-                      (s) => menuItems.find((m) => m.slug === s)?.group === group
-                    );
-                    if (!slugsInGroup.length) return null;
+                    const slugs = unstarredInOrder.filter((s) => menuItems.find((m) => m.slug === s)?.group === group);
+                    if (!slugs.length) return null;
                     return (
-                      <div key={group}>
-                        <SectionHeader emoji={cfg.emoji} label={cfg.label} />
-                        <div className="space-y-0.5 mt-1">
-                          {slugsInGroup.map((slug) => (
-                            <SortableItem
-                              key={slug} slug={slug}
-                              isActive={currentSlug === slug}
-                              isFav={false}
-                              showControls={!!session}
-                              onNavigate={handleNavigation}
-                              onToggleFav={toggleFavorite}
-                            />
-                          ))}
-                        </div>
-                      </div>
+                      <Section key={group} label={cfg.label} emoji={cfg.emoji}>
+                        {slugs.map((slug) => (
+                          <SortableItem key={slug} slug={slug} isActive={currentSlug === slug} isFav={false} showControls={!!session} onNavigate={handleNavigation} onToggleFav={toggleFavorite} />
+                        ))}
+                      </Section>
                     );
                   })}
                 </nav>
@@ -301,78 +241,54 @@ export default function CommonLayout(props: CommonLayoutProps) {
             </DndContext>
           </div>
 
-          {/* ── Footer ────────────────────────────────────────── */}
-          <div className="shrink-0 border-t border-base-300/50 p-2 space-y-1">
-            {/* Share */}
+          {/* Footer */}
+          <div className="shrink-0 px-2 py-2 border-t border-white/[0.06] flex flex-col gap-1">
             {session && (
-              <button
-                onClick={shareMenu}
-                disabled={sharing}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left transition-all hover:bg-base-200 opacity-50 hover:opacity-80 disabled:opacity-30"
-              >
-                <ShareIcon className="w-4 h-4 shrink-0" />
-                <span>{sharing ? "Generating…" : "Share my menu"}</span>
+              <button onClick={shareMenu} disabled={sharing}
+                className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] opacity-40 hover:opacity-80 transition-all hover:bg-white/5 w-full text-left disabled:opacity-20">
+                <ShareIcon className="w-3.5 h-3.5 shrink-0" />
+                {sharing ? "Generating…" : "Share my menu"}
               </button>
             )}
 
-            {/* Profile card */}
             {session ? (
-              <button
-                onClick={() => handleNavigation("profile")}
-                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm transition-all ${
-                  currentSlug === "profile" ? "bg-base-300" : "hover:bg-base-200"
-                }`}
-              >
+              <button onClick={() => handleNavigation("profile")}
+                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl w-full transition-all ${currentSlug === "profile" ? "bg-white/10" : "hover:bg-white/5"}`}>
                 {session.user?.image
-                  ? <img src={session.user.image} alt="Profile" className="w-7 h-7 rounded-full object-cover ring-2 ring-base-300 shrink-0" />
-                  : <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shrink-0"><UserCircleIcon className="w-4 h-4 text-white" /></div>
+                  ? <img src={session.user.image} alt="" className="w-6 h-6 rounded-full object-cover shrink-0 ring-1 ring-white/20" />
+                  : <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shrink-0"><UserCircleIcon className="w-3.5 h-3.5 text-white" /></div>
                 }
-                <div className="text-left min-w-0 flex-1">
-                  <div className="text-[12px] font-semibold truncate">{session.user?.name?.split(" ")[0]}</div>
-                  <div className="text-[10px] opacity-40 truncate">{session.user?.email}</div>
+                <div className="min-w-0 text-left">
+                  <div className="text-[11px] font-semibold truncate opacity-80">{session.user?.name?.split(" ")[0]}</div>
+                  <div className="text-[10px] opacity-30 truncate">{session.user?.email}</div>
                 </div>
               </button>
             ) : (
-              <button
-                onClick={() => signIn("google")}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left transition-all hover:bg-base-200 opacity-60 hover:opacity-100"
-              >
-                <ArrowRightOnRectangleIcon className="w-4 h-4 shrink-0" />
+              <button onClick={() => signIn("google")}
+                className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] opacity-40 hover:opacity-80 transition-all hover:bg-white/5 w-full">
+                <ArrowRightOnRectangleIcon className="w-3.5 h-3.5 shrink-0" />
                 Sign in
               </button>
             )}
-
-            <p className="text-[10px] opacity-25 text-center pb-1">&copy; {new Date().getFullYear()} DevToolsHub</p>
           </div>
         </aside>
 
-        {/* ── Main content ────────────────────────────────────── */}
+        {/* Main content */}
         <main className="flex-1 flex flex-col overflow-hidden relative">
           <Analytics debug={process.env.NODE_ENV === "development"} />
           <AnimatePresence mode="wait">
-            <motion.div
-              key={refreshKey}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-              className="flex-1 flex flex-col overflow-hidden"
-            >
+            <motion.div key={refreshKey} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }} className="flex-1 flex flex-col overflow-hidden">
               {children}
             </motion.div>
           </AnimatePresence>
           <SpeedInsights />
 
-          {/* Share toast */}
           <AnimatePresence>
             {shareToast && (
-              <motion.div
-                initial={{ opacity: 0, y: 16, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 16, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 28 }}
-                className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur text-white text-sm px-4 py-2.5 rounded-xl shadow-2xl border border-white/10 whitespace-nowrap"
-              >
+              <motion.div initial={{ opacity: 0, y: 12, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-gray-950/95 backdrop-blur text-white text-xs px-4 py-2.5 rounded-xl shadow-2xl border border-white/10 whitespace-nowrap">
                 {shareToast}
               </motion.div>
             )}
@@ -383,12 +299,15 @@ export default function CommonLayout(props: CommonLayoutProps) {
   );
 }
 
-// ─── Section header ───────────────────────────────────────────────────────────
-function SectionHeader({ emoji, label }: { emoji: string; label: string }) {
+// ── Section wrapper ─────────────────────────────────────────────────────────
+function Section({ label, emoji, children }: { label: string; emoji: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-1.5 px-2 mb-0.5">
-      <span className="text-[11px] leading-none">{emoji}</span>
-      <span className="text-[10px] font-bold uppercase tracking-widest opacity-35">{label}</span>
+    <div className="flex flex-col gap-0.5">
+      <div className="flex items-center gap-1.5 px-2 mb-0.5">
+        <span className="text-[10px] leading-none">{emoji}</span>
+        <span className="text-[9.5px] font-bold uppercase tracking-[0.08em] opacity-30">{label}</span>
+      </div>
+      {children}
     </div>
   );
 }

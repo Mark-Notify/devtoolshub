@@ -47,12 +47,13 @@ export const groupConfig: Record<GroupName, {
   activeBorder: string;
   activeText: string;
   hoverBg: string;
+  dot: string;
 }> = {
-  Data:   { label: "Data",    emoji: "🗄️", iconColor: "text-blue-400",    activeBg: "bg-blue-500/15",    activeBorder: "border-l-blue-400",    activeText: "text-blue-300",    hoverBg: "hover:bg-blue-500/8" },
-  Encode: { label: "Encode",  emoji: "🔐", iconColor: "text-emerald-400", activeBg: "bg-emerald-500/15", activeBorder: "border-l-emerald-400", activeText: "text-emerald-300", hoverBg: "hover:bg-emerald-500/8" },
-  Text:   { label: "Text",    emoji: "📝", iconColor: "text-orange-400",  activeBg: "bg-orange-500/15",  activeBorder: "border-l-orange-400",  activeText: "text-orange-300",  hoverBg: "hover:bg-orange-500/8" },
-  Util:   { label: "Utility", emoji: "⚙️", iconColor: "text-violet-400",  activeBg: "bg-violet-500/15",  activeBorder: "border-l-violet-400",  activeText: "text-violet-300",  hoverBg: "hover:bg-violet-500/8" },
-  Fun:    { label: "Fun",     emoji: "🎮", iconColor: "text-rose-400",    activeBg: "bg-rose-500/15",    activeBorder: "border-l-rose-400",    activeText: "text-rose-300",    hoverBg: "hover:bg-rose-500/8" },
+  Data:   { label: "Data",    emoji: "🗄️", iconColor: "text-blue-400",    activeBg: "bg-blue-500/15",    activeBorder: "border-l-blue-400",    activeText: "text-blue-300",    hoverBg: "hover:bg-blue-500/8",    dot: "bg-blue-400" },
+  Encode: { label: "Encode",  emoji: "🔐", iconColor: "text-emerald-400", activeBg: "bg-emerald-500/15", activeBorder: "border-l-emerald-400", activeText: "text-emerald-300", hoverBg: "hover:bg-emerald-500/8", dot: "bg-emerald-400" },
+  Text:   { label: "Text",    emoji: "📝", iconColor: "text-orange-400",  activeBg: "bg-orange-500/15",  activeBorder: "border-l-orange-400",  activeText: "text-orange-300",  hoverBg: "hover:bg-orange-500/8",  dot: "bg-orange-400" },
+  Util:   { label: "Utility", emoji: "⚙️", iconColor: "text-violet-400",  activeBg: "bg-violet-500/15",  activeBorder: "border-l-violet-400",  activeText: "text-violet-300",  hoverBg: "hover:bg-violet-500/8",  dot: "bg-violet-400" },
+  Fun:    { label: "Fun",     emoji: "🎮", iconColor: "text-rose-400",    activeBg: "bg-rose-500/15",    activeBorder: "border-l-rose-400",    activeText: "text-rose-300",    hoverBg: "hover:bg-rose-500/8",    dot: "bg-rose-400" },
 };
 
 export const menuItems = [
