@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 
-export interface ISavedSnippet extends Document {
+export interface ISavedSnippet {
   userEmail: string;
   toolKey: string;
   title: string;

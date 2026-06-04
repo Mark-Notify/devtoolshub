@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 
-export interface IUserPreferences extends Document {
+export interface IUserPreferences {
   userEmail: string;
   theme: string;
   jsonIndent: number;

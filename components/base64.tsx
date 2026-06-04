@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import { toastSuccess, toastError } from "../lib/swal";
 import { useToolHistory } from "../hooks/useToolHistory";
 import SaveSnippetButton from "./SaveSnippetButton";
+import SplitPane from "./SplitPane";
 
 export default function Base64Page() {
     const [inputData, setInputData] = useState<string>("");
@@ -41,30 +42,74 @@ export default function Base64Page() {
 
     const copyToClipboard = () => {
         if (!outputData.trim()) {
-            alertError("Output is empty");
+            toastError("Output is empty");
             return;
         }
         navigator.clipboard.writeText(outputData).catch(() => {
-            alertError("Failed to copy output!");
+            toastError("Failed to copy output!");
         });
-        alertCopy();
+        toastSuccess();
     };
 
     const handleEditorChange = (value: string | undefined) => {
         if (value !== undefined) setOutputData(value);
     };
 
-    const alertCopy = (title?: string) => {
-        toastSuccess(title);
-    };
+    const leftPanel = (
+        <>
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+                Input ({mode === "decode" ? "Base64" : "Plain Text"})
+            </div>
+            <textarea
+                className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
+                placeholder={`Paste your ${mode === "decode" ? "Base64" : "text"} here...`}
+                value={inputData}
+                onChange={(e) => setInputData(e.target.value)}
+                spellCheck={false}
+            />
+            <div className="px-3 py-2 border-t border-gray-700/30 bg-base-100 shrink-0">
+                <button className="btn btn-block btn-sm btn-accent" onClick={() => processData()}>
+                    {mode === "decode" ? "Decode" : "Encode"}
+                </button>
+            </div>
+        </>
+    );
 
-    const alertError = (message?: string) => {
-        toastError(message);
-    };
+    const rightPanel = (
+        <>
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0 flex items-center justify-between">
+                <span>Output</span>
+                <div className="flex items-center gap-1">
+                    <SaveSnippetButton toolKey="base64" content={outputData} disabled={!outputData} />
+                    <button
+                        className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+                        type="button"
+                        onClick={copyToClipboard}
+                    >
+                        Copy
+                    </button>
+                </div>
+            </div>
+            <div className="flex-1 overflow-hidden">
+                <Editor
+                    height="100%"
+                    language="plaintext"
+                    value={outputData}
+                    theme={theme === "dark" ? "vs-dark" : "vs-light"}
+                    onChange={handleEditorChange}
+                    options={{
+                        readOnly: false,
+                        automaticLayout: true,
+                    }}
+                />
+            </div>
+        </>
+    );
 
     return (
-        <div className="p-4">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-col h-full">
+            {/* Toolbar */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
                 <h2 className="text-sm font-semibold">
                     Base64 {mode === "encode" ? "Encoder" : "Decoder"}
                 </h2>
@@ -85,49 +130,7 @@ export default function Base64Page() {
                     </button>
                 </div>
             </div>
-
-            <div className="form-group">
-                <label htmlFor="inputData" className="text-sm font-semibold">
-                    Input Data ({mode === "decode" ? "Base64" : "Plain Text"})
-                </label>
-                <textarea
-                    id="inputData"
-                    className="input-area"
-                    placeholder={`Paste your ${mode === "decode" ? "Base64" : "text"} here...`}
-                    value={inputData}
-                    onChange={(e) => setInputData(e.target.value)}
-                ></textarea>
-                <button className="btn btn-block btn-sm mb-3 btn-accent" onClick={() => processData()}>
-                    {mode === "decode" ? "Decode" : "Encode"}
-                </button>
-            </div>
-
-            <div className="flex items-center justify-between mb-1">
-                <label htmlFor="outputData" className="text-sm font-semibold">Output</label>
-                <div className="flex items-center gap-1">
-                    <SaveSnippetButton toolKey="base64" content={outputData} disabled={!outputData} />
-                    <button
-                        className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
-                        type="button"
-                        onClick={copyToClipboard}
-                    >
-                        Copy
-                    </button>
-                </div>
-            </div>
-            <div className="w-full rounded overflow-hidden shadow-sm" style={{ height: "clamp(250px, calc(100vh - 420px), 900px)" }}>
-                <Editor
-                    height="100%"
-                    language="plaintext"
-                    value={outputData}
-                    theme={theme === "dark" ? "vs-dark" : "vs-light"}
-                    onChange={handleEditorChange}
-                    options={{
-                        readOnly: false,
-                        automaticLayout: true,
-                    }}
-                />
-            </div>
+            <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} />
         </div>
     );
 }

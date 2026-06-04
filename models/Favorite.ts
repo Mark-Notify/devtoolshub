@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 
-export interface IFavorite extends Document {
+export interface IFavorite {
   userEmail: string;
   toolKey: string;
   createdAt: Date;
