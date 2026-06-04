@@ -6,12 +6,14 @@ import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
 import { toastSuccess, toastError } from "../../lib/swal";
 import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
+import { useToolHistory } from "../../hooks/useToolHistory";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
   const [theme, setTheme] = useState<string | null>(null);
   const router = useRouter();
+  const { saveHistory } = useToolHistory("json-format");
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -62,6 +64,7 @@ export default function HomePage() {
       const deepResult = deepParseJSON(jsonData);
       result = JSON.stringify(deepResult, null, 4);
       setOutputData(result);
+      saveHistory(inputData, result);
     } else if (isPHPSerialized(inputData)) {
       try {
         const unserializedData = unserialize(inputData.trim());

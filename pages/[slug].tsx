@@ -13,6 +13,18 @@ import TermsAndConditions from "../components/terms-and-conditions";
 import Base64 from "../components/base64";
 import MorseCode from "../components/MorseCode";
 import HtmlEditorPage from "../components/HtmlEditor";
+import UrlEncodeDecode from "../components/UrlEncodeDecode";
+import HashGenerator from "../components/HashGenerator";
+import DiffChecker from "../components/DiffChecker";
+import TimestampConverter from "../components/TimestampConverter";
+import YamlJson from "../components/YamlJson";
+import RegexTester from "../components/RegexTester";
+import UuidGenerator from "../components/UuidGenerator";
+import SqlFormatter from "../components/SqlFormatter";
+import JsonToCsv from "../components/JsonToCsv";
+import ColorConverter from "../components/ColorConverter";
+import PasswordGenerator from "../components/PasswordGenerator";
+import NumberBase from "../components/NumberBase";
 
 const SlugPage = () => {
   const router = useRouter();
@@ -89,11 +101,33 @@ const SlugPage = () => {
         case "html-render":
           setSeoData({
             title: "HTML Online Render - เขียนและแสดงผล HTML แบบเรียลไทม์ | DevToolsHub",
-            description:
-              "เครื่องมือเขียน HTML แบบออนไลน์ พร้อมแสดงผลแบบเรียลไทม์ รองรับการปรับขนาดหน้าจอซ้าย-ขวา ใช้งานฟรี",
+            description: "เครื่องมือเขียน HTML แบบออนไลน์ พร้อมแสดงผลแบบเรียลไทม์ ใช้งานฟรี",
             url: "https://www.devtoolshub.org/html-render",
-          });
-          break;
+          }); break;
+        case "url-encode-decode":
+          setSeoData({ title: "URL Encode/Decode - เข้ารหัสและถอดรหัส URL | DevToolsHub", description: "เครื่องมือ Encode และ Decode URL ออนไลน์ฟรี", url: "https://www.devtoolshub.org/url-encode-decode" }); break;
+        case "hash-generator":
+          setSeoData({ title: "Hash Generator - MD5, SHA1, SHA256 | DevToolsHub", description: "สร้าง Hash ด้วย MD5, SHA1, SHA256, SHA512 ออนไลน์ฟรี", url: "https://www.devtoolshub.org/hash-generator" }); break;
+        case "diff-checker":
+          setSeoData({ title: "Diff Checker - เปรียบเทียบข้อความ | DevToolsHub", description: "เครื่องมือเปรียบเทียบข้อความ 2 ชิ้นแบบ line-by-line", url: "https://www.devtoolshub.org/diff-checker" }); break;
+        case "timestamp-converter":
+          setSeoData({ title: "Timestamp Converter - แปลง Unix Timestamp | DevToolsHub", description: "แปลง Unix Timestamp เป็น Date และกลับกัน", url: "https://www.devtoolshub.org/timestamp-converter" }); break;
+        case "yaml-json":
+          setSeoData({ title: "YAML ↔ JSON Converter | DevToolsHub", description: "แปลง YAML เป็น JSON หรือ JSON เป็น YAML ออนไลน์ฟรี", url: "https://www.devtoolshub.org/yaml-json" }); break;
+        case "regex-tester":
+          setSeoData({ title: "Regex Tester - ทดสอบ Regular Expression | DevToolsHub", description: "ทดสอบ Regex พร้อม highlight matches และ groups", url: "https://www.devtoolshub.org/regex-tester" }); break;
+        case "uuid-generator":
+          setSeoData({ title: "UUID Generator - สร้าง UUID v4 | DevToolsHub", description: "สร้าง UUID v4 แบบสุ่ม bulk generate ได้สูงสุด 100 ตัว", url: "https://www.devtoolshub.org/uuid-generator" }); break;
+        case "sql-formatter":
+          setSeoData({ title: "SQL Formatter - จัด Format SQL | DevToolsHub", description: "จัด Format SQL Query รองรับ MySQL, PostgreSQL, SQLite และอื่นๆ", url: "https://www.devtoolshub.org/sql-formatter" }); break;
+        case "json-to-csv":
+          setSeoData({ title: "JSON to CSV Converter | DevToolsHub", description: "แปลง JSON Array เป็น CSV พร้อม download", url: "https://www.devtoolshub.org/json-to-csv" }); break;
+        case "color-converter":
+          setSeoData({ title: "Color Converter - HEX RGB HSL | DevToolsHub", description: "แปลงสีระหว่าง HEX, RGB, HSL พร้อม color picker", url: "https://www.devtoolshub.org/color-converter" }); break;
+        case "password-generator":
+          setSeoData({ title: "Password Generator - สร้างรหัสผ่าน | DevToolsHub", description: "สร้างรหัสผ่านแบบสุ่ม ปลอดภัย ปรับแต่งได้", url: "https://www.devtoolshub.org/password-generator" }); break;
+        case "number-base":
+          setSeoData({ title: "Number Base Converter - แปลงเลขฐาน | DevToolsHub", description: "แปลงเลขระหว่างฐาน 2, 8, 10, 16 พร้อม bit visualization", url: "https://www.devtoolshub.org/number-base" }); break;
         default:
           setSeoData({
             title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
@@ -125,6 +159,30 @@ const SlugPage = () => {
         return <MorseCode />;
       case "html-render":
         return <HtmlEditorPage />;
+      case "url-encode-decode":
+        return <UrlEncodeDecode />;
+      case "hash-generator":
+        return <HashGenerator />;
+      case "diff-checker":
+        return <DiffChecker />;
+      case "timestamp-converter":
+        return <TimestampConverter />;
+      case "yaml-json":
+        return <YamlJson />;
+      case "regex-tester":
+        return <RegexTester />;
+      case "uuid-generator":
+        return <UuidGenerator />;
+      case "sql-formatter":
+        return <SqlFormatter />;
+      case "json-to-csv":
+        return <JsonToCsv />;
+      case "color-converter":
+        return <ColorConverter />;
+      case "password-generator":
+        return <PasswordGenerator />;
+      case "number-base":
+        return <NumberBase />;
       case "profile":
         return <ProfilePage />;
       case "terms-and-conditions":

@@ -14,6 +14,17 @@ import {
   DocumentTextIcon,
   ArrowsRightLeftIcon,
   UserCircleIcon,
+  LinkIcon,
+  HashtagIcon,
+  DocumentDuplicateIcon,
+  ClockIcon,
+  MagnifyingGlassIcon,
+  FingerPrintIcon,
+  CircleStackIcon,
+  TableCellsIcon,
+  SwatchIcon,
+  ShieldCheckIcon,
+  CalculatorIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -27,13 +38,25 @@ export interface HeaderProps {
 }
 
 export const menuItems = [
-  { slug: "json-format-vertical", label: "JSON Format", icon: CodeBracketSquareIcon },
-  { slug: "xml-to-json-vertical", label: "XML ↔ JSON", icon: ArrowsRightLeftIcon },
-  { slug: "jwt-decode", label: "JWT Decode", icon: KeyIcon },
-  { slug: "base64", label: "Base64", icon: LockClosedIcon },
-  { slug: "morse-code-decoder", label: "Morse Code", icon: SignalIcon },
-  { slug: "qr-code-generator", label: "QR Code", icon: QrCodeIcon },
-  { slug: "html-render", label: "HTML Render", icon: DocumentTextIcon },
+  { slug: "json-format-vertical", label: "JSON Format", icon: CodeBracketSquareIcon, group: "Data" },
+  { slug: "xml-to-json-vertical", label: "XML ↔ JSON", icon: ArrowsRightLeftIcon, group: "Data" },
+  { slug: "yaml-json", label: "YAML ↔ JSON", icon: ArrowsRightLeftIcon, group: "Data" },
+  { slug: "json-to-csv", label: "JSON → CSV", icon: TableCellsIcon, group: "Data" },
+  { slug: "sql-formatter", label: "SQL Formatter", icon: CircleStackIcon, group: "Data" },
+  { slug: "jwt-decode", label: "JWT Decode", icon: KeyIcon, group: "Encode" },
+  { slug: "base64", label: "Base64", icon: LockClosedIcon, group: "Encode" },
+  { slug: "url-encode-decode", label: "URL Encode", icon: LinkIcon, group: "Encode" },
+  { slug: "hash-generator", label: "Hash Generator", icon: HashtagIcon, group: "Encode" },
+  { slug: "diff-checker", label: "Diff Checker", icon: DocumentDuplicateIcon, group: "Text" },
+  { slug: "regex-tester", label: "Regex Tester", icon: MagnifyingGlassIcon, group: "Text" },
+  { slug: "timestamp-converter", label: "Timestamp", icon: ClockIcon, group: "Util" },
+  { slug: "uuid-generator", label: "UUID Generator", icon: FingerPrintIcon, group: "Util" },
+  { slug: "password-generator", label: "Password Gen", icon: ShieldCheckIcon, group: "Util" },
+  { slug: "number-base", label: "Number Base", icon: CalculatorIcon, group: "Util" },
+  { slug: "color-converter", label: "Color Converter", icon: SwatchIcon, group: "Util" },
+  { slug: "morse-code-decoder", label: "Morse Code", icon: SignalIcon, group: "Fun" },
+  { slug: "qr-code-generator", label: "QR Code", icon: QrCodeIcon, group: "Util" },
+  { slug: "html-render", label: "HTML Render", icon: DocumentTextIcon, group: "Text" },
 ];
 
 export default function Header(props: HeaderProps) {
@@ -207,30 +230,35 @@ export default function Header(props: HeaderProps) {
                 <XMarkIcon className="w-5 h-5" />
               </motion.button>
             </div>
-            <nav className="p-2 space-y-0.5 flex-1 overflow-y-auto">
-              {menuItems.map((item, index) => {
-                const Icon = item.icon;
-                const isActive = currentSlug === item.slug;
-                return (
-                  <motion.button
-                    key={item.slug}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.04, duration: 0.2 }}
-                    whileHover={{ x: 3 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => handleNavigation(item.slug)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
-                      isActive
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "hover:bg-gray-500/10"
-                    }`}
-                  >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    {item.label}
-                  </motion.button>
-                );
-              })}
+            <nav className="p-2 flex-1 overflow-y-auto">
+              {Array.from(new Set(menuItems.map((m) => m.group))).map((group) => (
+                <div key={group} className="mb-2">
+                  <div className="text-[10px] uppercase tracking-widest opacity-40 px-2 py-1">{group}</div>
+                  {menuItems.filter((m) => m.group === group).map((item, index) => {
+                    const Icon = item.icon;
+                    const isActive = currentSlug === item.slug;
+                    return (
+                      <motion.button
+                        key={item.slug}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.03, duration: 0.2 }}
+                        whileHover={{ x: 3 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => handleNavigation(item.slug)}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          isActive
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "hover:bg-gray-500/10"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 shrink-0" />
+                        {item.label}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              ))}
             </nav>
             <div className="p-2 border-t border-gray-700/30 shrink-0 space-y-1">
               <motion.button
