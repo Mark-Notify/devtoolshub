@@ -23,8 +23,22 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <RecoilRoot>
       <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Favicon placed in public/ */}
         <link rel="icon" href="/devtools-logo.png" />
+        {/* Site-wide Organization schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "DevToolsHub",
+              url: "https://www.devtoolshub.org",
+              logo: "https://www.devtoolshub.org/devtools-logo-full.png",
+            }),
+          }}
+        />
       </Head>
       <DebugObserver />
       <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
