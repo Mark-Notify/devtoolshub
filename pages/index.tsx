@@ -1,7 +1,5 @@
 import * as React from "react";
-import type { NextPage } from "next";
-import { useRouter } from "next/router"; // Import useRouter
-import Head from "next/head";
+import type { GetServerSideProps, NextPage } from "next";
 import CommonLayout from "components/Layout";
 import Jwtdecode from "../components/Jwt/Jwtdecode";
 import QRCodeGen from "components/QRCode/QRCodeGen";
@@ -13,89 +11,17 @@ import TermsAndConditions from "components/terms-and-conditions";
 import ProfilePage from "components/ProfilePage";
 import Base64 from "../components/base64";
 import MorseCode from "../components/MorseCode";
+import Seo from "../components/Seo";
+import { getSeo, TOOLS_SEO } from "../const/seo";
 
-const Home: NextPage = () => {
-  const router = useRouter();
-  const { type } = router.query; // ดึง query parameter จาก URL
+type Props = {
+  type: string;
+  seo: ReturnType<typeof getSeo>;
+  isTool: boolean;
+  index: boolean;
+};
 
-  // จัดการข้อมูล SEO เฉพาะสำหรับแต่ละ type
-  const [seoData, setSeoData] = React.useState({
-    title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
-    description: "รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ",
-    url: "https://www.devtoolshub.org",
-  });
-
-  React.useEffect(() => {
-    if (type) {
-      switch (type) {
-        case "jwt-decode":
-          setSeoData({
-            title: "JWT Decoder - แยกและตรวจสอบ JWT Token",
-            description: "เครื่องมือสำหรับการแยก JWT Token และตรวจสอบข้อมูลในส่วนต่างๆ เช่น Header, Payload และ Signature",
-            url: "https://www.devtoolshub.org/jwt-decode",
-          });
-          break;
-        case "json-format":
-          setSeoData({
-            title: "JSON Formatter - จัดระเบียบและอ่าน JSON ได้ง่าย",
-            description: "เครื่องมือช่วยจัดระเบียบ JSON ให้เป็นระเบียบ และอ่านข้อมูล JSON ได้ง่ายขึ้น",
-            url: "https://www.devtoolshub.org/json-format",
-          });
-          break;
-        case "json-format-vertical":
-          setSeoData({
-            title: "JSON Formatter Vertical - มุมมองแนวตั้ง",
-            description: "เครื่องมือ JSON Formatter แบบแนวตั้ง สำหรับดูข้อมูล JSON ในมุมมองใหม่",
-            url: "https://www.devtoolshub.org/json-format-vertical",
-          });
-          break;
-        case "xml-to-json":
-          setSeoData({
-            title: "XML to JSON Converter - แปลง XML เป็น JSON",
-            description: "เครื่องมือแปลงไฟล์ XML ให้เป็น JSON ได้ง่ายและรวดเร็ว",
-            url: "https://www.devtoolshub.org/xml-to-json",
-          });
-          break;
-        case "xml-to-json-vertical":
-          setSeoData({
-            title: "XML to JSON Converter - แปลง XML เป็น JSON",
-            description: "เครื่องมือแปลงไฟล์ XML ให้เป็น JSON ได้ง่ายและรวดเร็ว",
-            url: "https://www.devtoolshub.org/xml-to-json",
-          });
-          break;
-        case "qr-code-generator":
-          setSeoData({
-            title: "QR Code Generator - สร้าง QR Code ฟรี",
-            description: "เครื่องมือสร้าง QR Code พร้อมปรับแต่งและดาวน์โหลดได้ฟรี",
-            url: "https://www.devtoolshub.org/qr-code-generator",
-          });
-          break;
-        case "base64":
-          setSeoData({
-            title: "Base64 Encode/Decode - เข้ารหัสและถอดรหัส Base64 ออนไลน์",
-            description: "เครื่องมือเข้ารหัส (Encode) และถอดรหัส (Decode) ข้อความด้วย Base64 ฟรี ใช้ง่ายและรวดเร็ว",
-            url: "https://www.devtoolshub.org/base64",
-          });
-          break;
-        case "morse-code-decoder":
-          setSeoData({
-            title: "Morse Code Decoder - แปลงรหัสมอร์สเป็นข้อความ | DevToolsHub",
-            description:
-              "แปลงรหัสมอร์สเป็นข้อความหรือข้อความเป็นรหัสมอร์ส รองรับตัวอักษรภาษาอังกฤษและตัวเลข ใช้งานฟรี พร้อมเสียงและ animation",
-            url: "https://www.devtoolshub.org/morse-code-decoder",
-          });
-          break;
-        default:
-          setSeoData({
-            title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
-            description: "รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ",
-            url: "https://www.devtoolshub.org",
-          });
-      }
-    }
-  }, [type]);
-
-  // ฟังก์ชันเลือก Component ที่จะแสดงตาม query parameter
+const Home: NextPage<Props> = ({ type, seo, isTool, index }) => {
   const renderComponent = () => {
     switch (type) {
       case "json-format":
@@ -125,36 +51,29 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>{seoData.title}</title>
-        <meta name="description" content={seoData.description} />
-        <meta property="og:title" content={seoData.title} />
-        <meta property="og:description" content={seoData.description} />
-        <meta property="og:url" content={seoData.url} />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href={seoData.url} />
-        <link rel="icon" href="/favicon.ico" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebPage",
-              url: seoData.url,
-              name: seoData.title,
-              description: seoData.description,
-            }),
-          }}
-        />
-      </Head>
-
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        url={seo.url}
+        canonical={seo.canonical}
+        keywords={seo.keywords}
+        isTool={isTool}
+        index={index}
+      />
       <CommonLayout>
-        <div className="min-h-full">
-          {renderComponent()}
-        </div>
+        <div className="min-h-full">{renderComponent()}</div>
       </CommonLayout>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) => {
+  const type = (Array.isArray(query.type) ? query.type[0] : query.type) || "";
+  const entry = type ? TOOLS_SEO[type] : undefined;
+  const seo = getSeo(type);
+  const index = entry ? entry.index !== false : true;
+  const isTool = Boolean(entry) && index;
+  return { props: { type, seo, isTool, index } };
 };
 
 export default Home;
