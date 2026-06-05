@@ -243,13 +243,13 @@ export default function CommonLayout(props: CommonLayoutProps) {
 
           {/* Footer */}
           <div className="shrink-0 px-2 py-2 border-t border-white/[0.06] flex flex-col gap-1">
-            {session && (
+            {/* {session && (
               <button onClick={shareMenu} disabled={sharing}
                 className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] opacity-40 hover:opacity-80 transition-all hover:bg-white/5 w-full text-left disabled:opacity-20">
                 <ShareIcon className="w-3.5 h-3.5 shrink-0" />
                 {sharing ? "Generating…" : "Share my menu"}
               </button>
-            )}
+            )} */}
 
             {session ? (
               <button onClick={() => handleNavigation("profile")}
