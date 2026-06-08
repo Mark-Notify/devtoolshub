@@ -15,12 +15,14 @@ export default function SaveSnippetButton({ toolKey, content, disabled }: SaveSn
   const [title, setTitle] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   if (!session) return null;
 
   const handleSave = async () => {
     if (!title.trim() || !content) return;
     setSaving(true);
+    setError("");
     try {
       const res = await fetch("/api/snippets", {
         method: "POST",
@@ -32,7 +34,12 @@ export default function SaveSnippetButton({ toolKey, content, disabled }: SaveSn
         setOpen(false);
         setTitle("");
         setTimeout(() => setSaved(false), 3000);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data?.message || "Failed to save. Please try again.");
       }
+    } catch {
+      setError("Network error. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -67,6 +74,7 @@ export default function SaveSnippetButton({ toolKey, content, disabled }: SaveSn
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
               autoFocus
             />
+            {error && <p className="text-error text-sm mb-3 -mt-2">{error}</p>}
             <div className="flex gap-2 justify-end">
               <button className="btn btn-ghost btn-sm" onClick={() => setOpen(false)}>
                 Cancel
