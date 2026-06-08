@@ -195,7 +195,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
   };
 
   const handleThemeChange = () => { setRefreshKey((p) => p + 1); onThemeChange?.(); };
-  const handleNavigation = (slug: string) => router.push(`/${slug}`, undefined, { shallow: true });
+  const handleNavigation = (slug: string) => router.push(`/${slug}`);
 
   const starredInOrder = menuOrder.filter((s) => favorites.includes(s));
   const unstarredInOrder = menuOrder.filter((s) => !favorites.includes(s));
