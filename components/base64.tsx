@@ -1,27 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import Swal from "sweetalert2";
-import {
-    ArrowsPointingOutIcon,
-    ArrowsPointingInIcon,
-} from "@heroicons/react/24/outline";
+import { toastSuccess, toastError } from "../lib/swal";
+import { useToolHistory } from "../hooks/useToolHistory";
+import SaveSnippetButton from "./SaveSnippetButton";
+import SplitPane from "./SplitPane";
 
 export default function Base64Page() {
     const [inputData, setInputData] = useState<string>("");
     const [outputData, setOutputData] = useState<string>("");
-    const [isFullScreen, setIsFullScreen] = useState(false);
     const [theme, setTheme] = useState<string | null>(null);
     const [mode, setMode] = useState<"encode" | "decode">("encode");
+    const { saveHistory } = useToolHistory("base64");
 
     useEffect(() => {
         const storedTheme = localStorage.getItem("theme");
         setTheme(storedTheme || "dark");
-
-        const storedFullScreen = localStorage.getItem("isFullScreen");
-        if (storedFullScreen) {
-            setIsFullScreen(storedFullScreen === "true");
-        }
     }, []);
 
     const processData = (newMode?: "encode" | "decode") => {
@@ -34,6 +28,7 @@ export default function Base64Page() {
                 result = btoa(inputData.trim());
             }
             setOutputData(result);
+            saveHistory(inputData, result);
         } catch (error) {
             console.error("Base64 Error:", error);
             setOutputData("Error: Invalid Base64 input!");
@@ -47,135 +42,57 @@ export default function Base64Page() {
 
     const copyToClipboard = () => {
         if (!outputData.trim()) {
-            alertError("Output is empty");
+            toastError("Output is empty");
             return;
         }
         navigator.clipboard.writeText(outputData).catch(() => {
-            alertError("Failed to copy output!");
+            toastError("Failed to copy output!");
         });
-        alertCopy();
+        toastSuccess();
     };
 
     const handleEditorChange = (value: string | undefined) => {
         if (value !== undefined) setOutputData(value);
     };
 
-    const toggleFullScreen = () => {
-        const newFullScreenState = !isFullScreen;
-        setIsFullScreen(newFullScreenState);
-        localStorage.setItem("isFullScreen", newFullScreenState.toString());
-    };
-
-    const alertCopy = (title?: string) => {
-        Swal.fire({
-            toast: true,
-            position: "top-end",
-            icon: "success",
-            iconColor: "#dfe6e9",
-            title: title || "Copied to clipboard!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#4caf50",
-            color: "#fff",
-            width: 300,
-            padding: "10px",
-        });
-    };
-
-    const alertError = (message?: string) => {
-        Swal.fire({
-            toast: true,
-            position: "top-end",
-            icon: "error",
-            iconColor: "#dfe6e9",
-            title: message || "Something went wrong!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#fd79a8",
-            color: "#fff",
-            width: 300,
-            padding: "10px",
-        });
-    };
-
-    return (
-        <div
-            className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
-                }`}
-        >
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">
-                    Base64 {mode === "encode" ? "Encoder" : "Decoder"}
-                </h2>
-                <div>
-                    <button
-                        className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-                        onClick={() => switchMode("encode")}
-                        disabled={mode === "encode"}
-                    >
-                        Encode
-                    </button>
-                    <button
-                        className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-                        onClick={() => switchMode("decode")}
-                        disabled={mode === "decode"}
-                    >
-                        Decode
-                    </button>
-                </div>
+    const leftPanel = (
+        <>
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+                Input ({mode === "decode" ? "Base64" : "Plain Text"})
             </div>
-
-            <div className="form-group">
-                <label htmlFor="inputData">
-                    Input Data ({mode === "decode" ? "Base64" : "Plain Text"})
-                </label>
-                <div className="float-right">
-                    <button
-                        className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-                        type="button"
-                        onClick={toggleFullScreen}
-                    >
-                        {isFullScreen ? (
-                            <ArrowsPointingInIcon className="w-6 h-6" />
-                        ) : (
-                            <ArrowsPointingOutIcon className="w-6 h-6" />
-                        )}
-                    </button>
-                </div>
-                <textarea
-                    id="inputData"
-                    className="input-area"
-                    placeholder={`Paste your ${mode === "decode" ? "Base64" : "text"
-                        } here...`}
-                    value={inputData}
-                    onChange={(e) => setInputData(e.target.value)}
-                    style={{
-                        border: "1px solid #555",
-                        padding: "10px",
-                        borderRadius: "5px",
-                    }}
-                ></textarea>
-                <button className="btn btn-block mb-3 btn-accent" onClick={() => processData()}>
+            <textarea
+                className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
+                placeholder={`Paste your ${mode === "decode" ? "Base64" : "text"} here...`}
+                value={inputData}
+                onChange={(e) => setInputData(e.target.value)}
+                spellCheck={false}
+            />
+            <div className="px-3 py-2 border-t border-gray-700/30 bg-base-100 shrink-0">
+                <button className="btn btn-block btn-sm btn-accent" onClick={() => processData()}>
                     {mode === "decode" ? "Decode" : "Encode"}
                 </button>
             </div>
+        </>
+    );
 
-            <div className="float-right">
-                <button
-                    className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-                    type="button"
-                    onClick={copyToClipboard}
-                >
-                    Copy
-                </button>
+    const rightPanel = (
+        <>
+            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0 flex items-center justify-between">
+                <span>Output</span>
+                <div className="flex items-center gap-1">
+                    <SaveSnippetButton toolKey="base64" content={outputData} disabled={!outputData} />
+                    <button
+                        className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+                        type="button"
+                        onClick={copyToClipboard}
+                    >
+                        Copy
+                    </button>
+                </div>
             </div>
-
-            <label htmlFor="outputData">Output</label>
-            <div className="max-w-sm rounded overflow-hidden shadow-lg w-full lg:max-w-full lg:flex">
+            <div className="flex-1 overflow-hidden">
                 <Editor
-                    height="70vh"
+                    height="100%"
                     language="plaintext"
                     value={outputData}
                     theme={theme === "dark" ? "vs-dark" : "vs-light"}
@@ -186,6 +103,34 @@ export default function Base64Page() {
                     }}
                 />
             </div>
+        </>
+    );
+
+    return (
+        <div className="flex flex-col h-full">
+            {/* Toolbar */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
+                <h2 className="text-sm font-semibold">
+                    Base64 {mode === "encode" ? "Encoder" : "Decoder"}
+                </h2>
+                <div className="flex gap-2">
+                    <button
+                        className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
+                        onClick={() => switchMode("encode")}
+                        disabled={mode === "encode"}
+                    >
+                        Encode
+                    </button>
+                    <button
+                        className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
+                        onClick={() => switchMode("decode")}
+                        disabled={mode === "decode"}
+                    >
+                        Decode
+                    </button>
+                </div>
+            </div>
+            <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} />
         </div>
     );
 }

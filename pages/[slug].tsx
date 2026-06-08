@@ -1,109 +1,39 @@
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import Head from "next/head";
+import type { GetServerSideProps, NextPage } from "next";
 import Jwtdecode from "../components/Jwt/Jwtdecode";
 import QRCodeGen from "../components/QRCode/QRCodeGen";
 import JsonToXml from "../components/JsonFormat/JsonToXml";
 import JsonToXmlVertical from "../components/JsonFormat/JsonToXmlVertical";
 import JsonFormat from "../components/JsonFormat/JsonFormat";
 import JsonFormatVertical from "../components/JsonFormat/JsonFormatVertical";
-// import ComponentA from "../components/DefaultComponent";
 import ProfilePage from "../components/ProfilePage";
 import CommonLayout from "../components/Layout";
 import TermsAndConditions from "../components/terms-and-conditions";
 import Base64 from "../components/base64";
 import MorseCode from "../components/MorseCode";
+import HtmlEditorPage from "../components/HtmlEditor";
+import UrlEncodeDecode from "../components/UrlEncodeDecode";
+import HashGenerator from "../components/HashGenerator";
+import DiffChecker from "../components/DiffChecker";
+import TimestampConverter from "../components/TimestampConverter";
+import YamlJson from "../components/YamlJson";
+import RegexTester from "../components/RegexTester";
+import UuidGenerator from "../components/UuidGenerator";
+import SqlFormatter from "../components/SqlFormatter";
+import JsonToCsv from "../components/JsonToCsv";
+import ColorConverter from "../components/ColorConverter";
+import PasswordGenerator from "../components/PasswordGenerator";
+import NumberBase from "../components/NumberBase";
+import Seo from "../components/Seo";
+import { getSeo, TOOLS_SEO } from "../const/seo";
 
-const SlugPage = () => {
-  const router = useRouter();
-  const { slug } = router.query; // ดึง slug จาก URL
+type Props = {
+  slug: string;
+  seo: ReturnType<typeof getSeo>;
+  isTool: boolean;
+  index: boolean;
+};
 
-  // จัดการข้อมูล SEO เฉพาะสำหรับแต่ละ slug
-  const [seoData, setSeoData] = useState({
-    title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
-    description: "รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ",
-    url: "https://www.devtoolshub.org",
-  });
-
-  useEffect(() => {
-
-    if (slug) {
-      switch (slug) {
-        case "jwt-decode":
-          setSeoData({
-            title: "JWT Decoder - แยกและตรวจสอบ JWT Token",
-            description: "เครื่องมือสำหรับการแยก JWT Token และตรวจสอบข้อมูลในส่วนต่างๆ เช่น Header, Payload และ Signature",
-            url: "https://www.devtoolshub.org/jwt-decode",
-          });
-          break;
-        case "json-format":
-          setSeoData({
-            title: "JSON Formatter - จัดระเบียบและอ่าน JSON ได้ง่าย",
-            description: "เครื่องมือช่วยจัดระเบียบ JSON ให้เป็นระเบียบ และอ่านข้อมูล JSON ได้ง่ายขึ้น",
-            url: "https://www.devtoolshub.org/json-format",
-          });
-          break;
-        case "json-format-vertical":
-          setSeoData({
-            title: "JSON Formatter Vertical - มุมมองแนวตั้ง",
-            description: "เครื่องมือ JSON Formatter แบบแนวตั้ง สำหรับดูข้อมูล JSON ในมุมมองใหม่",
-            url: "https://www.devtoolshub.org/json-format-vertical",
-          });
-          break;
-        case "xml-to-json":
-          setSeoData({
-            title: "XML to JSON Converter - แปลง XML เป็น JSON",
-            description: "เครื่องมือแปลงไฟล์ XML ให้เป็น JSON ได้ง่ายและรวดเร็ว",
-            url: "https://www.devtoolshub.org/xml-to-json",
-          });
-          break;
-        case "xml-to-json-vertical":
-          setSeoData({
-            title: "XML to JSON Converter - แปลง XML เป็น JSON",
-            description: "เครื่องมือแปลงไฟล์ XML ให้เป็น JSON ได้ง่ายและรวดเร็ว",
-            url: "https://www.devtoolshub.org/xml-to-json",
-          });
-          break;
-        case "qr-code-generator":
-          setSeoData({
-            title: "QR Code Generator - สร้าง QR Code ฟรี",
-            description: "เครื่องมือสร้าง QR Code พร้อมปรับแต่งและดาวน์โหลดได้ฟรี",
-            url: "https://www.devtoolshub.org/qr-code-generator",
-          });
-          break;
-        case "base64":
-          setSeoData({
-            title: "Base64 Encode/Decode - เข้ารหัสและถอดรหัส Base64 ออนไลน์",
-            description: "เครื่องมือเข้ารหัส (Encode) และถอดรหัส (Decode) ข้อความด้วย Base64 ฟรี ใช้ง่ายและรวดเร็ว",
-            url: "https://www.devtoolshub.org/base64",
-          });
-          break;
-        case "morse-code-decoder":
-          setSeoData({
-            title: "Morse Code Decoder - แปลงรหัสมอร์สเป็นข้อความ | DevToolsHub",
-            description:
-              "แปลงรหัสมอร์สเป็นข้อความหรือข้อความเป็นรหัสมอร์ส รองรับตัวอักษรภาษาอังกฤษและตัวเลข ใช้งานฟรี พร้อมเสียงและ animation",
-            url: "https://www.devtoolshub.org/morse-code-decoder",
-          });
-          break;
-        case "component-a":
-          setSeoData({
-            title: "Component A - ตัวอย่าง Component",
-            description: "Component ตัวอย่างที่แสดงฟีเจอร์เฉพาะสำหรับหน้านี้",
-            url: "https://www.devtoolshub.org/component-a",
-          });
-          break;
-        default:
-          setSeoData({
-            title: "DevToolsHub - เครื่องมือสำหรับนักพัฒนา",
-            description: "รวมเครื่องมือฟรีสำหรับนักพัฒนา เช่น JSON Formatter, PHP Unserialize และอื่นๆ",
-            url: "https://www.devtoolshub.org",
-          });
-      }
-    }
-  }, [slug]);
-
-  // ฟังก์ชันเลือก Component ที่จะแสดงตาม slug
+const SlugPage: NextPage<Props> = ({ slug, seo, isTool, index }) => {
   const renderComponent = () => {
     switch (slug) {
       case "json-format":
@@ -122,6 +52,32 @@ const SlugPage = () => {
         return <Base64 />;
       case "morse-code-decoder":
         return <MorseCode />;
+      case "html-render":
+        return <HtmlEditorPage />;
+      case "url-encode-decode":
+        return <UrlEncodeDecode />;
+      case "hash-generator":
+        return <HashGenerator />;
+      case "diff-checker":
+        return <DiffChecker />;
+      case "timestamp-converter":
+        return <TimestampConverter />;
+      case "yaml-json":
+        return <YamlJson />;
+      case "regex-tester":
+        return <RegexTester />;
+      case "uuid-generator":
+        return <UuidGenerator />;
+      case "sql-formatter":
+        return <SqlFormatter />;
+      case "json-to-csv":
+        return <JsonToCsv />;
+      case "color-converter":
+        return <ColorConverter />;
+      case "password-generator":
+        return <PasswordGenerator />;
+      case "number-base":
+        return <NumberBase />;
       case "profile":
         return <ProfilePage />;
       case "terms-and-conditions":
@@ -133,35 +89,30 @@ const SlugPage = () => {
 
   return (
     <>
-      <Head>
-        <title>{seoData.title}</title>
-        <meta name="description" content={seoData.description} />
-        <meta property="og:title" content={seoData.title} />
-        <meta property="og:description" content={seoData.description} />
-        <meta property="og:url" content={seoData.url} />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href={seoData.url} />
-        <link rel="icon" href="/favicon.ico" />
-        <script src="https://win32.run/js/api/0.js"></script>
-        {/* Adding JSON-LD structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebPage",
-              url: seoData.url,
-              name: seoData.title,
-              description: seoData.description,
-            }),
-          }}
-        />
-      </Head>
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        url={seo.url}
+        canonical={seo.canonical}
+        keywords={seo.keywords}
+        isTool={isTool}
+        index={index}
+      />
       <CommonLayout>
-        <div className="mt-4">{renderComponent()}</div>
+        <div className="flex-1 flex flex-col overflow-hidden">{renderComponent()}</div>
       </CommonLayout>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) => {
+  const slug = (Array.isArray(params?.slug) ? params?.slug[0] : params?.slug) || "";
+  const entry = TOOLS_SEO[slug];
+  const seo = getSeo(slug);
+  // a "tool" is any known slug that should be indexed (excludes profile / terms)
+  const index = entry ? entry.index !== false : true;
+  const isTool = Boolean(entry) && index;
+  return { props: { slug, seo, isTool, index } };
 };
 
 export default SlugPage;

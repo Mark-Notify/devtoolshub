@@ -1,22 +1,19 @@
-"use client"; // Ensures this code only runs on the client
+"use client";
 import Image from "next/image";
-import { useRouter } from "next/router"; // ใช้สำหรับจัดการ Routing
+import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
-import Swal from "sweetalert2";
-import {
-  ArrowsPointingOutIcon,
-  ArrowsPointingInIcon,
-} from "@heroicons/react/24/outline";
+import { toastSuccess, toastError } from "../../lib/swal";
+import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
+import { useToolHistory } from "../../hooks/useToolHistory";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
-  const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
-  const [theme, setTheme] = useState<string | null>(null); // State to store theme
+  const [theme, setTheme] = useState<string | null>(null);
   const router = useRouter();
-  const { type } = router.query; // ดึง query parameter จาก URL
+  const { saveHistory } = useToolHistory("json-format");
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -24,10 +21,6 @@ export default function HomePage() {
       setTheme(storedTheme);
     } else {
       setTheme("dark");
-    }
-    const storedFullScreen = localStorage.getItem("isFullScreen");
-    if (storedFullScreen) {
-      setIsFullScreen(storedFullScreen === "true");
     }
   }, []);
 
@@ -47,25 +40,36 @@ export default function HomePage() {
       }
     };
 
-    const isPHPSerialized = (data: string): boolean => {
-      return (
-        data.startsWith("a:") ||
-        data.startsWith("O:") ||
-        data.startsWith("s:") ||
-        data.startsWith("i:") ||
-        data.startsWith("b:") ||
-        data.startsWith("d:")
-      );
+    const deepParseJSON = (value: unknown): unknown => {
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if ((trimmed.startsWith("{") || trimmed.startsWith("[")) && isJSON(trimmed)) {
+          return deepParseJSON(JSON.parse(trimmed));
+        }
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.map(deepParseJSON);
+      }
+      if (value !== null && typeof value === "object") {
+        return Object.fromEntries(
+          Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, deepParseJSON(v)])
+        );
+      }
+      return value;
     };
 
     if (isJSON(inputData)) {
       const jsonData = JSON.parse(inputData.trim());
-      result = JSON.stringify(jsonData, null, 4);
+      const deepResult = deepParseJSON(jsonData);
+      result = JSON.stringify(deepResult, null, 4);
       setOutputData(result);
+      saveHistory(inputData, result);
     } else if (isPHPSerialized(inputData)) {
       try {
         const unserializedData = unserialize(inputData.trim());
-        result = JSON.stringify(unserializedData, null, 4);
+        const deepResult = deepUnserialize(unserializedData);
+        result = JSON.stringify(deepResult, null, 4);
         setOutputData(result);
       } catch (error) {
         console.error("Unserialization error:", error);
@@ -131,44 +135,12 @@ export default function HomePage() {
     }
   };
 
-  const toggleFullScreen = () => {
-    const newFullScreenState = !isFullScreen;
-    setIsFullScreen(newFullScreenState);
-    localStorage.setItem("isFullScreen", newFullScreenState.toString());
-  };
-
   const alertCopy = (title?: string) => {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "success",
-      iconColor: "#dfe6e9",
-      title: title || "Copied to clipboard!",
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      background: "#4caf50",
-      color: "#fff",
-      width: 300,
-      padding: "10px",
-    });
+    toastSuccess(title);
   };
 
   const alertError = (message?: string) => {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "error",
-      iconColor: "#dfe6e9",
-      title: message || "Something went wrong!",
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      background: "#fd79a8",
-      color: "#fff",
-      width: 300,
-      padding: "10px",
-    });
+    toastError(message);
   };
 
   const handleNavigation = (slug: string) => {
@@ -176,33 +148,19 @@ export default function HomePage() {
   };
 
   return (
-    <div
-      className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
-        }`}
-    >
+    <div className="p-4">
       <div className="form-group">
-        <label htmlFor="inputData">Input Data (JSON or Serialized)</label>
-        <div className="float-right">
+        <div className="flex items-center justify-between mb-1">
+          <label htmlFor="inputData" className="text-sm font-semibold">Input Data (JSON or Serialized)</label>
           <button
             title="Vertical"
-            className={`rounded-md py-2 px-4 mb-2 mr-2 border border-r-none bg-base-100 text-white ${type === "json-format-vertical" ? "active" : ""}`}
+            className="rounded-md py-1.5 px-3 border bg-base-100 text-white"
             onClick={() => handleNavigation("json-format-vertical")}
           >
             <Image
               src="/horizontal-to-vertical.svg"
               className="svg-icon-theme" alt="Vertical Icon"
-              style={{ color: "#fff" }} width={24} height={24} />
-          </button>
-          <button
-            className="rounded-md py-2 px-4 mb-2 border border-l-none bg-base-100"
-            type="button"
-            onClick={toggleFullScreen}
-          >
-            {isFullScreen ? (
-              <ArrowsPointingInIcon className="w-6 h-6" />
-            ) : (
-              <ArrowsPointingOutIcon className="w-6 h-6" />
-            )}
+              style={{ color: "#fff" }} width={20} height={20} />
           </button>
         </div>
         <textarea
@@ -211,45 +169,41 @@ export default function HomePage() {
           placeholder="Paste your JSON or Serialized data here..."
           value={inputData}
           onChange={(e) => setInputData(e.target.value)}
-          style={{
-            border: "1px solid #555",
-            padding: "10px",
-            borderRadius: "5px",
-          }}
         ></textarea>
-        <button className="btn btn-block mb-3 btn-accent" onClick={processData}>
+        <button className="btn btn-block btn-sm mb-3 btn-accent" onClick={processData}>
           Process
         </button>
       </div>
 
-      <div className="float-right">
-        <button
-          className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-          type="button"
-          onClick={copySerializedOutput}
-        >
-          Copy Serialized
-        </button>
-        <button
-          className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-          type="button"
-          onClick={copyToInlineClipboard}
-        >
-          Copy Inline
-        </button>
-        <button
-          className="rounded-md py-2 px-4 mb-2 mr-2 border bg-base-100"
-          type="button"
-          onClick={copyToClipboard}
-        >
-          Copy
-        </button>
+      <div className="flex items-center justify-between mb-1">
+        <label htmlFor="outputData" className="text-sm font-semibold">Formatted Output</label>
+        <div className="flex gap-2">
+          <button
+            className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
+            type="button"
+            onClick={copySerializedOutput}
+          >
+            Copy Serialized
+          </button>
+          <button
+            className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
+            type="button"
+            onClick={copyToInlineClipboard}
+          >
+            Copy Inline
+          </button>
+          <button
+            className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
+            type="button"
+            onClick={copyToClipboard}
+          >
+            Copy
+          </button>
+        </div>
       </div>
-
-      <label htmlFor="outputData">Formatted Output</label>
-      <div className="max-w-sm rounded overflow-hidden shadow-lg w-full lg:max-w-full lg:flex">
+      <div className="w-full rounded overflow-hidden shadow-sm" style={{ height: "clamp(300px, calc(100vh - 410px), 900px)" }}>
         <Editor
-          height="80vh"
+          height="100%"
           language="json"
           value={outputData}
           theme={theme === "dark" ? "vs-dark" : "vs-light"}

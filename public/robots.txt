@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Keep private/utility routes out of the index
+Disallow: /api/
+Disallow: /profile
+Disallow: /shared/
+
+Sitemap: https://www.devtoolshub.org/sitemap.xml

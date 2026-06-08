@@ -1,39 +1,32 @@
 "use client"; // Ensures this code only runs on the client
 
 import Image from "next/image";
-import { useRouter } from "next/router"; // ใช้สำหรับจัดการ Routing
+import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { unserialize, serialize } from "php-serialize";
-import Swal from "sweetalert2";
-import {
-  ArrowsPointingOutIcon,
-  ArrowsPointingInIcon,
-} from "@heroicons/react/24/outline";
+import { toastSuccess, toastError } from "../../lib/swal";
+import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
+import { useToolHistory } from "../../hooks/useToolHistory";
+import SaveSnippetButton from "../SaveSnippetButton";
+import SplitPane from "../SplitPane";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
-  const [isFullScreen, setIsFullScreen] = useState(false); // State for full-screen mode
-  const [theme, setTheme] = useState<string | null>(null); // State to store theme
-  const [isVertical, setIsVertical] = useState(true);
+  const [theme, setTheme] = useState<string | null>(null);
   const router = useRouter();
-  const { type } = router.query; // ดึง query parameter จาก URL
+  const { saveHistory } = useToolHistory("json-format-vertical");
 
   useEffect(() => {
     // Get theme from localStorage once the component is mounted
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
-      setTheme(storedTheme); // Set the stored theme if available
+      setTheme(storedTheme);
     } else {
-      // Default to light theme if no stored theme
       setTheme("dark");
     }
-    const storedFullScreen = localStorage.getItem("isFullScreen");
-    if (storedFullScreen) {
-      setIsFullScreen(storedFullScreen === "true"); // Convert string to boolean
-    }
-  }, []); // Run only once after the component mounts
+  }, []);
 
   useEffect(() => {
     processData();
@@ -51,25 +44,36 @@ export default function HomePage() {
       }
     };
 
-    const isPHPSerialized = (data: string): boolean => {
-      return (
-        data.startsWith("a:") ||
-        data.startsWith("O:") ||
-        data.startsWith("s:") ||
-        data.startsWith("i:") ||
-        data.startsWith("b:") ||
-        data.startsWith("d:")
-      );
+    const deepParseJSON = (value: unknown): unknown => {
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if ((trimmed.startsWith("{") || trimmed.startsWith("[")) && isJSON(trimmed)) {
+          return deepParseJSON(JSON.parse(trimmed));
+        }
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.map(deepParseJSON);
+      }
+      if (value !== null && typeof value === "object") {
+        return Object.fromEntries(
+          Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, deepParseJSON(v)])
+        );
+      }
+      return value;
     };
 
     if (isJSON(inputData)) {
       const jsonData = JSON.parse(inputData.trim());
-      result = JSON.stringify(jsonData, null, 4);
+      const deepResult = deepParseJSON(jsonData);
+      result = JSON.stringify(deepResult, null, 4);
       setOutputData(result);
+      saveHistory(inputData, result);
     } else if (isPHPSerialized(inputData)) {
       try {
         const unserializedData = unserialize(inputData.trim());
-        result = JSON.stringify(unserializedData, null, 4);
+        const deepResult = deepUnserialize(unserializedData);
+        result = JSON.stringify(deepResult, null, 4);
         setOutputData(result);
       } catch (error) {
         console.error("Unserialization error:", error);
@@ -83,57 +87,50 @@ export default function HomePage() {
   const copyToClipboard = () => {
     if (outputData.trim() === "") {
       console.error("Failed to copy output: empty");
-      alertError("Output is empty");
+      toastError("Output is empty");
       return "";
     }
     navigator.clipboard.writeText(outputData).catch((err) => {
       console.error("Failed to copy output: ", err);
-      alertError("Failed to copy output!");
+      toastError("Failed to copy output!");
     });
-    alertCopy();
+    toastSuccess();
   };
 
   const copyToInlineClipboard = () => {
     try {
-      // Check if outputData is a valid JSON string
       if (outputData.trim() === "") {
-        console.error("Failed to copy output: empty");
-        alertError("Output is empty");
-        return "";
-      }
-      if (outputData.trim() === "") {
-        console.error("Failed to copy output: empty");
-        alertError("Output is empty");
-        return "";
+        toastError("Output is empty");
+        return;
       }
       const jsonObject = JSON.parse(outputData);
       const inlineJSON = JSON.stringify(jsonObject);
       navigator.clipboard.writeText(inlineJSON).catch((err) => {
         console.error("Failed to copy output: ", err);
-        alertError("Failed to copy output!");
+        toastError("Failed to copy output!");
       });
-      alertCopy("Copied inline to clipboard!");
+      toastSuccess("Copied inline to clipboard!");
     } catch (error) {
-      alertError("Invalid JSON format.");
+      toastError("Invalid JSON format.");
     }
   };
 
   const copySerializedOutput = () => {
     try {
       if (outputData.trim() === "") {
-        alertError("Output is empty");
+        toastError("Output is empty");
         return;
       }
       const jsonObject = JSON.parse(outputData);
       const serializedData = serialize(jsonObject); // Serialize the JSON output
       navigator.clipboard.writeText(serializedData).catch((err) => {
         console.error("Failed to copy serialized output: ", err);
-        alertError("Failed to copy serialized output!");
+        toastError("Failed to copy serialized output!");
       });
-      alertCopy("Serialized output copied to clipboard!");
+      toastSuccess("Serialized output copied to clipboard!");
     } catch (error) {
       console.error("Serialization error:", error);
-      alertError("Failed to serialize output!");
+      toastError("Failed to serialize output!");
     }
   };
 
@@ -143,146 +140,91 @@ export default function HomePage() {
     }
   };
 
-  const toggleFullScreen = () => {
-    // setIsFullScreen(!isFullScreen);
-    const newFullScreenState = !isFullScreen;
-    setIsFullScreen(newFullScreenState);
-    localStorage.setItem("isFullScreen", newFullScreenState.toString());
-  };
-
-  // Toggle layout orientation
-  const toggleOrientation = () => {
-    setIsVertical(!isVertical);
-  };
-
-  const alertCopy: (title?: string) => void = (title) => {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "success",
-      iconColor: "#dfe6e9",
-      title: title || "Copied to clipboard!", // Use default text if no title is provided
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      background: "#4caf50",
-      color: "#fff",
-      width: 300,
-      padding: "10px",
-    });
-  };
-
-  const alertError: (message?: string) => void = (message) => {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "error",
-      iconColor: "#dfe6e9",
-      // title: 'Oops...',
-      title: message || "Something went wrong!",
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      // confirmButtonText: 'Close',
-      background: "#fd79a8", // Red background for error
-      color: "#fff", // White text
-      width: 300,
-      padding: "10px",
-    });
-  };
-
   const handleNavigation = (slug: string) => {
     router.push(`/${slug}`, undefined, { shallow: true });
   };
 
-  return (
-    <div
-      className={`mx-auto p-4 border bg-base-100 rounded-md shadow-md ${isFullScreen ? "min-w-screen" : "max-w-7xl"
-        }`}
-    >
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Input Section - Smaller Width */}
-        <div className="w-full lg:w-1/3 flex flex-col">
-          <label htmlFor="inputData" className="text-lg font-semibold mb-2">
-            Input Data (JSON or Serialized)
-          </label>
-          <div className="flex justify-end mt-2 gap-2">
-            <button
-              title="Vertical"
-              className={`rounded-md py-2 px-4 border bg-base-100 text-white ${type === "json-format-vertical" ? "active" : ""}`}
-              onClick={() => handleNavigation("json-format")}
-            >
-              <Image
-                src="/horizontal-to-vertical.svg"
-                className="svg-icon-theme" alt="Vertical Icon"
-                style={{ color: "#fff" }} width={24} height={24} />
-            </button>
+  const leftPanel = (
+    <>
+      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
+        Input (JSON or Serialized)
+      </div>
+      <textarea
+        id="inputData"
+        className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
+        placeholder="Paste your JSON or Serialized data here..."
+        value={inputData}
+        onChange={(e) => setInputData(e.target.value)}
+        spellCheck={false}
+      />
+      <div className="px-3 py-2 border-t border-gray-700/30 bg-base-100 shrink-0">
+        <button className="btn btn-block btn-sm btn-accent" onClick={processData}>
+          Process
+        </button>
+      </div>
+    </>
+  );
 
-            <button
-              className="rounded-md py-2 px-4 border bg-base-100"
-              onClick={toggleFullScreen}
-            >
-              {isFullScreen ? <ArrowsPointingInIcon className="w-6 h-6" /> : <ArrowsPointingOutIcon className="w-6 h-6" />}
-            </button>
-          </div>
-          <textarea
-            id="inputData"
-            className="input-area mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Paste your JSON or Serialized data here..."
-            value={inputData}
-            onChange={(e) => setInputData(e.target.value)}
-            style={{
-              minHeight: "200px",
-              resize: "vertical",
-            }}
-          />
-          <button className="btn btn-accent" onClick={processData}>
-            Process
+  const rightPanel = (
+    <>
+      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0 flex items-center justify-between">
+        <span>Formatted Output</span>
+        <div className="flex items-center gap-1">
+          <SaveSnippetButton toolKey="json-format-vertical" content={outputData} disabled={!outputData} />
+          <button
+            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+            type="button"
+            onClick={copySerializedOutput}
+          >
+            Copy Serialized
+          </button>
+          <button
+            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+            onClick={copyToInlineClipboard}
+          >
+            Copy Inline
+          </button>
+          <button
+            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
+            onClick={copyToClipboard}
+          >
+            Copy
           </button>
         </div>
-
-        {/* Output Section - Larger Width */}
-        <div className="w-full lg:w-2/3 flex flex-col">
-          <label htmlFor="outputData" className="text-lg font-semibold mb-2">
-            Formatted Output
-          </label>
-          <div className="flex justify-end gap-2 mb-2">
-            <button
-              className="rounded-md py-2 px-4 border bg-base-100"
-              type="button"
-              onClick={copySerializedOutput}
-            >
-              Copy Serialized
-            </button>
-
-            <button
-              className="rounded-md py-2 px-4 border bg-base-100"
-              onClick={copyToInlineClipboard}
-            >
-              Copy Inline
-            </button>
-            <button
-              className="rounded-md py-2 px-4 border bg-base-100"
-              onClick={copyToClipboard}
-            >
-              Copy
-            </button>
-          </div>
-          <div className="editor-container mt-2 border rounded-md shadow-md">
-            <Editor
-              height="68vh"
-              language="json"
-              value={outputData}
-              theme={theme === "dark" ? "vs-dark" : "vs-light"}
-              onChange={handleEditorChange}
-              options={{
-                readOnly: false,
-                automaticLayout: true,
-              }}
-            />
-          </div>
-        </div>
       </div>
+      <div className="flex-1 overflow-hidden">
+        <Editor
+          height="100%"
+          language="json"
+          value={outputData}
+          theme={theme === "dark" ? "vs-dark" : "vs-light"}
+          onChange={handleEditorChange}
+          options={{
+            readOnly: false,
+            automaticLayout: true,
+          }}
+        />
+      </div>
+    </>
+  );
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
+        <h2 className="text-sm font-semibold">JSON Formatter</h2>
+        <button
+          title="Horizontal"
+          className="rounded-md py-1.5 px-3 border bg-base-100 text-white"
+          onClick={() => handleNavigation("json-format")}
+        >
+          <Image
+            src="/horizontal-to-vertical.svg"
+            className="svg-icon-theme" alt="Vertical Icon"
+            style={{ color: "#fff" }} width={20} height={20} />
+        </button>
+      </div>
+      <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} />
     </div>
   );
 }

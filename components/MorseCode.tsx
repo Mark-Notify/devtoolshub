@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import Swal from "sweetalert2";
+import { toastSuccess, toastWarning, alertInfo, alertError as swalAlertError } from "../lib/swal";
 
 const morseMap: Record<string, string> = {
     A: ".-", B: "-...", C: "-.-.", D: "-..", E: ".", F: "..-.",
@@ -76,7 +76,7 @@ export default function MorseCodeTool() {
     /** 🔊 เล่นเสียงมอร์ส */
     const playMorse = async () => {
         if (!output.trim()) {
-            Swal.fire("Error", "ไม่มีข้อความให้เล่น", "warning");
+            toastWarning("ไม่มีข้อความให้เล่น");
             return;
         }
 
@@ -148,7 +148,7 @@ export default function MorseCodeTool() {
             };
 
             if (!cap.torch) {
-                Swal.fire("⚠️", "อุปกรณ์นี้ไม่รองรับแฟลช", "info");
+                alertInfo("⚠️", "อุปกรณ์นี้ไม่รองรับแฟลช");
                 return;
             }
 
@@ -174,7 +174,7 @@ export default function MorseCodeTool() {
                 }
             }
         } catch (err) {
-            Swal.fire("Error", "ไม่สามารถเปิดแฟลชได้", "error");
+            swalAlertError("Error", "ไม่สามารถเปิดแฟลชได้");
         }
     };
 
@@ -190,11 +190,12 @@ export default function MorseCodeTool() {
         const baseUrl = "https://www.devtoolshub.org/morse-code-decoder";
         const url = `${baseUrl}?text=${encodeURIComponent(input.trim())}`;
         navigator.clipboard.writeText(url);
-        Swal.fire("Copied!", "คัดลอกลิงก์สำเร็จ", "success");
+        toastSuccess("คัดลอกลิงก์สำเร็จ");
     };
 
     return (
-        <div className="p-6 max-w-3xl mx-auto text-center">
+        <div className="h-full p-4 overflow-y-auto">
+            <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl font-bold mb-4">Morse Code</h1>
             <p className="text-gray-400 mb-6">
                 พิมพ์ข้อความหรือรหัสมอร์ส ระบบจะตรวจจับอัตโนมัติและแปลงให้ทันที
@@ -251,6 +252,7 @@ export default function MorseCodeTool() {
                 >
                     🧹 ล้าง
                 </button>
+            </div>
             </div>
         </div>
     );

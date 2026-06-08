@@ -1,6 +1,7 @@
 .now
 node_modules/
 *.env*
+!.env.example
 
 .vercel
 package-lock.json
@@ -29,3 +30,5 @@ yarn-error.log*
 
 # vercel
 .vercel
+yarn.lock
+.env.example

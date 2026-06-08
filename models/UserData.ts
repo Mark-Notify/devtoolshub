@@ -1,10 +1,11 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 
-export interface IUserData extends Document {
+export interface IUserData {
   userEmail: string;
   tool?: string;
   inputData?: string;
   outputData?: string;
+  shareId?: string;
   createdAt: Date;
 }
 
@@ -13,6 +14,7 @@ const UserDataSchema: Schema<IUserData> = new Schema({
   tool: { type: String },
   inputData: { type: String },
   outputData: { type: String },
+  shareId: { type: String, sparse: true, unique: true },
   createdAt: { type: Date, default: Date.now },
 });
 
