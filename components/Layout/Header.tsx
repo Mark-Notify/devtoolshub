@@ -25,6 +25,7 @@ import {
   SwatchIcon,
   ShieldCheckIcon,
   CalculatorIcon,
+  LanguageIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -67,6 +68,7 @@ export const menuItems = [
   { slug: "url-encode-decode",    label: "URL Encode",    icon: LinkIcon,              group: "Encode" as GroupName },
   { slug: "hash-generator",       label: "Hash",          icon: HashtagIcon,           group: "Encode" as GroupName },
   { slug: "diff-checker",         label: "Diff Checker",  icon: DocumentDuplicateIcon, group: "Text"   as GroupName },
+  { slug: "thai-eng-keyboard",    label: "แก้ภาษา ⇄",     icon: LanguageIcon,          group: "Text"   as GroupName },
   { slug: "regex-tester",         label: "Regex Tester",  icon: MagnifyingGlassIcon,   group: "Text"   as GroupName },
   { slug: "html-render",          label: "HTML Render",   icon: DocumentTextIcon,      group: "Text"   as GroupName },
   { slug: "timestamp-converter",  label: "Timestamp",     icon: ClockIcon,             group: "Util"   as GroupName },

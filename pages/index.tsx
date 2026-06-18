@@ -11,6 +11,7 @@ import TermsAndConditions from "components/terms-and-conditions";
 import ProfilePage from "components/ProfilePage";
 import Base64 from "../components/base64";
 import MorseCode from "../components/MorseCode";
+import ThaiEngKeyboard from "../components/ThaiEngKeyboard";
 import Seo from "../components/Seo";
 import { getSeo, TOOLS_SEO } from "../const/seo";
 
@@ -40,6 +41,8 @@ const Home: NextPage<Props> = ({ type, seo, isTool, index }) => {
         return <Base64 />;
       case "morse-code-decoder":
         return <MorseCode />;
+      case "thai-eng-keyboard":
+        return <ThaiEngKeyboard />;
       case "terms-and-conditions":
         return <TermsAndConditions />;
       case "profile":

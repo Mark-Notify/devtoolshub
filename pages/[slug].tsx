@@ -23,6 +23,7 @@ import JsonToCsv from "../components/JsonToCsv";
 import ColorConverter from "../components/ColorConverter";
 import PasswordGenerator from "../components/PasswordGenerator";
 import NumberBase from "../components/NumberBase";
+import ThaiEngKeyboard from "../components/ThaiEngKeyboard";
 import Seo from "../components/Seo";
 import { getSeo, TOOLS_SEO } from "../const/seo";
 
@@ -78,6 +79,8 @@ const SlugPage: NextPage<Props> = ({ slug, seo, isTool, index }) => {
         return <PasswordGenerator />;
       case "number-base":
         return <NumberBase />;
+      case "thai-eng-keyboard":
+        return <ThaiEngKeyboard />;
       case "profile":
         return <ProfilePage />;
       case "terms-and-conditions":
