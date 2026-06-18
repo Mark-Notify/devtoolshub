@@ -193,6 +193,20 @@ export const TOOLS_SEO: Record<string, ToolSeo> = {
       "แปลงข้อความเป็นรหัสมอร์สและถอดรหัสมอร์สเป็นข้อความออนไลน์ฟรี รองรับตัวอักษรและตัวเลข พร้อมเสียงและ animation สนุกและใช้งานง่าย",
     keywords: ["morse code translator", "morse code decoder", "แปลรหัสมอร์ส", "รหัสมอร์ส", "morse code online"],
   },
+  "thai-eng-keyboard": {
+    slug: "thai-eng-keyboard",
+    title: "แก้ภาษาแป้นพิมพ์ ไทย ⇄ อังกฤษ ออนไลน์ฟรี — ลืมเปลี่ยนภาษา | DevToolsHub",
+    description:
+      "แก้ข้อความที่ลืมเปลี่ยนภาษาบนแป้นพิมพ์ออนไลน์ฟรี เช่น 'l;ylfu' กลับเป็น 'สวัสดี' รองรับทั้งไทย→อังกฤษ และอังกฤษ→ไทย ตรวจจับทิศทางอัตโนมัติ ใช้งานทันทีบนเบราว์เซอร์",
+    keywords: [
+      "แก้ภาษาแป้นพิมพ์",
+      "ลืมเปลี่ยนภาษา",
+      "สลับภาษา ไทย อังกฤษ",
+      "thai english keyboard fix",
+      "wrong keyboard layout",
+      "l;ylfu สวัสดี",
+    ],
+  },
   "terms-and-conditions": {
     slug: "terms-and-conditions",
     title: "ข้อกำหนดและเงื่อนไขการใช้งาน | DevToolsHub",
