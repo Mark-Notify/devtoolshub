@@ -113,11 +113,6 @@ export default function Header(props: HeaderProps) {
     try { window.monaco.editor.setTheme(theme === "dark" ? "vs-light" : "vs-dark"); } catch { }
   };
 
-  const handleNavigation = (slug: string) => {
-    setSidebarOpen(false);
-    router.push(`/${slug}`, undefined, { shallow: true });
-  };
-
   const groups = Array.from(new Set(menuItems.map((m) => m.group))) as GroupName[];
 
   return (
@@ -218,9 +213,11 @@ export default function Header(props: HeaderProps) {
                         const Icon = item.icon;
                         const isActive = currentSlug === item.slug;
                         return (
-                          <button
+                          <NextLink
                             key={item.slug}
-                            onClick={() => handleNavigation(item.slug)}
+                            href={`/${item.slug}`}
+                            shallow
+                            onClick={() => setSidebarOpen(false)}
                             className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all border-l-2 ${
                               isActive
                                 ? `${cfg.activeBg} border-l-2 ${cfg.activeBorder} ${cfg.activeText}`
@@ -229,7 +226,7 @@ export default function Header(props: HeaderProps) {
                           >
                             <Icon className={`w-4 h-4 shrink-0 ${isActive ? cfg.iconColor : ""}`} />
                             {item.label}
-                          </button>
+                          </NextLink>
                         );
                       })}
                     </div>
@@ -240,8 +237,10 @@ export default function Header(props: HeaderProps) {
 
             {/* Profile footer */}
             <div className="p-3 border-t border-base-300/50">
-              <button
-                onClick={() => handleNavigation("profile")}
+              <NextLink
+                href="/profile"
+                shallow
+                onClick={() => setSidebarOpen(false)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   currentSlug === "profile" ? "bg-base-300" : "hover:bg-base-200"
                 }`}
@@ -254,7 +253,7 @@ export default function Header(props: HeaderProps) {
                   <div className="truncate font-semibold text-xs">{session?.user?.name || "Sign in"}</div>
                   {session && <div className="text-[10px] opacity-40 truncate">{session.user?.email}</div>}
                 </div>
-              </button>
+              </NextLink>
             </div>
           </motion.aside>
         )}

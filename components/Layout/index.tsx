@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import Header, { HeaderProps, menuItems, groupConfig, GroupName } from "components/Layout/Header";
@@ -42,11 +43,10 @@ interface SortableItemProps {
   isActive: boolean;
   isFav: boolean;
   showControls: boolean;
-  onNavigate: (slug: string) => void;
   onToggleFav: (slug: string, e: React.MouseEvent) => void;
 }
 
-function SortableItem({ slug, isActive, isFav, showControls, onNavigate, onToggleFav }: SortableItemProps) {
+function SortableItem({ slug, isActive, isFav, showControls, onToggleFav }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: slug });
 
   const item = menuItems.find((m) => m.slug === slug);
@@ -63,18 +63,7 @@ function SortableItem({ slug, isActive, isFav, showControls, onNavigate, onToggl
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...(showControls ? attributes : {})}
-      {...(showControls ? listeners : {})}
-      className={`group relative flex items-center gap-2 px-2.5 py-[7px] rounded-lg cursor-pointer select-none transition-all duration-150 ${
-        isActive
-          ? `${cfg.activeBg} shadow-sm`
-          : `hover:bg-white/5`
-      } ${showControls ? "cursor-grab active:cursor-grabbing" : ""}`}
-      onClick={() => onNavigate(slug)}
-    >
+    <div ref={setNodeRef} style={style} className="group relative">
       {/* Colored indicator bar */}
       <span
         className={`absolute left-0 top-1/2 -translate-y-1/2 w-0.5 rounded-r-full transition-all duration-200 ${
@@ -82,35 +71,46 @@ function SortableItem({ slug, isActive, isFav, showControls, onNavigate, onToggl
         }`}
       />
 
-      {/* Icon */}
-      <span className={`shrink-0 transition-colors duration-150 ${isActive ? cfg.iconColor : "opacity-40 group-hover:opacity-70"}`}>
-        <Icon className="w-[15px] h-[15px]" />
-      </span>
-
-      {/* Label */}
-      <span className={`flex-1 text-[12.5px] font-medium truncate transition-colors duration-150 leading-none ${
-        isActive ? cfg.activeText : "opacity-60 group-hover:opacity-90"
-      }`}>
-        {item.label}
-      </span>
-
-      {/* Star — inside the button, right side */}
-      {showControls && (
-        <span
-          onClick={(e) => { e.stopPropagation(); onToggleFav(slug, e); }}
-          className={`shrink-0 rounded p-0.5 transition-all duration-150 ${
-            isFav
-              ? "opacity-100"
-              : "opacity-0 group-hover:opacity-30 hover:!opacity-100"
-          }`}
-          title={isFav ? "Unstar" : "Star"}
-        >
-          {isFav
-            ? <StarSolidIcon className="w-3 h-3 text-yellow-400" />
-            : <StarIcon className="w-3 h-3" />
-          }
+      <Link
+        href={`/${slug}`}
+        {...(showControls ? attributes : {})}
+        {...(showControls ? listeners : {})}
+        className={`flex items-center gap-2 px-2.5 py-[7px] rounded-lg cursor-pointer select-none transition-all duration-150 ${
+          isActive
+            ? `${cfg.activeBg} shadow-sm`
+            : `hover:bg-white/5`
+        } ${showControls ? "cursor-grab active:cursor-grabbing" : ""}`}
+      >
+        {/* Icon */}
+        <span className={`shrink-0 transition-colors duration-150 ${isActive ? cfg.iconColor : "opacity-40 group-hover:opacity-70"}`}>
+          <Icon className="w-[15px] h-[15px]" />
         </span>
-      )}
+
+        {/* Label */}
+        <span className={`flex-1 text-[12.5px] font-medium truncate transition-colors duration-150 leading-none ${
+          isActive ? cfg.activeText : "opacity-60 group-hover:opacity-90"
+        }`}>
+          {item.label}
+        </span>
+
+        {/* Star — right side */}
+        {showControls && (
+          <span
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFav(slug, e); }}
+            className={`shrink-0 rounded p-0.5 transition-all duration-150 ${
+              isFav
+                ? "opacity-100"
+                : "opacity-0 group-hover:opacity-30 hover:!opacity-100"
+            }`}
+            title={isFav ? "Unstar" : "Star"}
+          >
+            {isFav
+              ? <StarSolidIcon className="w-3 h-3 text-yellow-400" />
+              : <StarIcon className="w-3 h-3" />
+            }
+          </span>
+        )}
+      </Link>
     </div>
   );
 }
@@ -195,7 +195,6 @@ export default function CommonLayout(props: CommonLayoutProps) {
   };
 
   const handleThemeChange = () => { setRefreshKey((p) => p + 1); onThemeChange?.(); };
-  const handleNavigation = (slug: string) => router.push(`/${slug}`);
 
   const starredInOrder = menuOrder.filter((s) => favorites.includes(s));
   const unstarredInOrder = menuOrder.filter((s) => !favorites.includes(s));
@@ -218,7 +217,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
                   {session && starredInOrder.length > 0 && (
                     <Section label="Starred" emoji="⭐">
                       {starredInOrder.map((slug) => (
-                        <SortableItem key={slug} slug={slug} isActive={currentSlug === slug} isFav showControls onNavigate={handleNavigation} onToggleFav={toggleFavorite} />
+                        <SortableItem key={slug} slug={slug} isActive={currentSlug === slug} isFav showControls onToggleFav={toggleFavorite} />
                       ))}
                     </Section>
                   )}
@@ -231,7 +230,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
                     return (
                       <Section key={group} label={cfg.label} emoji={cfg.emoji}>
                         {slugs.map((slug) => (
-                          <SortableItem key={slug} slug={slug} isActive={currentSlug === slug} isFav={false} showControls={!!session} onNavigate={handleNavigation} onToggleFav={toggleFavorite} />
+                          <SortableItem key={slug} slug={slug} isActive={currentSlug === slug} isFav={false} showControls={!!session} onToggleFav={toggleFavorite} />
                         ))}
                       </Section>
                     );
@@ -252,7 +251,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
             )} */}
 
             {session ? (
-              <button onClick={() => handleNavigation("profile")}
+              <Link href="/profile"
                 className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl w-full transition-all ${currentSlug === "profile" ? "bg-white/10" : "hover:bg-white/5"}`}>
                 {session.user?.image
                   ? <img src={session.user.image} alt="" className="w-6 h-6 rounded-full object-cover shrink-0 ring-1 ring-white/20" />
@@ -262,7 +261,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
                   <div className="text-[11px] font-semibold truncate opacity-80">{session.user?.name?.split(" ")[0]}</div>
                   <div className="text-[10px] opacity-30 truncate">{session.user?.email}</div>
                 </div>
-              </button>
+              </Link>
             ) : (
               <button onClick={() => signIn("google")}
                 className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] opacity-40 hover:opacity-80 transition-all hover:bg-white/5 w-full">
