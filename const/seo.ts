@@ -193,6 +193,14 @@ export const TOOLS_SEO: Record<string, ToolSeo> = {
       "แปลงข้อความเป็นรหัสมอร์สและถอดรหัสมอร์สเป็นข้อความออนไลน์ฟรี รองรับตัวอักษรและตัวเลข พร้อมเสียงและ animation สนุกและใช้งานง่าย",
     keywords: ["morse code translator", "morse code decoder", "แปลรหัสมอร์ส", "รหัสมอร์ส", "morse code online"],
   },
+  "cipher-encode-decode": {
+    slug: "cipher-encode-decode",
+    title: "Cipher Encode / Decode (ต้องเข้าสู่ระบบ) | DevToolsHub",
+    description:
+      "เข้ารหัสและถอดรหัสข้อความด้วย cipher เฉพาะของระบบ ต้องเข้าสู่ระบบก่อนใช้งาน ประมวลผลในเบราว์เซอร์",
+    keywords: ["cipher encode", "cipher decode", "encode front decode front", "เข้ารหัสข้อความ"],
+    index: false,
+  },
   "thai-eng-keyboard": {
     slug: "thai-eng-keyboard",
     title: "แก้ภาษาแป้นพิมพ์ ไทย ⇄ อังกฤษ ออนไลน์ฟรี — ลืมเปลี่ยนภาษา | DevToolsHub",

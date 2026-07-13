@@ -24,6 +24,7 @@ import ColorConverter from "../components/ColorConverter";
 import PasswordGenerator from "../components/PasswordGenerator";
 import NumberBase from "../components/NumberBase";
 import ThaiEngKeyboard from "../components/ThaiEngKeyboard";
+import CipherEncodeDecode from "../components/CipherEncodeDecode";
 import Seo from "../components/Seo";
 import { getSeo, TOOLS_SEO } from "../const/seo";
 
@@ -81,6 +82,8 @@ const SlugPage: NextPage<Props> = ({ slug, seo, isTool, index }) => {
         return <NumberBase />;
       case "thai-eng-keyboard":
         return <ThaiEngKeyboard />;
+      case "cipher-encode-decode":
+        return <CipherEncodeDecode />;
       case "profile":
         return <ProfilePage />;
       case "terms-and-conditions":
