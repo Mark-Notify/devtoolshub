@@ -38,10 +38,23 @@ export function encodeFront(input: string): string {
   return bytesToBase64(out);
 }
 
+/** Payloads passed through a URL (query string, form field, etc.) often arrive
+ *  percent-encoded, e.g. base64 padding `==` becomes `%3D%3D`. atob() rejects
+ *  `%`, so undo that encoding first when present. */
+function normalizeBase64Input(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed.includes("%")) return trimmed;
+  try {
+    return decodeURIComponent(trimmed);
+  } catch {
+    return trimmed;
+  }
+}
+
 export function decodeFront(input: string): string | Record<string, unknown> | false {
   let bytes: Uint8Array;
   try {
-    bytes = base64ToBytes(input.trim());
+    bytes = base64ToBytes(normalizeBase64Input(input));
   } catch {
     return false;
   }
