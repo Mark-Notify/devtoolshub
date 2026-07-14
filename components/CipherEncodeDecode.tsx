@@ -13,27 +13,39 @@ export default function CipherEncodeDecode() {
   const [output, setOutput] = useState("");
   const { saveHistory } = useToolHistory("cipher-encode-decode");
 
+  const runCipher = (text: string, currentMode: "encode" | "decode") => {
+    if (currentMode === "encode") {
+      const result = encodeFront(text);
+      setOutput(result);
+      saveHistory(text, result);
+    } else {
+      const result = decodeFront(text);
+      if (result === false) {
+        setOutput("Error: ข้อมูลไม่ถูกต้อง ไม่สามารถถอดรหัสได้");
+        return;
+      }
+      const decoded = typeof result === "string" ? result : JSON.stringify(result, null, 2);
+      setOutput(decoded);
+      saveHistory(text, decoded);
+    }
+  };
+
   const processData = (newMode?: "encode" | "decode") => {
     const currentMode = newMode || mode;
     if (!input.trim()) {
       toastError("กรุณากรอกข้อความก่อน");
       return;
     }
+    runCipher(input, currentMode);
+  };
 
-    if (currentMode === "encode") {
-      const result = encodeFront(input);
-      setOutput(result);
-      saveHistory(input, result);
-    } else {
-      const result = decodeFront(input);
-      if (result === false) {
-        setOutput("Error: ข้อมูลไม่ถูกต้อง ไม่สามารถถอดรหัสได้");
-        return;
-      }
-      const text = typeof result === "string" ? result : JSON.stringify(result, null, 2);
-      setOutput(text);
-      saveHistory(input, text);
+  const handleInputChange = (value: string) => {
+    setInput(value);
+    if (!value.trim()) {
+      setOutput("");
+      return;
     }
+    runCipher(value, mode);
   };
 
   const switchMode = (newMode: "encode" | "decode") => {
@@ -108,7 +120,7 @@ export default function CipherEncodeDecode() {
         </label>
         <textarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={mode === "encode" ? "พิมพ์ข้อความที่ต้องการเข้ารหัส..." : "วาง Base64 ที่ต้องการถอดรหัส..."}
           className="w-full h-36 p-3 mb-4 rounded-xl bg-base-200 border border-gray-700/50 focus:ring-2 focus:ring-accent outline-none resize-none font-mono text-sm"
           spellCheck={false}
