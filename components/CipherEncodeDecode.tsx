@@ -125,7 +125,7 @@ export default function CipherEncodeDecode() {
           value={output}
           readOnly
           placeholder="ผลลัพธ์จะแสดงที่นี่..."
-          className="w-full h-36 p-3 mb-4 rounded-xl bg-base-300 border border-gray-700/50 resize-none font-mono text-sm"
+          className="w-full h-36 min-h-[9rem] p-3 mb-4 rounded-xl bg-base-300 border border-gray-700/50 resize-y font-mono text-sm"
           spellCheck={false}
         />
 
