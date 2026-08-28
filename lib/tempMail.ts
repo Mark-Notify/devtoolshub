@@ -160,24 +160,21 @@ export async function resolveViewer(
   return { ownerKey, email, plan, limits: PLANS[plan] };
 }
 
-const ADJECTIVES = [
-  "brave", "calm", "clever", "cosmic", "crisp", "eager", "fuzzy", "gentle",
-  "happy", "jolly", "lucky", "mellow", "neat", "quiet", "rapid", "silent",
-  "smart", "solid", "swift", "tidy", "vivid", "witty", "zesty", "amber",
-];
-const NOUNS = [
-  "otter", "falcon", "maple", "comet", "pixel", "cactus", "ember", "harbor",
-  "lantern", "meadow", "nebula", "onyx", "pebble", "quartz", "ripple", "summit",
-  "thistle", "umbra", "vector", "willow", "zephyr", "cobalt", "delta", "koi",
-];
+// Deliberately excludes the characters that get misread off a screen — 0/o,
+// 1/l/i — because people do retype these addresses into signup forms by hand.
+const LOCAL_PART_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
+const LOCAL_PART_LENGTH = 10;
 
-function pick<T>(arr: T[]): T {
-  return arr[crypto.randomInt(0, arr.length)];
-}
-
+/**
+ * 31^10 ≈ 8.2e14 addresses. `randomInt` draws from a uniform range rather than
+ * taking `Math.random() % n`, so no character is favoured over another.
+ */
 export function randomLocalPart(): string {
-  const suffix = crypto.randomInt(0, 10000).toString().padStart(4, "0");
-  return `${pick(ADJECTIVES)}${pick(NOUNS)}${suffix}`;
+  let localPart = "";
+  for (let i = 0; i < LOCAL_PART_LENGTH; i++) {
+    localPart += LOCAL_PART_ALPHABET[crypto.randomInt(0, LOCAL_PART_ALPHABET.length)];
+  }
+  return localPart;
 }
 
 export type PrefixCheck = { ok: true; value: string } | { ok: false; error: string };
