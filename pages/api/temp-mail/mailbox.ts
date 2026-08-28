@@ -42,7 +42,9 @@ function serialize(box: {
 
 /**
  * GET    /api/temp-mail/mailbox            list the caller's live mailboxes
- * POST   /api/temp-mail/mailbox            create one (body: { prefix?, domain? })
+ * POST   /api/temp-mail/mailbox            create one (body: { prefix?, domain?, replace? })
+ *                                          `replace` is an address to drop first — the
+ *                                          "change my address" action.
  * PATCH  /api/temp-mail/mailbox            renew one (body: { address })
  * DELETE /api/temp-mail/mailbox?address=   destroy one and its messages
  */
@@ -72,20 +74,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
-      const live = await TempMailbox.countDocuments({
-        ...ownerFilter(viewer),
-        expiresAt: { $gt: now },
-      });
-      if (live >= viewer.limits.maxMailboxes) {
-        return res.status(409).json({
-          message:
-            viewer.plan === "free"
-              ? "แผน Free ใช้ได้ 1 กล่องต่อครั้ง — ลบกล่องเดิมก่อน หรืออัปเกรดเป็น Pro"
-              : `ใช้ได้สูงสุด ${viewer.limits.maxMailboxes} กล่องพร้อมกัน`,
-          code: "MAILBOX_LIMIT",
-        });
-      }
-
       // Domain choice is a Pro affordance; Free is pinned to the primary domain.
       let domain = defaultDomain();
       const requestedDomain = typeof req.body?.domain === "string" ? req.body.domain.toLowerCase().trim() : "";
@@ -111,6 +99,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const checked = normalizePrefix(rawPrefix);
         if (!checked.ok) return res.status(400).json({ message: checked.error });
         fixedLocalPart = checked.value;
+      }
+
+      // "Change address": drop the mailbox being replaced so its slot frees up,
+      // which is what makes re-rolling work on Free's single-mailbox limit.
+      // Everything that can reject the request is validated above, so the delete
+      // only happens once the new mailbox is certain to be creatable.
+      const replaceAddress =
+        typeof req.body?.replace === "string" ? req.body.replace.toLowerCase().trim() : "";
+      if (replaceAddress) {
+        const previous = await TempMailbox.findOne({ ...ownerFilter(viewer), address: replaceAddress });
+        if (previous) {
+          await TempMessage.deleteMany({ mailboxId: previous._id });
+          await TempMailbox.deleteOne({ _id: previous._id });
+        }
+      }
+
+      const live = await TempMailbox.countDocuments({
+        ...ownerFilter(viewer),
+        expiresAt: { $gt: now },
+      });
+      if (live >= viewer.limits.maxMailboxes) {
+        return res.status(409).json({
+          message:
+            viewer.plan === "free"
+              ? "แผน Free ใช้ได้ 1 กล่องต่อครั้ง — กด \"สุ่มใหม่\" เพื่อเปลี่ยนที่อยู่ หรืออัปเกรดเป็น Pro"
+              : `ใช้ได้สูงสุด ${viewer.limits.maxMailboxes} กล่องพร้อมกัน`,
+          code: "MAILBOX_LIMIT",
+        });
       }
 
       const expiresAt = new Date(now.getTime() + viewer.limits.ttlMinutes * 60 * 1000);
