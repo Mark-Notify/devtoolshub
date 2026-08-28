@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import {
   ArrowPathIcon,
+  ArrowPathRoundedSquareIcon,
   BoltIcon,
   ClipboardDocumentIcon,
   ClockIcon,
@@ -92,31 +93,44 @@ export default function TempMail() {
     }
   }, []);
 
-  const createMailbox = useCallback(async (opts: { prefix?: string; domain?: string } = {}) => {
-    setCreating(true);
-    try {
-      const data = await api<{ mailbox: Mailbox }>("/api/temp-mail/mailbox", {
-        method: "POST",
-        body: JSON.stringify(opts),
-      });
-      setMailboxes((prev) => [
-        data.mailbox,
-        ...prev.filter((m) => m.address !== data.mailbox.address),
-      ]);
-      setActiveAddress(data.mailbox.address);
-      setMessages([]);
-      setSelected(null);
-      setSelectedId("");
-      setExpired(false);
-      setPrefix("");
-      return data.mailbox;
-    } catch (err) {
-      toastError((err as Error).message);
-      return null;
-    } finally {
-      setCreating(false);
-    }
-  }, []);
+  const createMailbox = useCallback(
+    async (opts: { prefix?: string; domain?: string; replace?: string } = {}) => {
+      setCreating(true);
+      try {
+        const data = await api<{ mailbox: Mailbox }>("/api/temp-mail/mailbox", {
+          method: "POST",
+          body: JSON.stringify(opts),
+        });
+        setMailboxes((prev) => [
+          data.mailbox,
+          ...prev.filter((m) => m.address !== data.mailbox.address && m.address !== opts.replace),
+        ]);
+        setActiveAddress(data.mailbox.address);
+        setMessages([]);
+        setSelected(null);
+        setSelectedId("");
+        setExpired(false);
+        setPrefix("");
+        return data.mailbox;
+      } catch (err) {
+        toastError((err as Error).message);
+        return null;
+      } finally {
+        setCreating(false);
+      }
+    },
+    []
+  );
+
+  /**
+   * "Change my address": hand the current address to the API as `replace` so the
+   * old mailbox is dropped in the same request. Without that, Free's one-mailbox
+   * limit would reject the new one.
+   */
+  const regenerateAddress = useCallback(async () => {
+    const current = activeAddressRef.current;
+    await createMailbox(current ? { domain, replace: current } : { domain });
+  }, [createMailbox, domain]);
 
   // Boot: resolve the plan, adopt any live mailbox, otherwise mint a fresh one.
   useEffect(() => {
@@ -270,65 +284,91 @@ export default function TempMail() {
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* ── Address bar ─────────────────────────────────────── */}
-      <div className="px-4 py-3 border-b border-base-300/60 bg-base-100 shrink-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-2 flex-1 min-w-[240px]">
-            <EnvelopeIcon className="w-5 h-5 opacity-50 shrink-0" />
-            <div
-              className="flex-1 min-w-0 font-mono text-sm sm:text-base font-semibold truncate select-all"
-              title={activeAddress}
-            >
-              {activeAddress || "—"}
+      {/* ── Address card ────────────────────────────────────── */}
+      <div className="px-4 py-3 border-b border-base-300/60 bg-base-100 shrink-0 space-y-2">
+        <div className="rounded-xl border border-base-300 bg-base-200/40 px-3 py-2.5 flex flex-wrap items-center gap-3">
+          <EnvelopeIcon className="w-5 h-5 opacity-40 shrink-0" />
+
+          <div className="flex-1 min-w-[200px]">
+            <div className="text-[10px] uppercase tracking-wider opacity-45">
+              ที่อยู่ชั่วคราวของคุณ
             </div>
-            <button
-              className="btn btn-ghost btn-xs btn-square"
-              onClick={copyAddress}
-              disabled={!activeAddress}
-              title="คัดลอก"
-            >
-              <ClipboardDocumentIcon className="w-4 h-4" />
-            </button>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeAddress || "empty"}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.18 }}
+                className="font-mono text-base sm:text-lg font-semibold truncate select-all leading-snug"
+                title={activeAddress}
+              >
+                {activeAddress || "—"}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <div
               className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono ${
-                remainingMs <= 60_000 ? "bg-error/15 text-error" : "bg-base-200"
+                remainingMs <= 60_000 ? "bg-error/15 text-error" : "bg-base-100"
               }`}
               title="เวลาที่เหลือก่อนกล่องหมดอายุ"
             >
               <ClockIcon className="w-3.5 h-3.5" />
               {formatCountdown(remainingMs)}
             </div>
-
             <span
               className={`px-2 py-1 rounded-md text-xs font-semibold ${
-                isPro ? "bg-amber-500/20 text-amber-500" : "bg-base-200 opacity-70"
+                isPro ? "bg-amber-500/20 text-amber-500" : "bg-base-100 opacity-60"
               }`}
             >
               {isPro ? "PRO" : "FREE"}
             </span>
-
-            <button className="btn btn-ghost btn-xs btn-square" onClick={refreshNow} title="รีเฟรช">
-              <ArrowPathIcon className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-            </button>
-            <button className="btn btn-ghost btn-xs" onClick={renewMailbox} title="ต่ออายุ">
-              ต่ออายุ
-            </button>
             <button
-              className="btn btn-primary btn-xs gap-1"
-              onClick={() => createMailbox({ domain })}
-              disabled={creating}
+              className="btn btn-primary btn-sm gap-1.5"
+              onClick={copyAddress}
+              disabled={!activeAddress}
             >
-              <PlusIcon className="w-3.5 h-3.5" />
-              กล่องใหม่
+              <ClipboardDocumentIcon className="w-4 h-4" />
+              คัดลอก
             </button>
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            className="btn btn-outline btn-xs gap-1"
+            onClick={regenerateAddress}
+            disabled={creating}
+            title="ทิ้งที่อยู่นี้แล้วสุ่มที่อยู่ใหม่"
+          >
+            <ArrowPathRoundedSquareIcon className="w-3.5 h-3.5" />
+            สุ่มใหม่
+          </button>
+          <button className="btn btn-ghost btn-xs gap-1" onClick={refreshNow} title="เช็คเมลเดี๋ยวนี้">
+            <ArrowPathIcon className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+            เช็คเมล
+          </button>
+          <button className="btn btn-ghost btn-xs gap-1" onClick={renewMailbox} title="ต่ออายุกล่องนี้">
+            <ClockIcon className="w-3.5 h-3.5" />
+            ต่ออายุ
+          </button>
+          {isPro && (
+            <button
+              className="btn btn-ghost btn-xs gap-1"
+              onClick={() => createMailbox({ domain })}
+              disabled={creating}
+              title="เปิดกล่องเพิ่มอีกใบ"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              เพิ่มกล่อง
+            </button>
+          )}
+        </div>
+
         {/* Pro-only controls, rendered locked on Free so the upgrade is discoverable. */}
-        <div className="flex flex-wrap items-center gap-2 mt-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
             <input
               className="input input-bordered input-xs w-40 font-mono"
@@ -415,11 +455,8 @@ export default function TempMail() {
               <div className="p-6 text-center text-sm space-y-3">
                 <ClockIcon className="w-8 h-8 mx-auto opacity-30" />
                 <p className="opacity-60">กล่องนี้หมดอายุแล้ว</p>
-                <button
-                  className="btn btn-primary btn-xs"
-                  onClick={() => createMailbox({ domain })}
-                >
-                  สร้างกล่องใหม่
+                <button className="btn btn-primary btn-xs" onClick={regenerateAddress}>
+                  สุ่มที่อยู่ใหม่
                 </button>
               </div>
             ) : messages.length === 0 ? (
