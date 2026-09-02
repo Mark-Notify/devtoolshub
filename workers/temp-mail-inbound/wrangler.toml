@@ -1,0 +1,10 @@
+name = "temp-mail-inbound"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+[vars]
+# Point this at your deployed Next.js app.
+INBOUND_WEBHOOK_URL = "https://www.devtoolshub.org/api/temp-mail/inbound"
+
+# INBOUND_SECRET is a secret, not a var:
+#   npx wrangler secret put INBOUND_SECRET

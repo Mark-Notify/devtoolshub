@@ -23,6 +23,7 @@
 | 📡 Morse Code | `/morse-code-decoder` | Translate text ↔ Morse code with audio playback |
 | 📱 QR Code | `/qr-code-generator` | Create custom QR codes with logo & color support |
 | 🌐 HTML Render | `/html-render` | Live HTML/CSS/JS preview with resizable split pane |
+| 📬 Temp Mail | `/temp-mail` | Disposable inbox that self-destructs — no signup |
 
 ---
 
@@ -174,6 +175,12 @@ GOOGLE_CLIENT_SECRET=<your-client-secret>
 
 # Cron job secret (protects /api/history/cleanup)
 CRON_SECRET=<random 32-byte base64>
+
+# Temp Mail — comma separated; the first one is the default for Free users
+TEMP_MAIL_DOMAINS=mail.example.com,inbox.example.com
+
+# Shared secret between the Cloudflare Email Worker and /api/temp-mail/inbound
+TEMP_MAIL_INBOUND_SECRET=<random 32-byte base64>
 ```
 
 Generate a secret:
@@ -191,6 +198,43 @@ The endpoint requires:
 ```
 Authorization: Bearer <CRON_SECRET>
 ```
+
+---
+
+## 📬 Temp Mail
+
+Disposable inboxes at `/temp-mail`. Vercel cannot run an SMTP server, so mail is
+accepted by **Cloudflare Email Routing** and pushed into the app as JSON.
+
+```
+Next.js UI ──► /api/temp-mail/* ──► MongoDB (mailboxes + messages, TTL indexes)
+                     ▲
+                     │ POST /api/temp-mail/inbound  (x-tempmail-secret)
+                     │
+        Cloudflare Email Worker ◄── Cloudflare MX ◄── Internet Mail
+```
+
+Mailbox and message documents carry an `expiresAt` TTL index, so MongoDB deletes
+them on its own — no Redis or queue worker to run.
+
+| | Free | Pro |
+|---|---|---|
+| Lifetime | 10 minutes | 24 hours |
+| Mailboxes | 1 | 5 |
+| Read mail | ✅ | ✅ |
+| Attachments | ❌ | ✅ (1 MB/file, 4 MB/mail) |
+| Custom prefix + domain | ❌ | ✅ |
+
+**Pro has no payment flow yet.** It is granted by an allow-list in MongoDB — sign
+in with Google, and Pro applies if that email is in the `prowhitelists`
+collection:
+
+```js
+db.prowhitelists.insertOne({ email: "someone@gmail.com", active: true, createdAt: new Date() })
+```
+
+Setting up the mail path is documented in
+[`workers/temp-mail-inbound/README.md`](workers/temp-mail-inbound/README.md).
 
 ---
 

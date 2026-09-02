@@ -215,6 +215,21 @@ export const TOOLS_SEO: Record<string, ToolSeo> = {
     keywords: ["cipher encode", "cipher decode", "encode front decode front", "เข้ารหัสข้อความ"],
     index: false,
   },
+  "temp-mail": {
+    slug: "temp-mail",
+    title: "Temp Mail — อีเมลชั่วคราวใช้แล้วทิ้ง ฟรี ไม่ต้องสมัคร | DevToolsHub",
+    description:
+      "สร้างอีเมลชั่วคราวใช้แล้วทิ้งฟรี รับเมลยืนยันตัวตนได้ทันทีในเบราว์เซอร์ ไม่ต้องสมัครสมาชิก กล่องจดหมายหมดอายุอัตโนมัติ ปลอดภัย ไม่มีสแปมตามกวน",
+    keywords: [
+      "temp mail",
+      "อีเมลชั่วคราว",
+      "temporary email",
+      "disposable email",
+      "เมลใช้แล้วทิ้ง",
+      "10 minute mail",
+      "รับ otp เมลชั่วคราว",
+    ],
+  },
   "thai-eng-keyboard": {
     slug: "thai-eng-keyboard",
     title: "แก้ภาษาแป้นพิมพ์ ไทย ⇄ อังกฤษ ออนไลน์ฟรี — ลืมเปลี่ยนภาษา | DevToolsHub",

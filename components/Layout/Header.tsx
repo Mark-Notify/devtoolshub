@@ -28,6 +28,7 @@ import {
   LanguageIcon,
   ShieldExclamationIcon,
   LockOpenIcon,
+  EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -81,6 +82,7 @@ export const menuItems = [
   { slug: "color-converter",      label: "Color",         icon: SwatchIcon,            group: "Util"   as GroupName },
   { slug: "qr-code-generator",    label: "QR Code",       icon: QrCodeIcon,            group: "Util"   as GroupName },
   { slug: "pdf-remove-password",  label: "PDF Unlock",    icon: LockOpenIcon,          group: "Util"   as GroupName },
+  { slug: "temp-mail",            label: "Temp Mail",     icon: EnvelopeIcon,          group: "Util"   as GroupName },
   { slug: "morse-code-decoder",   label: "Morse Code",    icon: SignalIcon,            group: "Fun"    as GroupName },
 ];
 
