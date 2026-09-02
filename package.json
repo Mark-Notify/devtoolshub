@@ -6,7 +6,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "prisma generate && next build",
+    "build": "node scripts/copy-qpdf.mjs && prisma generate && next build",
     "dev": "next dev",
     "setup": "NODE_OPTIONS='--experimental-json-modules' node ./scripts/setup.mjs",
     "start": "next start"
@@ -19,6 +19,7 @@
     "@heroicons/react": "^2.0.18",
     "@monaco-editor/react": "^4.6.0",
     "@mui/lab": "^5.0.0-alpha.93",
+    "@neslinesli93/qpdf-wasm": "^0.3.0",
     "@prisma/client": "^4.5.0",
     "@tailwindcss/typography": "^0.5.9",
     "@vercel/analytics": "^1.4.1",
