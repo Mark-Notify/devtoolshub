@@ -193,6 +193,20 @@ export const TOOLS_SEO: Record<string, ToolSeo> = {
       "แปลงข้อความเป็นรหัสมอร์สและถอดรหัสมอร์สเป็นข้อความออนไลน์ฟรี รองรับตัวอักษรและตัวเลข พร้อมเสียงและ animation สนุกและใช้งานง่าย",
     keywords: ["morse code translator", "morse code decoder", "แปลรหัสมอร์ส", "รหัสมอร์ส", "morse code online"],
   },
+  "pdf-remove-password": {
+    slug: "pdf-remove-password",
+    title: "ปลดล็อกรหัสผ่าน PDF ออนไลน์ฟรี — ลบ password ออกจากไฟล์ PDF | DevToolsHub",
+    description:
+      "ลบรหัสผ่านออกจากไฟล์ PDF ที่คุณมีรหัสอยู่แล้ว ออนไลน์ฟรี อัปโหลดไฟล์ ใส่รหัสผ่าน แล้วดาวน์โหลดเป็นไฟล์ที่เปิดได้โดยไม่ต้องใส่รหัส ประมวลผลในเบราว์เซอร์ ไฟล์ไม่ถูกอัปโหลดขึ้นเซิร์ฟเวอร์",
+    keywords: [
+      "ปลดล็อก pdf",
+      "ลบรหัสผ่าน pdf",
+      "remove pdf password",
+      "unlock pdf online",
+      "decrypt pdf",
+      "pdf password remover",
+    ],
+  },
   "cipher-encode-decode": {
     slug: "cipher-encode-decode",
     title: "Cipher Encode / Decode (ต้องเข้าสู่ระบบ) | DevToolsHub",
