@@ -29,6 +29,7 @@ import {
   ShieldExclamationIcon,
   LockOpenIcon,
   EnvelopeIcon,
+  PhotoIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -71,6 +72,7 @@ export const menuItems = [
   { slug: "url-encode-decode",    label: "URL Encode",    icon: LinkIcon,              group: "Encode" as GroupName },
   { slug: "hash-generator",       label: "Hash",          icon: HashtagIcon,           group: "Encode" as GroupName },
   { slug: "cipher-encode-decode", label: "Cipher",        icon: ShieldExclamationIcon, group: "Encode" as GroupName },
+  { slug: "image-to-base64",      label: "Image ↔ Base64", icon: PhotoIcon,            group: "Encode" as GroupName },
   { slug: "diff-checker",         label: "Diff Checker",  icon: DocumentDuplicateIcon, group: "Text"   as GroupName },
   { slug: "thai-eng-keyboard",    label: "แก้ภาษา ⇄",     icon: LanguageIcon,          group: "Text"   as GroupName },
   { slug: "regex-tester",         label: "Regex Tester",  icon: MagnifyingGlassIcon,   group: "Text"   as GroupName },

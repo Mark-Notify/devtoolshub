@@ -20,6 +20,7 @@
 | 🔄 XML ↔ JSON | `/xml-to-json-vertical` | Convert between XML and JSON instantly |
 | 🔑 JWT Decoder | `/jwt-decode` | Inspect JWT header, payload, and signature |
 | 🔒 Base64 | `/base64` | Encode and decode Base64 strings |
+| 🖼️ Image ↔ Base64 | `/image-to-base64` | Convert images to Base64 (or render Base64 back), with full image info & EXIF |
 | 📡 Morse Code | `/morse-code-decoder` | Translate text ↔ Morse code with audio playback |
 | 📱 QR Code | `/qr-code-generator` | Create custom QR codes with logo & color support |
 | 🌐 HTML Render | `/html-render` | Live HTML/CSS/JS preview with resizable split pane |

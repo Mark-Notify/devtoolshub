@@ -215,6 +215,21 @@ export const TOOLS_SEO: Record<string, ToolSeo> = {
     keywords: ["cipher encode", "cipher decode", "encode front decode front", "เข้ารหัสข้อความ"],
     index: false,
   },
+  "image-to-base64": {
+    slug: "image-to-base64",
+    title: "Image to Base64 & Base64 to Image ออนไลน์ฟรี — พร้อมดูข้อมูลรูป | DevToolsHub",
+    description:
+      "แปลงรูปเป็น Base64 หรือวาง Base64 / data URL เพื่อ render กลับเป็นรูปออนไลน์ฟรี คัดลอก data URL, <img>, CSS ได้ทันที พร้อมแสดงข้อมูลรูปครบ — ขนาด, สี, EXIF, GPS ประมวลผลในเบราว์เซอร์",
+    keywords: [
+      "image to base64",
+      "base64 to image",
+      "แปลงรูปเป็น base64",
+      "base64 image decoder",
+      "data url image",
+      "ดูข้อมูล exif รูป",
+      "image metadata viewer",
+    ],
+  },
   "temp-mail": {
     slug: "temp-mail",
     title: "Temp Mail — อีเมลชั่วคราวใช้แล้วทิ้ง ฟรี ไม่ต้องสมัคร | DevToolsHub",

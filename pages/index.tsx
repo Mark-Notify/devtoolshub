@@ -13,6 +13,7 @@ import Base64 from "../components/base64";
 import MorseCode from "../components/MorseCode";
 import ThaiEngKeyboard from "../components/ThaiEngKeyboard";
 import CipherEncodeDecode from "../components/CipherEncodeDecode";
+import ImageBase64 from "../components/ImageBase64";
 import Seo from "../components/Seo";
 import { getSeo, TOOLS_SEO } from "../const/seo";
 
@@ -46,6 +47,8 @@ const Home: NextPage<Props> = ({ type, seo, isTool, index }) => {
         return <ThaiEngKeyboard />;
       case "cipher-encode-decode":
         return <CipherEncodeDecode />;
+      case "image-to-base64":
+        return <ImageBase64 />;
       case "terms-and-conditions":
         return <TermsAndConditions />;
       case "profile":

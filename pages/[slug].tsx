@@ -27,6 +27,7 @@ import ThaiEngKeyboard from "../components/ThaiEngKeyboard";
 import CipherEncodeDecode from "../components/CipherEncodeDecode";
 import PdfPasswordRemover from "../components/PdfPasswordRemover";
 import TempMail from "../components/TempMail";
+import ImageBase64 from "../components/ImageBase64";
 import Seo from "../components/Seo";
 import { getSeo, TOOLS_SEO } from "../const/seo";
 
@@ -86,6 +87,8 @@ const SlugPage: NextPage<Props> = ({ slug, seo, isTool, index }) => {
         return <ThaiEngKeyboard />;
       case "cipher-encode-decode":
         return <CipherEncodeDecode />;
+      case "image-to-base64":
+        return <ImageBase64 />;
       case "pdf-remove-password":
         return <PdfPasswordRemover />;
       case "temp-mail":
