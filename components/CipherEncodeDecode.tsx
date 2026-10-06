@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
 import { toastSuccess, toastError } from "../lib/swal";
@@ -12,6 +12,15 @@ export default function CipherEncodeDecode() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { saveHistory } = useToolHistory("cipher-encode-decode");
+  const outputRef = useRef<HTMLTextAreaElement>(null);
+
+  // ขยายความสูงช่องผลลัพธ์ตามความยาวข้อมูล (สูงสุด 70vh แล้วค่อย scroll)
+  useEffect(() => {
+    const el = outputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight + 2, window.innerHeight * 0.7)}px`;
+  }, [output]);
 
   const runCipher = (text: string, currentMode: "encode" | "decode") => {
     if (currentMode === "encode") {
@@ -134,10 +143,11 @@ export default function CipherEncodeDecode() {
 
         <label className="block text-xs font-medium opacity-60 mb-1">ผลลัพธ์</label>
         <textarea
+          ref={outputRef}
           value={output}
           readOnly
           placeholder="ผลลัพธ์จะแสดงที่นี่..."
-          className="w-full h-36 min-h-[9rem] p-3 mb-4 rounded-xl bg-base-300 border border-gray-700/50 resize-y font-mono text-sm"
+          className="w-full min-h-[9rem] p-3 mb-4 rounded-xl bg-base-300 border border-gray-700/50 resize-y font-mono text-sm"
           spellCheck={false}
         />
 
