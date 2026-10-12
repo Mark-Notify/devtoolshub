@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { unserialize, serialize } from "php-serialize";
+import { serialize } from "php-serialize";
 import { toastSuccess, toastError } from "../../lib/swal";
-import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
+import { isPHPSerialized, deepUnserialize, safeUnserialize } from "../../lib/phpUnserialize";
 import { useToolHistory } from "../../hooks/useToolHistory";
 import SaveSnippetButton from "../SaveSnippetButton";
 import SplitPane from "../SplitPane";
@@ -71,7 +71,7 @@ export default function HomePage() {
       saveHistory(inputData, result);
     } else if (isPHPSerialized(inputData)) {
       try {
-        const unserializedData = unserialize(inputData.trim());
+        const unserializedData = safeUnserialize(inputData);
         const deepResult = deepUnserialize(unserializedData);
         result = JSON.stringify(deepResult, null, 4);
         setOutputData(result);
