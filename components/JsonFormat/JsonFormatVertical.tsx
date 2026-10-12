@@ -1,6 +1,6 @@
 "use client"; // Ensures this code only runs on the client
 
-import Image from "next/image";
+import { ViewColumnsIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
@@ -10,13 +10,14 @@ import { isPHPSerialized, deepUnserialize } from "../../lib/phpUnserialize";
 import { useToolHistory } from "../../hooks/useToolHistory";
 import SaveSnippetButton from "../SaveSnippetButton";
 import SplitPane from "../SplitPane";
+import ToolPage, { Panel } from "../ui/ToolPage";
 
-export default function HomePage() {
+export default function JsonFormatTool({ stacked = false }: { stacked?: boolean }) {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
   const [theme, setTheme] = useState<string | null>(null);
   const router = useRouter();
-  const { saveHistory } = useToolHistory("json-format-vertical");
+  const { saveHistory } = useToolHistory(stacked ? "json-format" : "json-format-vertical");
 
   useEffect(() => {
     // Get theme from localStorage once the component is mounted
@@ -145,10 +146,14 @@ export default function HomePage() {
   };
 
   const leftPanel = (
-    <>
-      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-        Input (JSON or Serialized)
-      </div>
+    <Panel
+      label="Input (JSON or Serialized)"
+      footer={
+        <button className="btn btn-block btn-sm btn-primary" onClick={processData}>
+          Process
+        </button>
+      }
+    >
       <textarea
         id="inputData"
         className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
@@ -157,74 +162,58 @@ export default function HomePage() {
         onChange={(e) => setInputData(e.target.value)}
         spellCheck={false}
       />
-      <div className="px-3 py-2 border-t border-gray-700/30 bg-base-100 shrink-0">
-        <button className="btn btn-block btn-sm btn-accent" onClick={processData}>
-          Process
-        </button>
-      </div>
-    </>
+    </Panel>
   );
 
   const rightPanel = (
-    <>
-      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0 flex items-center justify-between">
-        <span>Formatted Output</span>
-        <div className="flex items-center gap-1">
+    <Panel
+      label="Formatted Output"
+      actions={
+        <>
           <SaveSnippetButton toolKey="json-format-vertical" content={outputData} disabled={!outputData} />
-          <button
-            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
-            type="button"
-            onClick={copySerializedOutput}
-          >
+          <button className="btn btn-xs btn-soft" type="button" onClick={copySerializedOutput}>
             Copy Serialized
           </button>
-          <button
-            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
-            onClick={copyToInlineClipboard}
-          >
+          <button className="btn btn-xs btn-soft" onClick={copyToInlineClipboard}>
             Copy Inline
           </button>
-          <button
-            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
-            onClick={copyToClipboard}
-          >
+          <button className="btn btn-xs btn-soft" onClick={copyToClipboard}>
             Copy
           </button>
-        </div>
-      </div>
-      <div className="flex-1 overflow-hidden">
-        <Editor
-          height="100%"
-          language="json"
-          value={outputData}
-          theme={theme === "dark" ? "vs-dark" : "vs-light"}
-          onChange={handleEditorChange}
-          options={{
-            readOnly: false,
-            automaticLayout: true,
-          }}
-        />
-      </div>
-    </>
+        </>
+      }
+    >
+      <Editor
+        height="100%"
+        language="json"
+        value={outputData}
+        theme={theme === "dark" ? "vs-dark" : "vs-light"}
+        onChange={handleEditorChange}
+        options={{
+          readOnly: false,
+          automaticLayout: true,
+        }}
+      />
+    </Panel>
   );
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
-        <h2 className="text-sm font-semibold">JSON Formatter</h2>
+    <ToolPage
+      slug="json-format-vertical"
+      title="JSON Formatter"
+      description="Format, beautify and unserialize JSON or PHP serialized data"
+      variant="fill"
+      actions={
         <button
-          title="Horizontal"
-          className="rounded-md py-1.5 px-3 border bg-base-100 text-white"
-          onClick={() => handleNavigation("json-format")}
+          title={stacked ? "Side by side" : "Stacked"}
+          className="btn btn-sm btn-soft btn-square"
+          onClick={() => handleNavigation(stacked ? "json-format-vertical" : "json-format")}
         >
-          <Image
-            src="/horizontal-to-vertical.svg"
-            className="svg-icon-theme" alt="Vertical Icon"
-            style={{ color: "#fff" }} width={20} height={20} />
+          {stacked ? <ViewColumnsIcon className="w-4 h-4" /> : <RectangleStackIcon className="w-4 h-4" />}
         </button>
-      </div>
-      <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} />
-    </div>
+      }
+    >
+      <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} stacked={stacked} />
+    </ToolPage>
   );
 }

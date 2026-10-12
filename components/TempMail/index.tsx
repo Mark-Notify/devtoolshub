@@ -1,4 +1,5 @@
 "use client";
+import ToolPage from "../ui/ToolPage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import {
@@ -260,266 +261,274 @@ export default function TempMail() {
 
   if (booting) {
     return (
-      <div className="h-full flex items-center justify-center opacity-60 text-sm">
-        กำลังเตรียมกล่องจดหมาย...
-      </div>
+      <ToolPage slug="temp-mail" variant="fill">
+        <div className="flex-1 flex items-center justify-center opacity-60 text-sm">
+          กำลังเตรียมกล่องจดหมาย...
+        </div>
+      </ToolPage>
     );
   }
 
   if (noDomainConfigured) {
     return (
-      <div className="h-full flex items-center justify-center p-6">
-        <div className="max-w-md text-center space-y-3">
-          <EnvelopeIcon className="w-12 h-12 mx-auto opacity-40" />
-          <h2 className="text-lg font-bold">ยังไม่ได้ตั้งค่าโดเมนรับเมล</h2>
-          <p className="text-sm opacity-60">
-            ตั้งค่า <code className="text-xs">TEMP_MAIL_DOMAINS</code> บน Vercel แล้วชี้ MX
-            ของโดเมนมาที่ Cloudflare Email Routing ตามคู่มือใน{" "}
-            <code className="text-xs">workers/temp-mail-inbound</code>
-          </p>
+      <ToolPage slug="temp-mail" variant="fill">
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="max-w-md text-center space-y-3">
+            <EnvelopeIcon className="w-12 h-12 mx-auto opacity-40" />
+            <h2 className="text-lg font-bold">ยังไม่ได้ตั้งค่าโดเมนรับเมล</h2>
+            <p className="text-sm opacity-60">
+              ตั้งค่า <code className="text-xs">TEMP_MAIL_DOMAINS</code> บน Vercel แล้วชี้ MX
+              ของโดเมนมาที่ Cloudflare Email Routing ตามคู่มือใน{" "}
+              <code className="text-xs">workers/temp-mail-inbound</code>
+            </p>
+          </div>
         </div>
-      </div>
+      </ToolPage>
     );
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0">
-      {/* ── Address card ────────────────────────────────────── */}
-      <div className="px-4 py-3 border-b border-base-300/60 bg-base-100 shrink-0 space-y-2">
-        <div className="rounded-xl border border-base-300 bg-base-200/40 px-3 py-2.5 flex flex-wrap items-center gap-3">
-          <EnvelopeIcon className="w-5 h-5 opacity-40 shrink-0" />
+    <ToolPage
+      slug="temp-mail"
+      description="อีเมลชั่วคราวสำหรับรับโค้ดยืนยันหรือสมัครบริการ โดยไม่ต้องใช้อีเมลจริง"
+      variant="fill"
+    >
+        {/* ── Address card ────────────────────────────────────── */}
+        <div className="px-4 py-3 border-b border-base-300/60 bg-base-100 shrink-0 space-y-2">
+          <div className="rounded-xl border border-base-300 bg-base-200/40 px-3 py-2.5 flex flex-wrap items-center gap-3">
+            <EnvelopeIcon className="w-5 h-5 opacity-40 shrink-0" />
 
-          <div className="flex-1 min-w-[200px]">
-            <div className="text-[10px] uppercase tracking-wider opacity-45">
-              ที่อยู่ชั่วคราวของคุณ
-            </div>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={activeAddress || "empty"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18 }}
-                className="font-mono text-base sm:text-lg font-semibold truncate select-all leading-snug"
-                title={activeAddress}
-              >
-                {activeAddress || "—"}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <div
-              className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono ${
-                remainingMs <= 60_000 ? "bg-error/15 text-error" : "bg-base-100"
-              }`}
-              title="เวลาที่เหลือก่อนกล่องหมดอายุ"
-            >
-              <ClockIcon className="w-3.5 h-3.5" />
-              {formatCountdown(remainingMs)}
-            </div>
-            <span
-              className={`px-2 py-1 rounded-md text-xs font-semibold ${
-                isPro ? "bg-amber-500/20 text-amber-500" : "bg-base-100 opacity-60"
-              }`}
-            >
-              {isPro ? "PRO" : "FREE"}
-            </span>
-            <button
-              className="btn btn-primary btn-sm gap-1.5"
-              onClick={copyAddress}
-              disabled={!activeAddress}
-            >
-              <ClipboardDocumentIcon className="w-4 h-4" />
-              คัดลอก
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            className="btn btn-outline btn-xs gap-1"
-            onClick={regenerateAddress}
-            disabled={creating}
-            title="ทิ้งที่อยู่นี้แล้วสุ่มที่อยู่ใหม่"
-          >
-            <ArrowPathRoundedSquareIcon className="w-3.5 h-3.5" />
-            สุ่มใหม่
-          </button>
-          <button className="btn btn-ghost btn-xs gap-1" onClick={refreshNow} title="เช็คเมลเดี๋ยวนี้">
-            <ArrowPathIcon className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
-            เช็คเมล
-          </button>
-          <button className="btn btn-ghost btn-xs gap-1" onClick={renewMailbox} title="ต่ออายุกล่องนี้">
-            <ClockIcon className="w-3.5 h-3.5" />
-            ต่ออายุ
-          </button>
-          {isPro && (
-            <button
-              className="btn btn-ghost btn-xs gap-1"
-              onClick={() => createMailbox({ domain })}
-              disabled={creating}
-              title="เปิดกล่องเพิ่มอีกใบ"
-            >
-              <PlusIcon className="w-3.5 h-3.5" />
-              เพิ่มกล่อง
-            </button>
-          )}
-        </div>
-
-        {/* Pro-only controls, rendered locked on Free so the upgrade is discoverable. */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-2">
-            <input
-              className="input input-bordered input-xs w-40 font-mono"
-              placeholder={isPro ? "ตั้งชื่อเอง" : "custom prefix"}
-              value={prefix}
-              onChange={(e) => setPrefix(e.target.value)}
-              disabled={!isPro}
-            />
-            {planInfo && planInfo.domains.length > 1 && (
-              <select
-                className="select select-bordered select-xs font-mono"
-                value={domain}
-                onChange={(e) => setDomain(e.target.value)}
-                disabled={!isPro}
-              >
-                {planInfo.domains.map((d) => (
-                  <option key={d} value={d}>
-                    @{d}
-                  </option>
-                ))}
-              </select>
-            )}
-            <button
-              className="btn btn-outline btn-xs"
-              disabled={!isPro || !prefix.trim() || creating}
-              onClick={() => createMailbox({ prefix, domain })}
-            >
-              สร้าง
-            </button>
-            {!isPro && (
-              <span className="flex items-center gap-1 text-[11px] opacity-60">
-                <LockClosedIcon className="w-3 h-3" />
-                Pro
-              </span>
-            )}
-          </div>
-
-          {mailboxes.length > 1 && (
-            <div className="flex items-center gap-1 flex-wrap">
-              {mailboxes.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => {
-                    setActiveAddress(m.address);
-                    setSelected(null);
-                    setSelectedId("");
-                    setExpired(false);
-                  }}
-                  className={`px-2 py-0.5 rounded text-[11px] font-mono border ${
-                    m.address === activeAddress
-                      ? "border-primary text-primary bg-primary/10"
-                      : "border-base-300 opacity-70"
-                  }`}
+            <div className="flex-1 min-w-[200px]">
+              <div className="text-[10px] uppercase tracking-wider opacity-45">
+                ที่อยู่ชั่วคราวของคุณ
+              </div>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={activeAddress || "empty"}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.18 }}
+                  className="font-mono text-base sm:text-lg font-semibold truncate select-all leading-snug"
+                  title={activeAddress}
                 >
-                  {m.address.split("@")[0]}
-                </button>
-              ))}
+                  {activeAddress || "—"}
+                </motion.div>
+              </AnimatePresence>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* ── Inbox + reader ──────────────────────────────────── */}
-      <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
-        <div className="lg:w-[340px] shrink-0 border-b lg:border-b-0 lg:border-r border-base-300/60 flex flex-col min-h-0 max-h-[45vh] lg:max-h-none">
-          <div className="px-3 py-2 flex items-center justify-between text-xs font-semibold border-b border-base-300/40 shrink-0">
-            <span className="flex items-center gap-1.5">
-              <InboxIcon className="w-4 h-4" /> Inbox
-              {unreadCount > 0 && <span className="badge badge-primary badge-xs">{unreadCount}</span>}
-            </span>
-            {activeMailbox && (
-              <button
-                className="btn btn-ghost btn-xs btn-square text-error"
-                onClick={() => deleteMailbox(activeMailbox.address)}
-                title="ลบกล่องนี้"
+            <div className="flex items-center gap-2 shrink-0">
+              <div
+                className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono ${
+                  remainingMs <= 60_000 ? "bg-error/15 text-error" : "bg-base-100"
+                }`}
+                title="เวลาที่เหลือก่อนกล่องหมดอายุ"
               >
-                <TrashIcon className="w-3.5 h-3.5" />
+                <ClockIcon className="w-3.5 h-3.5" />
+                {formatCountdown(remainingMs)}
+              </div>
+              <span
+                className={`px-2 py-1 rounded-md text-xs font-semibold ${
+                  isPro ? "bg-amber-500/20 text-amber-500" : "bg-base-100 opacity-60"
+                }`}
+              >
+                {isPro ? "PRO" : "FREE"}
+              </span>
+              <button
+                className="btn btn-primary btn-sm gap-1.5"
+                onClick={copyAddress}
+                disabled={!activeAddress}
+              >
+                <ClipboardDocumentIcon className="w-4 h-4" />
+                คัดลอก
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              className="btn btn-outline btn-xs gap-1"
+              onClick={regenerateAddress}
+              disabled={creating}
+              title="ทิ้งที่อยู่นี้แล้วสุ่มที่อยู่ใหม่"
+            >
+              <ArrowPathRoundedSquareIcon className="w-3.5 h-3.5" />
+              สุ่มใหม่
+            </button>
+            <button className="btn btn-ghost btn-xs gap-1" onClick={refreshNow} title="เช็คเมลเดี๋ยวนี้">
+              <ArrowPathIcon className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+              เช็คเมล
+            </button>
+            <button className="btn btn-ghost btn-xs gap-1" onClick={renewMailbox} title="ต่ออายุกล่องนี้">
+              <ClockIcon className="w-3.5 h-3.5" />
+              ต่ออายุ
+            </button>
+            {isPro && (
+              <button
+                className="btn btn-ghost btn-xs gap-1"
+                onClick={() => createMailbox({ domain })}
+                disabled={creating}
+                title="เปิดกล่องเพิ่มอีกใบ"
+              >
+                <PlusIcon className="w-3.5 h-3.5" />
+                เพิ่มกล่อง
               </button>
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto min-h-0">
-            {expired ? (
-              <div className="p-6 text-center text-sm space-y-3">
-                <ClockIcon className="w-8 h-8 mx-auto opacity-30" />
-                <p className="opacity-60">กล่องนี้หมดอายุแล้ว</p>
-                <button className="btn btn-primary btn-xs" onClick={regenerateAddress}>
-                  สุ่มที่อยู่ใหม่
-                </button>
-              </div>
-            ) : messages.length === 0 ? (
-              <div className="p-6 text-center text-sm space-y-2">
-                <motion.div
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ repeat: Infinity, duration: 2.4 }}
-                  className="w-10 h-10 mx-auto rounded-full bg-base-200 flex items-center justify-center"
+          {/* Pro-only controls, rendered locked on Free so the upgrade is discoverable. */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                className="input input-bordered input-xs w-40 font-mono"
+                placeholder={isPro ? "ตั้งชื่อเอง" : "custom prefix"}
+                value={prefix}
+                onChange={(e) => setPrefix(e.target.value)}
+                disabled={!isPro}
+              />
+              {planInfo && planInfo.domains.length > 1 && (
+                <select
+                  className="select select-bordered select-xs font-mono"
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                  disabled={!isPro}
                 >
-                  <EnvelopeIcon className="w-5 h-5 opacity-50" />
-                </motion.div>
-                <p className="opacity-60">รออีเมลเข้า...</p>
-                <p className="text-xs opacity-40">ระบบเช็คให้อัตโนมัติทุก 6 วินาที</p>
-              </div>
-            ) : (
-              <AnimatePresence initial={false}>
-                {messages.map((m) => (
-                  <motion.button
+                  {planInfo.domains.map((d) => (
+                    <option key={d} value={d}>
+                      @{d}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <button
+                className="btn btn-outline btn-xs"
+                disabled={!isPro || !prefix.trim() || creating}
+                onClick={() => createMailbox({ prefix, domain })}
+              >
+                สร้าง
+              </button>
+              {!isPro && (
+                <span className="flex items-center gap-1 text-[11px] opacity-60">
+                  <LockClosedIcon className="w-3 h-3" />
+                  Pro
+                </span>
+              )}
+            </div>
+
+            {mailboxes.length > 1 && (
+              <div className="flex items-center gap-1 flex-wrap">
+                {mailboxes.map((m) => (
+                  <button
                     key={m.id}
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => openMessage(m.id)}
-                    className={`w-full text-left px-3 py-2.5 border-b border-base-300/40 hover:bg-base-200/60 transition ${
-                      selectedId === m.id ? "bg-primary/10 border-l-2 border-l-primary" : ""
+                    onClick={() => {
+                      setActiveAddress(m.address);
+                      setSelected(null);
+                      setSelectedId("");
+                      setExpired(false);
+                    }}
+                    className={`px-2 py-0.5 rounded text-[11px] font-mono border ${
+                      m.address === activeAddress
+                        ? "border-primary text-primary bg-primary/10"
+                        : "border-base-300 opacity-70"
                     }`}
                   >
-                    <div className="flex items-center gap-2">
-                      {!m.read && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
-                      <span
-                        className={`text-xs truncate flex-1 ${m.read ? "opacity-60" : "font-semibold"}`}
-                      >
-                        {m.fromName || m.fromAddress}
-                      </span>
-                      {m.hadAttachments && <PaperClipIcon className="w-3 h-3 opacity-50 shrink-0" />}
-                      <span className="text-[10px] opacity-40 shrink-0">
-                        {formatRelative(m.receivedAt)}
-                      </span>
-                    </div>
-                    <div className={`text-sm truncate mt-0.5 ${m.read ? "opacity-70" : "font-medium"}`}>
-                      {m.subject}
-                    </div>
-                    <div className="text-[11px] opacity-45 truncate mt-0.5">{m.preview}</div>
-                  </motion.button>
+                    {m.address.split("@")[0]}
+                  </button>
                 ))}
-              </AnimatePresence>
+              </div>
             )}
           </div>
-
-          {!isPro && <ProUpsell signedIn={Boolean(planInfo?.signedIn)} />}
         </div>
 
-        <div className="flex-1 min-h-0">
-          {selected ? (
-            <MessageView message={selected} onDelete={deleteMessage} />
-          ) : (
-            <div className="h-full flex items-center justify-center text-sm opacity-40 p-6 text-center">
-              เลือกอีเมลทางซ้ายเพื่ออ่าน
+        {/* ── Inbox + reader ──────────────────────────────────── */}
+        <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
+          <div className="lg:w-[340px] shrink-0 border-b lg:border-b-0 lg:border-r border-base-300/60 flex flex-col min-h-0 max-h-[45vh] lg:max-h-none">
+            <div className="px-3 py-2 flex items-center justify-between text-xs font-semibold border-b border-base-300/40 shrink-0">
+              <span className="flex items-center gap-1.5">
+                <InboxIcon className="w-4 h-4" /> Inbox
+                {unreadCount > 0 && <span className="badge badge-primary badge-xs">{unreadCount}</span>}
+              </span>
+              {activeMailbox && (
+                <button
+                  className="btn btn-ghost btn-xs btn-square text-error"
+                  onClick={() => deleteMailbox(activeMailbox.address)}
+                  title="ลบกล่องนี้"
+                >
+                  <TrashIcon className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
-          )}
+
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {expired ? (
+                <div className="p-6 text-center text-sm space-y-3">
+                  <ClockIcon className="w-8 h-8 mx-auto opacity-30" />
+                  <p className="opacity-60">กล่องนี้หมดอายุแล้ว</p>
+                  <button className="btn btn-primary btn-xs" onClick={regenerateAddress}>
+                    สุ่มที่อยู่ใหม่
+                  </button>
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="p-6 text-center text-sm space-y-2">
+                  <motion.div
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ repeat: Infinity, duration: 2.4 }}
+                    className="w-10 h-10 mx-auto rounded-full bg-base-200 flex items-center justify-center"
+                  >
+                    <EnvelopeIcon className="w-5 h-5 opacity-50" />
+                  </motion.div>
+                  <p className="opacity-60">รออีเมลเข้า...</p>
+                  <p className="text-xs opacity-40">ระบบเช็คให้อัตโนมัติทุก 6 วินาที</p>
+                </div>
+              ) : (
+                <AnimatePresence initial={false}>
+                  {messages.map((m) => (
+                    <motion.button
+                      key={m.id}
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      onClick={() => openMessage(m.id)}
+                      className={`w-full text-left px-3 py-2.5 border-b border-base-300/40 hover:bg-base-200/60 transition ${
+                        selectedId === m.id ? "bg-primary/10 border-l-2 border-l-primary" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        {!m.read && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+                        <span
+                          className={`text-xs truncate flex-1 ${m.read ? "opacity-60" : "font-semibold"}`}
+                        >
+                          {m.fromName || m.fromAddress}
+                        </span>
+                        {m.hadAttachments && <PaperClipIcon className="w-3 h-3 opacity-50 shrink-0" />}
+                        <span className="text-[10px] opacity-40 shrink-0">
+                          {formatRelative(m.receivedAt)}
+                        </span>
+                      </div>
+                      <div className={`text-sm truncate mt-0.5 ${m.read ? "opacity-70" : "font-medium"}`}>
+                        {m.subject}
+                      </div>
+                      <div className="text-[11px] opacity-45 truncate mt-0.5">{m.preview}</div>
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+              )}
+            </div>
+
+            {!isPro && <ProUpsell signedIn={Boolean(planInfo?.signedIn)} />}
+          </div>
+
+          <div className="flex-1 min-h-0">
+            {selected ? (
+              <MessageView message={selected} onDelete={deleteMessage} />
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm opacity-40 p-6 text-center">
+                เลือกอีเมลทางซ้ายเพื่ออ่าน
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+    </ToolPage>
   );
 }
 

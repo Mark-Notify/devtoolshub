@@ -1,5 +1,7 @@
 // /pages/terms.tsx
 import Head from "next/head";
+import { DocumentTextIcon } from "@heroicons/react/24/outline";
+import ToolPage from "./ui/ToolPage";
 import React from "react";
 import Link from "next/link";
 
@@ -15,17 +17,17 @@ const TermsAndConditions: React.FC = () => {
                 <meta name="description" content={`${COMPANY_NAME} Terms and Conditions`} />
             </Head>
 
-            <main className="min-h-screen bg-base-100 py-12">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-8">
+            <ToolPage slug="terms-and-conditions" title="Terms and Conditions" icon={DocumentTextIcon} width="medium">
+                <div>
+                    <div className="tool-card p-6 sm:p-8">
                         <header className="mb-6">
                             <h1 className="text-2xl font-semibold mb-1">Terms and Conditions</h1>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm opacity-60">
                                 Last updated: {LAST_UPDATED}
                             </p>
                         </header>
 
-                        <section className="prose prose-sm prose-invert mb-6">
+                        <section className="prose prose-sm max-w-none mb-6">
                             <p>
                                 Welcome to <strong>{COMPANY_NAME}</strong> ({DOMAIN}). By accessing or using our website,
                                 services, or tools (collectively, the “Service”), you agree to be bound by these Terms
@@ -113,14 +115,14 @@ const TermsAndConditions: React.FC = () => {
                                 <strong>support@devtoolshub.org</strong>
                             </p>
 
-                            <p className="text-sm text-gray-500 mt-4">
+                            <p className="text-sm opacity-50 mt-4">
                                 <em>Note: This document is a general template and does not constitute legal advice. Consider consulting a qualified attorney
                                     to tailor terms to your needs and jurisdiction.</em>
                             </p>
                         </section>
                     </div>
                 </div>
-            </main>
+            </ToolPage>
         </>
     );
 };

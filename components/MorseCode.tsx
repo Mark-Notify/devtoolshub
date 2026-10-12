@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import ToolPage from "./ui/ToolPage";
 import { toastSuccess, toastWarning, alertInfo, alertError as swalAlertError } from "../lib/swal";
 
 const morseMap: Record<string, string> = {
@@ -194,66 +195,49 @@ export default function MorseCodeTool() {
     };
 
     return (
-        <div className="h-full p-4 overflow-y-auto">
-            <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl font-bold mb-4">Morse Code</h1>
-            <p className="text-gray-400 mb-6">
-                พิมพ์ข้อความหรือรหัสมอร์ส ระบบจะตรวจจับอัตโนมัติและแปลงให้ทันที
-            </p>
-
-            <textarea
-                value={input}
-                onChange={handleChange}
-                placeholder="พิมพ์ข้อความหรือวางรหัสมอร์สที่นี่..."
-                className="w-full h-40 p-4 mb-4 rounded-xl bg-gray-900 text-gray-100 border border-gray-700 focus:ring-2 focus:ring-blue-500 resize-none font-mono"
-            />
-
-            <textarea
-                value={output}
-                readOnly
-                placeholder="ผลลัพธ์จะแสดงที่นี่..."
-                className="w-full h-40 p-4 mb-4 rounded-xl bg-gray-800 text-gray-200 border border-gray-700 font-mono"
-            />
-
-            <div className="flex flex-wrap justify-center gap-3 mt-2">
+        <ToolPage
+            slug="morse-code-decoder"
+            description="พิมพ์ข้อความหรือรหัสมอร์ส ระบบจะตรวจจับอัตโนมัติและแปลงให้ทันที"
+            width="narrow"
+        >
+            <div className="flex flex-col gap-1">
+                <label className="tool-label">ข้อความ / รหัสมอร์ส</label>
+                <textarea
+                    value={input}
+                    onChange={handleChange}
+                    placeholder="พิมพ์ข้อความหรือวางรหัสมอร์สที่นี่..."
+                    className="input-area h-36 resize-none font-mono text-sm"
+                />
+            </div>
+            <div className="flex flex-col gap-1">
+                <label className="tool-label">ผลลัพธ์</label>
+                <textarea
+                    value={output}
+                    readOnly
+                    placeholder="ผลลัพธ์จะแสดงที่นี่..."
+                    className="input-area h-36 resize-none font-mono text-sm"
+                />
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
                 {!isPlaying ? (
-                    <button
-                        onClick={playMorse}
-                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
-                    >
+                    <button onClick={playMorse} className="btn btn-sm btn-primary">
                         🔊 เล่นเสียง
                     </button>
                 ) : (
-                    <button
-                        onClick={stopMorse}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
-                    >
+                    <button onClick={stopMorse} className="btn btn-sm btn-error">
                         ⏹️ หยุดเสียง
                     </button>
                 )}
-
-                <button
-                    onClick={toggleFlash}
-                    className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition"
-                >
+                <button onClick={toggleFlash} className="btn btn-sm btn-soft">
                     💡 แฟลชไฟ
                 </button>
-
-                <button
-                    onClick={copyLink}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-                >
+                <button onClick={copyLink} className="btn btn-sm btn-soft">
                     🔗 Copy Link
                 </button>
-
-                <button
-                    onClick={clearAll}
-                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition"
-                >
+                <button onClick={clearAll} className="btn btn-sm btn-soft">
                     🧹 ล้าง
                 </button>
             </div>
-            </div>
-        </div>
+        </ToolPage>
     );
 }

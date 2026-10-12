@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ViewColumnsIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { serialize } from "php-serialize";
@@ -9,8 +9,9 @@ import { xml2json, json2xml } from "xml-js";
 import { XMLParser } from "fast-xml-parser";
 import { useRouter } from "next/router";
 import SplitPane from "../SplitPane";
+import ToolPage, { Panel } from "../ui/ToolPage";
 
-export default function HomePage() {
+export default function XmlJsonTool({ stacked = false }: { stacked?: boolean }) {
   const [inputData, setInputData] = useState<string>("");
   const [outputData, setOutputData] = useState<string>("");
   const [theme, setTheme] = useState<string | null>(null);
@@ -135,10 +136,14 @@ export default function HomePage() {
   };
 
   const leftPanel = (
-    <>
-      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-        Input (JSON or XML)
-      </div>
+    <Panel
+      label="Input (JSON or XML)"
+      footer={
+        <button className="btn btn-block btn-sm btn-primary" onClick={processData}>
+          Process
+        </button>
+      }
+    >
       <textarea
         id="inputData"
         className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
@@ -147,73 +152,57 @@ export default function HomePage() {
         onChange={(e) => setInputData(e.target.value)}
         spellCheck={false}
       />
-      <div className="px-3 py-2 border-t border-gray-700/30 bg-base-100 shrink-0">
-        <button className="btn btn-block btn-sm btn-accent" onClick={processData}>
-          Process
-        </button>
-      </div>
-    </>
+    </Panel>
   );
 
   const rightPanel = (
-    <>
-      <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0 flex items-center justify-between">
-        <span>Formatted Output</span>
-        <div className="flex items-center gap-1">
-          <button
-            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
-            type="button"
-            onClick={copySerializedOutput}
-          >
+    <Panel
+      label="Formatted Output"
+      actions={
+        <>
+          <button className="btn btn-xs btn-soft" type="button" onClick={copySerializedOutput}>
             Copy Serialized
           </button>
-          <button
-            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
-            onClick={copyToInlineClipboard}
-          >
+          <button className="btn btn-xs btn-soft" onClick={copyToInlineClipboard}>
             Copy Inline
           </button>
-          <button
-            className="rounded-md py-1 px-2 border bg-base-100 text-xs"
-            onClick={copyToClipboard}
-          >
+          <button className="btn btn-xs btn-soft" onClick={copyToClipboard}>
             Copy
           </button>
-        </div>
-      </div>
-      <div className="flex-1 overflow-hidden">
-        <Editor
-          height="100%"
-          language={inputType === "xml" ? "xml" : "json"}
-          value={outputData}
-          theme={theme === "dark" ? "vs-dark" : "vs-light"}
-          onChange={handleEditorChange}
-          options={{
-            readOnly: false,
-            automaticLayout: true,
-          }}
-        />
-      </div>
-    </>
+        </>
+      }
+    >
+      <Editor
+        height="100%"
+        language={inputType === "xml" ? "xml" : "json"}
+        value={outputData}
+        theme={theme === "dark" ? "vs-dark" : "vs-light"}
+        onChange={handleEditorChange}
+        options={{
+          readOnly: false,
+          automaticLayout: true,
+        }}
+      />
+    </Panel>
   );
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
-        <h2 className="text-sm font-semibold">XML ↔ JSON Converter</h2>
+    <ToolPage
+      slug="xml-to-json-vertical"
+      title="XML ↔ JSON Converter"
+      description="Convert between XML and JSON — direction is detected from the input"
+      variant="fill"
+      actions={
         <button
-          title="Horizontal"
-          className="rounded-md py-1.5 px-3 border bg-base-100 text-white"
-          onClick={() => handleNavigation("xml-to-json")}
+          title={stacked ? "Side by side" : "Stacked"}
+          className="btn btn-sm btn-soft btn-square"
+          onClick={() => handleNavigation(stacked ? "xml-to-json-vertical" : "xml-to-json")}
         >
-          <Image
-            src="/horizontal-to-vertical.svg"
-            className="svg-icon-theme" alt="Vertical Icon"
-            style={{ color: "#fff" }} width={20} height={20} />
+          {stacked ? <ViewColumnsIcon className="w-4 h-4" /> : <RectangleStackIcon className="w-4 h-4" />}
         </button>
-      </div>
-      <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} />
-    </div>
+      }
+    >
+      <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} stacked={stacked} />
+    </ToolPage>
   );
 }

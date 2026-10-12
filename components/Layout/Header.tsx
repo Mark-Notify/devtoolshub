@@ -88,11 +88,19 @@ export const menuItems = [
   { slug: "morse-code-decoder",   label: "Morse Code",    icon: SignalIcon,            group: "Fun"    as GroupName },
 ];
 
+// Alternate layouts of a tool that should highlight the same menu entry.
+const SLUG_ALIASES: Record<string, string> = {
+  "json-format": "json-format-vertical",
+  "xml-to-json": "xml-to-json-vertical",
+};
+
+export const menuSlugFor = (slug: string) => SLUG_ALIASES[slug] || slug;
+
 export default function Header(props: HeaderProps) {
   const [theme, setTheme] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
-  const currentSlug = router.query.slug || router.query.type || "";
+  const currentSlug = menuSlugFor((router.query.slug || router.query.type || "") as string);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -102,7 +110,6 @@ export default function Header(props: HeaderProps) {
     } else {
       setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     }
-    return () => { document.documentElement.removeAttribute("data-theme"); };
   }, []);
 
   useEffect(() => {

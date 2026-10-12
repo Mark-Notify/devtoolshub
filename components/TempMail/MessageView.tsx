@@ -115,7 +115,7 @@ export default function MessageView({ message, onDelete }: Props) {
         )}
       </div>
 
-      <div className="flex-1 min-h-0 bg-white">
+      <div className={`flex-1 min-h-0 ${view === "rich" && hasHtml ? "bg-white" : "bg-base-100"}`}>
         {view === "rich" && hasHtml ? (
           <iframe
             key={`${message.id}-rich`}
@@ -125,7 +125,7 @@ export default function MessageView({ message, onDelete }: Props) {
             className="w-full h-full border-0"
           />
         ) : (
-          <pre className="w-full h-full overflow-auto p-4 text-sm whitespace-pre-wrap break-words text-gray-800">
+          <pre className="w-full h-full overflow-auto p-4 text-sm whitespace-pre-wrap break-words m-0 border-0">
             {message.text || "(ไม่มีเนื้อหาแบบข้อความ)"}
           </pre>
         )}

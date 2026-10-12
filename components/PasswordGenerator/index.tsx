@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
+import ToolPage from "../ui/ToolPage";
 import { toastSuccess } from "../../lib/swal";
 
 const CHARS = {
@@ -69,9 +70,9 @@ export default function PasswordGenerator() {
   const str = pw0 ? strength(pw0) : null;
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden p-4 gap-4">
+    <ToolPage slug="password-generator" title="Password Generator" description="Generate strong random passwords" width="medium">
       {/* Options */}
-      <div className="bg-base-200 rounded-lg p-4 flex flex-col gap-3">
+      <div className="tool-card flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-sm">
             <span className="font-semibold">Length: {length}</span>
@@ -80,7 +81,7 @@ export default function PasswordGenerator() {
             type="range" min={4} max={128}
             value={length}
             onChange={(e) => setLength(Number(e.target.value))}
-            className="w-full"
+            className="range range-sm range-primary w-full"
           />
         </div>
 
@@ -107,7 +108,7 @@ export default function PasswordGenerator() {
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs">
             <span className="opacity-60">Strength</span>
-            <span className={str.pct >= 75 ? "text-green-400" : str.pct >= 50 ? "text-yellow-400" : "text-red-400"}>{str.label}</span>
+            <span className={str.pct >= 75 ? "text-success" : str.pct >= 50 ? "text-warning" : "text-error"}>{str.label}</span>
           </div>
           <div className="h-1.5 bg-base-300 rounded-full overflow-hidden">
             <div className={`h-full rounded-full transition-all ${str.color}`} style={{ width: `${str.pct}%` }} />
@@ -117,19 +118,19 @@ export default function PasswordGenerator() {
 
       {/* Password list */}
       <div className="flex items-center justify-between">
-        <label className="text-sm font-semibold">Passwords</label>
+        <label className="tool-label">Passwords</label>
         {passwords.length > 1 && (
-          <button className="btn btn-xs btn-ghost border" onClick={copyAll}>Copy All</button>
+          <button className="btn btn-xs btn-soft" onClick={copyAll}>Copy All</button>
         )}
       </div>
       <div className="flex flex-col gap-1.5 flex-1 overflow-auto">
         {passwords.map((pwd, i) => (
-          <div key={i} className="flex items-center justify-between bg-base-200 rounded-lg px-3 py-2 gap-2">
+          <div key={i} className="flex items-center justify-between rounded-lg border border-base-content/10 bg-base-200/50 px-3 py-2 gap-2">
             <span className="font-mono text-sm break-all flex-1">{pwd}</span>
-            <button className="btn btn-xs btn-ghost shrink-0" onClick={() => copy(pwd)}>Copy</button>
+            <button className="btn btn-xs btn-soft shrink-0" onClick={() => copy(pwd)}>Copy</button>
           </div>
         ))}
       </div>
-    </div>
+    </ToolPage>
   );
 }

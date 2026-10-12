@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
+import ToolPage, { Segmented } from "./ui/ToolPage";
 import { toastSuccess, toastError } from "../lib/swal";
 import { useToolHistory } from "../hooks/useToolHistory";
 import { encodeFront, decodeFront } from "../lib/cipher";
@@ -75,13 +76,17 @@ export default function CipherEncodeDecode() {
   };
 
   if (status === "loading") {
-    return <div className="h-full flex items-center justify-center opacity-60 text-sm">กำลังโหลด...</div>;
+    return (
+      <ToolPage slug="cipher-encode-decode" title="Cipher Encode / Decode">
+        <div className="text-center opacity-60 text-sm mt-8">กำลังโหลด...</div>
+      </ToolPage>
+    );
   }
 
   if (!session) {
     return (
-      <div className="h-full flex items-center justify-center p-4">
-        <div className="max-w-sm w-full bg-base-100 rounded-2xl shadow-lg p-8 text-center border border-base-300">
+      <ToolPage slug="cipher-encode-decode" title="Cipher Encode / Decode" description="เข้ารหัสและถอดรหัสข้อความด้วย cipher เฉพาะของระบบ">
+        <div className="max-w-sm w-full mx-auto mt-8 bg-base-100 rounded-2xl shadow-lg p-8 text-center border border-base-300">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
             <LockClosedIcon className="w-8 h-8 text-white" />
           </div>
@@ -93,70 +98,60 @@ export default function CipherEncodeDecode() {
             Sign in with Google
           </button>
         </div>
-      </div>
+      </ToolPage>
     );
   }
 
   return (
-    <div className="h-full p-4 overflow-y-auto">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold mb-2">Cipher Encode / Decode</h1>
-          <p className="text-gray-400 text-sm">เข้ารหัสและถอดรหัสข้อความด้วย cipher เฉพาะของระบบ</p>
-        </div>
-
-        <div className="flex justify-center gap-2 mb-4">
-          <button
-            className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              mode === "encode" ? "bg-accent text-accent-content" : "border border-gray-700/50 opacity-70 hover:opacity-100"
-            }`}
-            onClick={() => switchMode("encode")}
-          >
-            Encode
-          </button>
-          <button
-            className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              mode === "decode" ? "bg-accent text-accent-content" : "border border-gray-700/50 opacity-70 hover:opacity-100"
-            }`}
-            onClick={() => switchMode("decode")}
-          >
-            Decode
-          </button>
-        </div>
-
-        <label className="block text-xs font-medium opacity-60 mb-1">
+    <ToolPage
+      slug="cipher-encode-decode"
+      title="Cipher Encode / Decode"
+      description="เข้ารหัสและถอดรหัสข้อความด้วย cipher เฉพาะของระบบ"
+      width="narrow"
+      actions={
+        <Segmented
+          value={mode}
+          onChange={switchMode}
+          options={[
+            { value: "encode", label: "Encode" },
+            { value: "decode", label: "Decode" },
+          ]}
+        />
+      }
+    >
+      <div className="flex flex-col gap-1">
+        <label className="tool-label">
           {mode === "encode" ? "ข้อความต้นฉบับ" : "ข้อความที่เข้ารหัสแล้ว (Base64)"}
         </label>
         <textarea
           value={input}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={mode === "encode" ? "พิมพ์ข้อความที่ต้องการเข้ารหัส..." : "วาง Base64 ที่ต้องการถอดรหัส..."}
-          className="w-full h-36 p-3 mb-4 rounded-xl bg-base-200 border border-gray-700/50 focus:ring-2 focus:ring-accent outline-none resize-none font-mono text-sm"
+          className="input-area h-36 resize-none font-mono text-sm"
           spellCheck={false}
         />
+      </div>
 
-        <div className="flex justify-center mb-4">
-          <button className="btn btn-sm btn-accent" onClick={() => processData()}>
-            {mode === "encode" ? "🔒 เข้ารหัส" : "🔓 ถอดรหัส"}
+      <button className="btn btn-sm btn-primary self-center" onClick={() => processData()}>
+        {mode === "encode" ? "🔒 เข้ารหัส" : "🔓 ถอดรหัส"}
+      </button>
+
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <label className="tool-label">ผลลัพธ์</label>
+          <button className="btn btn-xs btn-soft" onClick={copyOutput}>
+            📋 คัดลอกผลลัพธ์
           </button>
         </div>
-
-        <label className="block text-xs font-medium opacity-60 mb-1">ผลลัพธ์</label>
         <textarea
           ref={outputRef}
           value={output}
           readOnly
           placeholder="ผลลัพธ์จะแสดงที่นี่..."
-          className="w-full min-h-[9rem] p-3 mb-4 rounded-xl bg-base-300 border border-gray-700/50 resize-y font-mono text-sm"
+          className="input-area min-h-[9rem] resize-y font-mono text-sm"
           spellCheck={false}
         />
-
-        <div className="flex justify-center">
-          <button className="btn btn-sm btn-ghost" onClick={copyOutput}>
-            📋 คัดลอกผลลัพธ์
-          </button>
-        </div>
       </div>
-    </div>
+    </ToolPage>
   );
 }

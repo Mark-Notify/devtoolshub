@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import ToolPage from "../ui/ToolPage";
 import { toastSuccess } from "../../lib/swal";
 
 function uuidv4(): string {
@@ -13,7 +14,8 @@ function uuidv4(): string {
 }
 
 export default function UuidGenerator() {
-  const [uuids, setUuids] = useState<string[]>([uuidv4()]);
+  // generated after mount: a random initial value would differ between SSR and hydration
+  const [uuids, setUuids] = useState<string[]>([]);
   const [count, setCount] = useState(1);
   const [uppercase, setUppercase] = useState(false);
   const [noDashes, setNoDashes] = useState(false);
@@ -29,6 +31,10 @@ export default function UuidGenerator() {
     setUuids(Array.from({ length: Math.min(count, 100) }, () => uuidv4()));
   };
 
+  useEffect(() => {
+    setUuids([uuidv4()]);
+  }, []);
+
   const copyOne = (id: string) => {
     navigator.clipboard.writeText(format(id));
     toastSuccess("UUID copied!");
@@ -40,41 +46,46 @@ export default function UuidGenerator() {
   };
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden p-4 gap-4">
+    <ToolPage
+      slug="uuid-generator"
+      title="UUID Generator"
+      description="Generate random v4 UUIDs"
+      width="medium"
+      actions={<button className="btn btn-sm btn-soft" onClick={copyAll}>Copy All</button>}
+    >
       {/* Controls */}
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="tool-card flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold opacity-60">Count</label>
+          <label className="tool-label">Count</label>
           <input
             type="number"
             min={1}
             max={100}
             value={count}
             onChange={(e) => setCount(Number(e.target.value))}
-            className="input input-bordered w-24 text-sm"
+            className="input input-bordered input-sm w-24"
           />
         </div>
-        <label className="flex items-center gap-1.5 text-sm cursor-pointer pb-1">
+        <label className="flex items-center gap-1.5 text-sm cursor-pointer h-8">
           <input type="checkbox" className="checkbox checkbox-sm" checked={uppercase} onChange={(e) => setUppercase(e.target.checked)} />
           Uppercase
         </label>
-        <label className="flex items-center gap-1.5 text-sm cursor-pointer pb-1">
+        <label className="flex items-center gap-1.5 text-sm cursor-pointer h-8">
           <input type="checkbox" className="checkbox checkbox-sm" checked={noDashes} onChange={(e) => setNoDashes(e.target.checked)} />
           No dashes
         </label>
-        <button className="btn btn-primary btn-sm" onClick={generate}>Generate</button>
-        <button className="btn btn-ghost border btn-sm ml-auto" onClick={copyAll}>Copy All</button>
+        <button className="btn btn-primary btn-sm ml-auto" onClick={generate}>Generate</button>
       </div>
 
       {/* UUID list */}
-      <div className="flex flex-col gap-1.5 flex-1 overflow-auto">
+      <div className="flex flex-col gap-1.5">
         {uuids.map((id, i) => (
-          <div key={i} className="flex items-center justify-between bg-base-200 rounded-lg px-3 py-2">
-            <span className="font-mono text-sm">{format(id)}</span>
-            <button className="btn btn-xs btn-ghost" onClick={() => copyOne(id)}>Copy</button>
+          <div key={i} className="flex items-center justify-between gap-2 rounded-lg border border-base-content/10 bg-base-200/50 px-3 py-2">
+            <span className="font-mono text-sm break-all">{format(id)}</span>
+            <button className="btn btn-xs btn-soft" onClick={() => copyOne(id)}>Copy</button>
           </div>
         ))}
       </div>
-    </div>
+    </ToolPage>
   );
 }

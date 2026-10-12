@@ -1,4 +1,5 @@
 "use client";
+import ToolPage, { Segmented } from "./ui/ToolPage";
 import { useState, useEffect, useMemo } from "react";
 import { toastSuccess, toastError } from "../lib/swal";
 import { useToolHistory } from "../hooks/useToolHistory";
@@ -111,81 +112,65 @@ export default function ThaiEngKeyboard() {
   };
 
   return (
-    <div className="h-full p-4 overflow-y-auto">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold mb-2">แก้ภาษาแป้นพิมพ์ ไทย ⇄ EN</h1>
-          <p className="text-gray-400 text-sm">
-            ลืมเปลี่ยนภาษาก่อนพิมพ์? วางข้อความที่เพี้ยน เช่น{" "}
-            <code className="px-1.5 py-0.5 rounded bg-base-300 font-mono">l;ylfu</code>{" "}
-            แล้วระบบจะแปลงกลับเป็น <span className="font-semibold">สวัสดี</span> ให้ทันที
-          </p>
-        </div>
+    <ToolPage
+      slug="thai-eng-keyboard"
+      title="แก้ภาษาแป้นพิมพ์ ไทย ⇄ EN"
+      description={<>ลืมเปลี่ยนภาษาก่อนพิมพ์? วางข้อความที่เพี้ยน เช่น <code className="font-mono">l;ylfu</code> แล้วระบบจะแปลงกลับเป็น สวัสดี ให้ทันที</>}
+      width="narrow"
+    >
+      {/* ตัวเลือกทิศทาง */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Segmented
+          value={dir}
+          onChange={setDir}
+          options={(["auto", "en2th", "th2en"] as Dir[]).map((d) => ({ value: d, label: DIR_LABELS[d] }))}
+        />
+        {dir === "auto" && input && (
+          <span className="text-xs opacity-50">
+            ตรวจพบ: {effDir === "en2th" ? "EN → ไทย" : "ไทย → EN"}
+          </span>
+        )}
+      </div>
 
-        {/* ตัวเลือกทิศทาง */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-          <div className="inline-flex rounded-lg border border-gray-700/50 overflow-hidden text-xs">
-            {(["auto", "en2th", "th2en"] as Dir[]).map((d) => (
-              <button
-                key={d}
-                onClick={() => setDir(d)}
-                className={`px-3 py-1.5 transition-colors ${
-                  dir === d
-                    ? "bg-accent text-accent-content font-medium"
-                    : "hover:bg-white/5 opacity-70"
-                }`}
-              >
-                {DIR_LABELS[d]}
-              </button>
-            ))}
-          </div>
-          {dir === "auto" && input && (
-            <span className="text-xs opacity-50">
-              ตรวจพบ: {effDir === "en2th" ? "EN → ไทย" : "ไทย → EN"}
-            </span>
-          )}
-        </div>
-
-        {/* Input */}
-        <label className="block text-xs font-medium opacity-60 mb-1">
-          ข้อความที่พิมพ์ผิด
-        </label>
+      {/* Input */}
+      <div className="flex flex-col gap-1">
+        <label className="tool-label">ข้อความที่พิมพ์ผิด</label>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="วางข้อความที่ลืมเปลี่ยนภาษาที่นี่..."
-          className="w-full h-36 p-3 mb-4 rounded-xl bg-base-200 border border-gray-700/50 focus:ring-2 focus:ring-accent outline-none resize-none font-mono text-sm"
+          className="input-area h-36 resize-none font-mono text-sm"
           spellCheck={false}
         />
+      </div>
 
-        {/* Output */}
-        <label className="block text-xs font-medium opacity-60 mb-1">
-          ผลลัพธ์ที่แก้แล้ว
-        </label>
+      {/* Output */}
+      <div className="flex flex-col gap-1">
+        <label className="tool-label">ผลลัพธ์ที่แก้แล้ว</label>
         <textarea
           value={output}
           readOnly
           placeholder="ผลลัพธ์จะแสดงที่นี่..."
-          className="w-full h-36 p-3 mb-4 rounded-xl bg-base-300 border border-gray-700/50 resize-none font-mono text-sm"
+          className="input-area h-36 resize-none font-mono text-sm"
           spellCheck={false}
         />
-
-        {/* ปุ่มต่าง ๆ */}
-        <div className="flex flex-wrap justify-center gap-2">
-          <button className="btn btn-sm btn-accent" onClick={copyOutput}>
-            📋 คัดลอกผลลัพธ์
-          </button>
-          <button className="btn btn-sm btn-ghost" onClick={useAsInput}>
-            ↩️ ใช้ผลลัพธ์เป็นข้อความตั้งต้น
-          </button>
-          <button className="btn btn-sm btn-ghost" onClick={loadExample}>
-            ✨ ตัวอย่าง
-          </button>
-          <button className="btn btn-sm btn-ghost" onClick={clearAll}>
-            🧹 ล้าง
-          </button>
-        </div>
       </div>
-    </div>
+
+      {/* ปุ่มต่าง ๆ */}
+      <div className="flex flex-wrap justify-center gap-2">
+        <button className="btn btn-sm btn-primary" onClick={copyOutput}>
+          📋 คัดลอกผลลัพธ์
+        </button>
+        <button className="btn btn-sm btn-soft" onClick={useAsInput}>
+          ↩️ ใช้ผลลัพธ์เป็นข้อความตั้งต้น
+        </button>
+        <button className="btn btn-sm btn-soft" onClick={loadExample}>
+          ✨ ตัวอย่าง
+        </button>
+        <button className="btn btn-sm btn-soft" onClick={clearAll}>
+          🧹 ล้าง
+        </button>
+      </div>
+    </ToolPage>
   );
 }

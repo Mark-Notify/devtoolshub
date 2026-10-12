@@ -1,6 +1,8 @@
+import ToolPage from "./ui/ToolPage";
 import React, { useEffect, useState, useCallback } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import {
+  UserCircleIcon,
   ClockIcon,
   StarIcon,
   BookmarkIcon,
@@ -131,8 +133,8 @@ const ProfilePage: React.FC = () => {
 
   if (!session) {
     return (
-      <div className="h-full flex items-center justify-center p-4">
-        <div className="max-w-sm w-full bg-base-100 rounded-2xl shadow-lg p-8 text-center border border-base-300">
+      <ToolPage slug="profile" title="Profile" icon={UserCircleIcon} description="Your history, favorites and snippets">
+        <div className="max-w-sm w-full mx-auto mt-8 bg-base-100 rounded-2xl shadow-lg p-8 text-center border border-base-300">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
             <WrenchScrewdriverIcon className="w-8 h-8 text-white" />
           </div>
@@ -144,19 +146,19 @@ const ProfilePage: React.FC = () => {
             Sign in with Google
           </button>
         </div>
-      </div>
+      </ToolPage>
     );
   }
 
   return (
-    <div className="h-full overflow-y-auto p-4 space-y-6">
+    <ToolPage slug="profile" title="Profile" icon={UserCircleIcon} description="Your history, favorites and snippets" width="medium">
       {/* Profile header */}
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-base-100 rounded-2xl shadow border border-base-300 p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+      <div>
+        <div className="tool-card p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4">
           <img
             src={session.user?.image ?? "/default-profile.png"}
             alt="Profile"
-            className="w-20 h-20 rounded-full shadow border-4 border-base-200 object-cover bg-gray-200 shrink-0"
+            className="w-20 h-20 rounded-full shadow border-4 border-base-200 object-cover bg-base-300 shrink-0"
           />
           <div className="flex-1 text-center sm:text-left">
             <h1 className="text-xl font-bold">{session.user?.name}</h1>
@@ -174,7 +176,7 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Stats row */}
-      <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { icon: ChartBarIcon, label: "Total Usage", value: history.length, color: "text-blue-500" },
           { icon: StarIcon, label: "Favorites", value: favorites.length, color: "text-yellow-500" },
@@ -186,7 +188,7 @@ const ProfilePage: React.FC = () => {
             color: "text-purple-500",
           },
         ].map(({ icon: Icon, label, value, color }) => (
-          <div key={label} className="bg-base-100 rounded-xl border border-base-300 p-4 text-center shadow-sm">
+          <div key={label} className="tool-card p-4 text-center">
             <Icon className={`w-6 h-6 mx-auto mb-1 ${color}`} />
             <div className="text-2xl font-bold">{loading ? "—" : value}</div>
             <div className="text-xs opacity-50">{label}</div>
@@ -195,9 +197,9 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* 3-column cards */}
-      <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Most Used Tools */}
-        <div className="bg-base-100 rounded-xl border border-base-300 shadow-sm p-4">
+        <div className="tool-card p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1.5">
             <ChartBarIcon className="w-4 h-4 text-blue-500" />
             Most Used Tools
@@ -219,7 +221,7 @@ const ProfilePage: React.FC = () => {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-base-100 rounded-xl border border-base-300 shadow-sm p-4">
+        <div className="tool-card p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1.5">
             <ClockIcon className="w-4 h-4 text-purple-500" />
             Recent Activity
@@ -246,7 +248,7 @@ const ProfilePage: React.FC = () => {
         </div>
 
         {/* Favorite Tools */}
-        <div className="bg-base-100 rounded-xl border border-base-300 shadow-sm p-4">
+        <div className="tool-card p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1.5">
             <StarSolidIcon className="w-4 h-4 text-yellow-500" />
             Favorite Tools
@@ -269,8 +271,8 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Saved Snippets */}
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-base-100 rounded-xl border border-base-300 shadow-sm p-4">
+      <div>
+        <div className="tool-card p-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-1.5">
             <BookmarkIcon className="w-4 h-4 text-green-500" />
             Saved Snippets
@@ -287,7 +289,7 @@ const ProfilePage: React.FC = () => {
               {snippets.map((snippet) => (
                 <div
                   key={snippet._id}
-                  className="border border-base-300 rounded-lg p-3 flex flex-col gap-1"
+                  className="border border-base-content/10 bg-base-100 rounded-lg p-3 flex flex-col gap-1"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-medium text-sm truncate">{snippet.title}</span>
@@ -317,7 +319,7 @@ const ProfilePage: React.FC = () => {
                     <span className="badge badge-xs badge-ghost">{toolLabel(snippet.toolKey)}</span>
                     <span>{timeAgo(snippet.createdAt)}</span>
                   </div>
-                  <pre className="text-xs font-mono opacity-60 truncate bg-base-200 rounded p-1.5 mt-1">
+                  <pre className="text-xs font-mono opacity-60 truncate bg-base-100 rounded p-1.5 mt-1">
                     {snippet.content.slice(0, 80)}{snippet.content.length > 80 ? "…" : ""}
                   </pre>
                 </div>
@@ -329,20 +331,20 @@ const ProfilePage: React.FC = () => {
 
       {/* Pinned Snippets */}
       {favoriteSnippets.length > 0 && (
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-base-100 rounded-xl border border-yellow-400/30 shadow-sm p-4">
+        <div>
+          <div className="tool-card p-4 border-yellow-400/30">
             <h3 className="font-semibold text-sm mb-3 flex items-center gap-1.5">
               <StarSolidIcon className="w-4 h-4 text-yellow-500" />
               Pinned Snippets
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {favoriteSnippets.map((snippet) => (
-                <div key={snippet._id} className="border border-yellow-400/20 rounded-lg p-3">
+                <div key={snippet._id} className="border border-yellow-400/20 bg-base-100 rounded-lg p-3">
                   <div className="font-medium text-sm">{snippet.title}</div>
                   <div className="text-xs opacity-40 mt-0.5">
                     <span className="badge badge-xs badge-ghost">{toolLabel(snippet.toolKey)}</span>
                   </div>
-                  <pre className="text-xs font-mono opacity-60 truncate bg-base-200 rounded p-1.5 mt-1">
+                  <pre className="text-xs font-mono opacity-60 truncate bg-base-100 rounded p-1.5 mt-1">
                     {snippet.content.slice(0, 100)}{snippet.content.length > 100 ? "…" : ""}
                   </pre>
                 </div>
@@ -351,7 +353,7 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </ToolPage>
   );
 };
 

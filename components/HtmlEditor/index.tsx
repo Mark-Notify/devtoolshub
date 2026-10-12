@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState } from "react";
+import SplitPane from "../SplitPane";
+import ToolPage, { Panel } from "../ui/ToolPage";
+import { toastSuccess, toastError } from "../../lib/swal";
 
 const DEFAULT_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -41,108 +44,35 @@ const DEFAULT_HTML = `<!DOCTYPE html>
 
 export default function HtmlEditorPage() {
   const [html, setHtml] = useState(DEFAULT_HTML);
-  const [splitPercent, setSplitPercent] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  /* ── Detect mobile ── */
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  /* ── Draggable divider logic (mouse) ── */
-  const onMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isDragging) return;
-    const onMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      let pct = ((e.clientX - rect.left) / rect.width) * 100;
-      pct = Math.max(15, Math.min(85, pct));
-      setSplitPercent(pct);
-    };
-    const onMouseUp = () => {
-      setIsDragging(false);
-    };
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [isDragging]);
-
-  /* ── Touch support for desktop drag ── */
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isDragging) return;
-    const onTouchMove = (e: TouchEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
-      let pct = ((touch.clientX - rect.left) / rect.width) * 100;
-      pct = Math.max(15, Math.min(85, pct));
-      setSplitPercent(pct);
-    };
-    const onTouchEnd = () => {
-      setIsDragging(false);
-    };
-    window.addEventListener("touchmove", onTouchMove);
-    window.addEventListener("touchend", onTouchEnd);
-    return () => {
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-    };
-  }, [isDragging]);
-
-  /* ── Rendered HTML for iframe ── */
-  const srcDoc = html;
+  const copyHtml = () => {
+    navigator.clipboard
+      .writeText(html)
+      .then(() => toastSuccess("HTML copied!"))
+      .catch(() => toastError("Failed to copy"));
+  };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
-        <h2 className="text-sm font-semibold">HTML Online Render</h2>
-        <div className="flex gap-2">
-          <button
-            className="rounded-md py-1.5 px-3 border bg-base-100 text-xs hover:bg-gray-500/10 transition-colors"
-            onClick={() => setHtml(DEFAULT_HTML)}
-          >
+    <ToolPage
+      slug="html-render"
+      title="HTML Online Render"
+      description="Write HTML, CSS and JS and see the result live"
+      variant="fill"
+      actions={
+        <>
+          <button className="btn btn-sm btn-soft" onClick={() => setHtml(DEFAULT_HTML)}>
             Reset
           </button>
-          <button
-            className="rounded-md py-1.5 px-3 border bg-base-100 text-xs hover:bg-gray-500/10 transition-colors"
-            onClick={() => {
-              navigator.clipboard.writeText(html).catch(() => {
-                /* clipboard may be unavailable */
-              });
-            }}
-          >
+          <button className="btn btn-sm btn-soft" onClick={copyHtml}>
             Copy HTML
           </button>
-        </div>
-      </div>
-
-      {isMobile ? (
-        /* ── Mobile: vertical stacked layout ── */
-        <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Editor pane - equal half */}
-          <div className="flex flex-col overflow-hidden flex-1">
-            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-              HTML Code
-            </div>
+        </>
+      }
+    >
+      <SplitPane
+        defaultSplit={50}
+        left={
+          <Panel label="HTML Code">
             <textarea
               className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
               value={html}
@@ -150,85 +80,15 @@ export default function HtmlEditorPage() {
               spellCheck={false}
               placeholder="Type your HTML here..."
             />
-          </div>
-
-          {/* Horizontal divider */}
-          <div className="h-2 shrink-0 bg-gray-700/30 flex items-center justify-center">
-            <div className="h-0.5 w-8 bg-gray-400/50 rounded-full" />
-          </div>
-
-          {/* Preview pane - equal half */}
-          <div className="flex flex-col overflow-hidden flex-1">
-            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-              Preview
-            </div>
-            <iframe
-              className="flex-1 w-full bg-white"
-              srcDoc={srcDoc}
-              title="HTML Preview"
-              sandbox="allow-scripts"
-            />
-          </div>
-        </div>
-      ) : (
-        /* ── Desktop: horizontal split pane ── */
-        <div
-          ref={containerRef}
-          className="flex flex-1 overflow-hidden relative"
-          style={{ cursor: isDragging ? "col-resize" : undefined }}
-        >
-          {/* Editor pane */}
-          <div
-            className="flex flex-col overflow-hidden"
-            style={{ width: `${splitPercent}%` }}
-          >
-            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-              HTML Code
-            </div>
-            <textarea
-              className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
-              value={html}
-              onChange={(e) => setHtml(e.target.value)}
-              spellCheck={false}
-              placeholder="Type your HTML here..."
-            />
-          </div>
-
-          {/* Draggable divider */}
-          <div
-            className="w-2 shrink-0 bg-gray-700/30 hover:bg-blue-500/60 active:bg-blue-500/80 transition-colors flex items-center justify-center"
-            style={{
-              cursor: "col-resize",
-              touchAction: "none",
-            }}
-            onMouseDown={onMouseDown}
-            onTouchStart={onTouchStart}
-          >
-            <div className="w-0.5 h-8 bg-gray-400/50 rounded-full" />
-          </div>
-
-          {/* Preview pane */}
-          <div
-            className="flex flex-col overflow-hidden"
-            style={{ width: `${100 - splitPercent}%` }}
-          >
-            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-              Preview
-            </div>
-            <iframe
-              className="flex-1 w-full bg-white"
-              srcDoc={srcDoc}
-              title="HTML Preview"
-              sandbox="allow-scripts"
-            />
-          </div>
-
-          {/* Transparent overlay while dragging to prevent iframe stealing events */}
-          {isDragging && (
-            <div className="absolute inset-0 z-10" style={{ cursor: "col-resize" }} />
-          )}
-        </div>
-      )}
-    </div>
+          </Panel>
+        }
+        right={
+          <Panel label="Preview">
+            {/* white backdrop on purpose: it previews the user's page, not our theme */}
+            <iframe className="flex-1 w-full bg-white" srcDoc={html} title="HTML Preview" sandbox="allow-scripts" />
+          </Panel>
+        }
+      />
+    </ToolPage>
   );
 }

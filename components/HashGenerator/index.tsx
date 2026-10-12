@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import CryptoJS from "crypto-js";
+import ToolPage from "../ui/ToolPage";
 import { toastSuccess, toastError } from "../../lib/swal";
 import { useToolHistory } from "../../hooks/useToolHistory";
 
@@ -30,9 +31,9 @@ export default function HashGenerator() {
   };
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto p-4 gap-4">
+    <ToolPage slug="hash-generator" title="Hash Generator" description="MD5, SHA-1, SHA-256, SHA-512, SHA3 and RIPEMD-160" width="medium">
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold">Input Text</label>
+        <label className="tool-label">Input Text</label>
         <textarea
           className="input-area resize-none h-28 font-mono text-sm"
           placeholder="Enter text to hash..."
@@ -49,14 +50,10 @@ export default function HashGenerator() {
         {ALGORITHMS.map(({ key, fn }) => {
           const hash = input ? getHash(fn) : "";
           return (
-            <div key={key} className="flex flex-col gap-1 bg-base-200 rounded-lg p-3">
+            <div key={key} className="tool-card flex flex-col gap-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-blue-400">{key}</span>
-                <button
-                  className="btn btn-xs btn-ghost"
-                  disabled={!input}
-                  onClick={() => copy(hash, key)}
-                >
+                <span className="text-xs font-bold text-primary">{key}</span>
+                <button className="btn btn-xs btn-soft" disabled={!input} onClick={() => copy(hash, key)}>
                   Copy
                 </button>
               </div>
@@ -67,6 +64,6 @@ export default function HashGenerator() {
           );
         })}
       </div>
-    </div>
+    </ToolPage>
   );
 }

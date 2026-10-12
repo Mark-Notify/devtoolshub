@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import ToolPage from "../ui/ToolPage";
 import { toastSuccess, toastError } from "../../lib/swal";
 
 const BASES = [
@@ -46,19 +47,19 @@ export default function NumberBase() {
   const bytes = padded ? padded.match(/.{1,8}/g) ?? [] : [];
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto p-4 gap-4">
-      <div className="grid grid-cols-1 gap-3">
+    <ToolPage slug="number-base" title="Number Base Converter" description="Convert between binary, octal, decimal and hexadecimal" width="medium">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {BASES.map(({ label, base, prefix, placeholder }) => (
-          <div key={base} className="bg-base-200 rounded-lg p-3 flex flex-col gap-1">
+          <div key={base} className="tool-card flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-blue-400">{label} (base {base})</span>
+              <span className="text-xs font-bold text-primary">{label} (base {base})</span>
               <div className="flex items-center gap-2">
                 {prefix && <span className="text-xs opacity-40 font-mono">{prefix}</span>}
-                <button className="btn btn-xs btn-ghost" disabled={!values[base]} onClick={() => copy(base)}>Copy</button>
+                <button className="btn btn-xs btn-soft" disabled={!values[base]} onClick={() => copy(base)}>Copy</button>
               </div>
             </div>
             <input
-              className="input input-bordered font-mono text-sm w-full"
+              className="input input-bordered input-sm font-mono w-full"
               placeholder={placeholder}
               value={values[base]}
               onChange={(e) => updateFrom(base, e.target.value)}
@@ -67,12 +68,12 @@ export default function NumberBase() {
         ))}
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="text-error text-sm">{error}</p>}
 
       {/* Bit grid */}
       {bytes.length > 0 && (
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold">Bit Visualization</label>
+          <label className="tool-label">Bit Visualization</label>
           <div className="flex flex-wrap gap-3">
             {bytes.map((byte, bi) => (
               <div key={bi} className="flex flex-col items-center gap-1">
@@ -80,7 +81,7 @@ export default function NumberBase() {
                   {byte.split("").map((bit, i) => (
                     <div
                       key={i}
-                      className={`w-6 h-6 rounded text-xs flex items-center justify-center font-mono font-bold ${bit === "1" ? "bg-blue-600 text-white" : "bg-base-300 opacity-40"}`}
+                      className={`w-6 h-6 rounded text-xs flex items-center justify-center font-mono font-bold ${bit === "1" ? "bg-primary text-primary-content" : "bg-base-300 opacity-40"}`}
                     >{bit}</div>
                   ))}
                 </div>
@@ -90,6 +91,6 @@ export default function NumberBase() {
           </div>
         </div>
       )}
-    </div>
+    </ToolPage>
   );
 }

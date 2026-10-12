@@ -8,9 +8,11 @@ interface SplitPaneProps {
   left: ReactNode;
   right: ReactNode;
   defaultSplit?: number;
+  /** Always stack the panes top/bottom, even on wide screens. */
+  stacked?: boolean;
 }
 
-export default function SplitPane({ left, right, defaultSplit = 40 }: SplitPaneProps) {
+export default function SplitPane({ left, right, defaultSplit = 40, stacked = false }: SplitPaneProps) {
   const [splitPercent, setSplitPercent] = useState(defaultSplit);
   const [isDragging, setIsDragging] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -69,12 +71,12 @@ export default function SplitPane({ left, right, defaultSplit = 40 }: SplitPaneP
     };
   }, [isDragging]);
 
-  if (isMobile) {
+  if (isMobile || stacked) {
     return (
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex flex-col overflow-hidden flex-1">{left}</div>
-        <div className="h-2 shrink-0 bg-gray-700/30 flex items-center justify-center">
-          <div className="h-0.5 w-8 bg-gray-400/50 rounded-full" />
+        <div className="h-2 shrink-0 bg-base-300/60 flex items-center justify-center">
+          <div className="h-0.5 w-8 bg-base-content/20 rounded-full" />
         </div>
         <div className="flex flex-col overflow-hidden flex-1">{right}</div>
       </div>
@@ -92,12 +94,12 @@ export default function SplitPane({ left, right, defaultSplit = 40 }: SplitPaneP
       </div>
 
       <div
-        className="w-2 shrink-0 bg-gray-700/30 hover:bg-blue-500/60 active:bg-blue-500/80 transition-colors flex items-center justify-center"
+        className="w-2 shrink-0 bg-base-300/60 hover:bg-primary/50 active:bg-primary/70 transition-colors flex items-center justify-center"
         style={{ cursor: "col-resize", touchAction: "none" }}
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
       >
-        <div className="w-0.5 h-8 bg-gray-400/50 rounded-full" />
+        <div className="w-0.5 h-8 bg-base-content/20 rounded-full" />
       </div>
 
       <div className="flex flex-col overflow-hidden" style={{ width: `${100 - splitPercent}%` }}>

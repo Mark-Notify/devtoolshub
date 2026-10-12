@@ -5,6 +5,7 @@ import { toastSuccess, toastError } from "../lib/swal";
 import { useToolHistory } from "../hooks/useToolHistory";
 import SaveSnippetButton from "./SaveSnippetButton";
 import SplitPane from "./SplitPane";
+import ToolPage, { Panel, Segmented } from "./ui/ToolPage";
 
 export default function Base64Page() {
     const [inputData, setInputData] = useState<string>("");
@@ -56,10 +57,14 @@ export default function Base64Page() {
     };
 
     const leftPanel = (
-        <>
-            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0">
-                Input ({mode === "decode" ? "Base64" : "Plain Text"})
-            </div>
+        <Panel
+            label={`Input (${mode === "decode" ? "Base64" : "Plain Text"})`}
+            footer={
+                <button className="btn btn-block btn-sm btn-primary" onClick={() => processData()}>
+                    {mode === "decode" ? "Decode" : "Encode"}
+                </button>
+            }
+        >
             <textarea
                 className="flex-1 w-full resize-none p-3 font-mono text-sm bg-base-100 outline-none"
                 placeholder={`Paste your ${mode === "decode" ? "Base64" : "text"} here...`}
@@ -67,70 +72,53 @@ export default function Base64Page() {
                 onChange={(e) => setInputData(e.target.value)}
                 spellCheck={false}
             />
-            <div className="px-3 py-2 border-t border-gray-700/30 bg-base-100 shrink-0">
-                <button className="btn btn-block btn-sm btn-accent" onClick={() => processData()}>
-                    {mode === "decode" ? "Decode" : "Encode"}
-                </button>
-            </div>
-        </>
+        </Panel>
     );
 
     const rightPanel = (
-        <>
-            <div className="px-3 py-1.5 text-xs font-medium opacity-60 border-b border-gray-700/30 bg-base-100 shrink-0 flex items-center justify-between">
-                <span>Output</span>
-                <div className="flex items-center gap-1">
+        <Panel
+            label="Output"
+            actions={
+                <>
                     <SaveSnippetButton toolKey="base64" content={outputData} disabled={!outputData} />
-                    <button
-                        className="rounded-md py-1 px-2 border bg-base-100 text-xs"
-                        type="button"
-                        onClick={copyToClipboard}
-                    >
+                    <button className="btn btn-xs btn-soft" type="button" onClick={copyToClipboard}>
                         Copy
                     </button>
-                </div>
-            </div>
-            <div className="flex-1 overflow-hidden">
-                <Editor
-                    height="100%"
-                    language="plaintext"
-                    value={outputData}
-                    theme={theme === "dark" ? "vs-dark" : "vs-light"}
-                    onChange={handleEditorChange}
-                    options={{
-                        readOnly: false,
-                        automaticLayout: true,
-                    }}
-                />
-            </div>
-        </>
+                </>
+            }
+        >
+            <Editor
+                height="100%"
+                language="plaintext"
+                value={outputData}
+                theme={theme === "dark" ? "vs-dark" : "vs-light"}
+                onChange={handleEditorChange}
+                options={{
+                    readOnly: false,
+                    automaticLayout: true,
+                }}
+            />
+        </Panel>
     );
 
     return (
-        <div className="flex flex-col h-full">
-            {/* Toolbar */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/30 bg-base-100 shrink-0">
-                <h2 className="text-sm font-semibold">
-                    Base64 {mode === "encode" ? "Encoder" : "Decoder"}
-                </h2>
-                <div className="flex gap-2">
-                    <button
-                        className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
-                        onClick={() => switchMode("encode")}
-                        disabled={mode === "encode"}
-                    >
-                        Encode
-                    </button>
-                    <button
-                        className="rounded-md py-1.5 px-3 border bg-base-100 text-xs"
-                        onClick={() => switchMode("decode")}
-                        disabled={mode === "decode"}
-                    >
-                        Decode
-                    </button>
-                </div>
-            </div>
+        <ToolPage
+            slug="base64"
+            title={`Base64 ${mode === "encode" ? "Encoder" : "Decoder"}`}
+            description="Encode plain text to Base64 or decode it back"
+            variant="fill"
+            actions={
+                <Segmented
+                    value={mode}
+                    onChange={switchMode}
+                    options={[
+                        { value: "encode", label: "Encode" },
+                        { value: "decode", label: "Decode" },
+                    ]}
+                />
+            }
+        >
             <SplitPane left={leftPanel} right={rightPanel} defaultSplit={40} />
-        </div>
+        </ToolPage>
     );
 }

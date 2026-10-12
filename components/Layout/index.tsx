@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import Header, { HeaderProps, menuItems, groupConfig, GroupName } from "components/Layout/Header";
+import Header, { HeaderProps, menuItems, groupConfig, GroupName, menuSlugFor } from "components/Layout/Header";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -126,7 +126,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
   const saveOrderTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const router = useRouter();
-  const currentSlug = (router.query.slug || router.query.type || "") as string;
+  const currentSlug = menuSlugFor((router.query.slug || router.query.type || "") as string);
   const { data: session } = useSession();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));

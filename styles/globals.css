@@ -202,44 +202,65 @@ h5 {
   font-weight: 600;
 }
 
-/* Additional styling for input area and editor */
+/* ====== SHARED TOOL STYLES ====== */
+
+/* Text areas / code inputs used across tools. Height comes from utilities. */
 .input-area {
   width: 100%;
-  height: 130px;
-  font-size: 14px;
-  padding: 10px;
-  color: var(--foreground);
-  border: 1px solid var(--foreground);
-  border-radius: 6px;
-  margin-bottom: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: hsl(var(--bc));
+  background-color: hsl(var(--b1));
+  border: 1px solid hsl(var(--bc) / 0.15);
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.input {
-  color: var(--foreground);
-  border: 1px solid var(--foreground);
-  border-radius: 6px;
-  margin-bottom: 12px;
+.input-area:focus {
+  border-color: hsl(var(--p));
+  box-shadow: 0 0 0 3px hsl(var(--p) / 0.15);
 }
 
-#editor {
-  width: 100%;
-  min-height: 300px;
-  height: calc(100vh - 200px);
-  border: 1px solid var(--foreground);
-  border-radius: 6px;
-  background-color: var(--background);
-  color: var(--foreground);
+.input-area[readonly] {
+  background-color: hsl(var(--b2) / 0.6);
 }
 
-button {
-  border: 1px solid var(--foreground);
+/* Field label */
+.tool-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+/* Grouped content block */
+.tool-card {
+  border: 1px solid hsl(var(--bc) / 0.1);
+  background-color: hsl(var(--b2) / 0.5);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+/* Secondary button: bordered, neutral — pairs with btn-primary */
+.btn-soft {
+  background-color: hsl(var(--b1));
+  border-color: hsl(var(--bc) / 0.15);
+}
+
+.btn-soft:hover {
+  background-color: hsl(var(--b2));
+  border-color: hsl(var(--bc) / 0.25);
+}
+
+/* Soften the default input / select border so it matches .input-area */
+.input-bordered,
+.select-bordered {
+  border-color: hsl(var(--bc) / 0.15);
 }
 
 pre {
-  color: var(--foreground);
-  border: 1px solid var(--foreground);
-  border-radius: 6px;
-  margin-bottom: 12px;
+  color: hsl(var(--bc));
 }
 
 [data-theme="dark"] .svg-icon-theme {

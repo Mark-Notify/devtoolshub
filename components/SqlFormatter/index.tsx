@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { format } from "sql-formatter";
 import Editor from "@monaco-editor/react";
 import SplitPane from "../SplitPane";
+import ToolPage, { Panel } from "../ui/ToolPage";
 import { toastSuccess, toastError } from "../../lib/swal";
 import { useToolHistory } from "../../hooks/useToolHistory";
 
@@ -50,58 +51,57 @@ export default function SqlFormatter() {
   const vsTheme = theme === "dark" ? "vs-dark" : "vs-light";
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden p-4 gap-3">
-      <div className="flex items-center gap-2 flex-wrap">
-        <select
-          className="select select-bordered select-sm"
-          value={dialect}
-          onChange={(e) => setDialect(e.target.value as Dialect)}
-        >
-          {DIALECTS.map((d) => (
-            <option key={d.value} value={d.value}>{d.label}</option>
-          ))}
-        </select>
-        <div className="flex items-center gap-1 text-sm">
-          <span className="opacity-60">Indent:</span>
-          <select className="select select-bordered select-sm w-16" value={indent} onChange={(e) => setIndent(Number(e.target.value))}>
-            <option value={2}>2</option>
-            <option value={4}>4</option>
+    <ToolPage
+      slug="sql-formatter"
+      description="Beautify SQL queries for many dialects"
+      variant="fill"
+      actions={
+        <>
+          <select
+            className="select select-bordered select-sm"
+            value={dialect}
+            onChange={(e) => setDialect(e.target.value as Dialect)}
+          >
+            {DIALECTS.map((d) => (
+              <option key={d.value} value={d.value}>{d.label}</option>
+            ))}
           </select>
-        </div>
-        <button className="btn btn-sm btn-ghost border ml-auto" onClick={copy}>Copy</button>
-      </div>
-
+          <label className="flex items-center gap-1.5 text-xs">
+            <span className="opacity-60">Indent</span>
+            <select className="select select-bordered select-sm w-16" value={indent} onChange={(e) => setIndent(Number(e.target.value))}>
+              <option value={2}>2</option>
+              <option value={4}>4</option>
+            </select>
+          </label>
+          <button className="btn btn-sm btn-soft" onClick={copy}>Copy</button>
+        </>
+      }
+    >
       <SplitPane
         left={
-          <div className="flex flex-col flex-1 overflow-hidden gap-1 pr-1">
-            <label className="text-xs font-semibold opacity-60 px-1">SQL Input</label>
-            <div className="flex-1 overflow-hidden rounded">
-              <Editor
-                height="100%"
-                language="sql"
-                value={input}
-                theme={vsTheme}
-                onChange={(v) => setInput(v ?? "")}
-                options={{ minimap: { enabled: false }, fontSize: 13 }}
-              />
-            </div>
-          </div>
+          <Panel label="SQL Input">
+            <Editor
+              height="100%"
+              language="sql"
+              value={input}
+              theme={vsTheme}
+              onChange={(v) => setInput(v ?? "")}
+              options={{ minimap: { enabled: false }, fontSize: 13, automaticLayout: true }}
+            />
+          </Panel>
         }
         right={
-          <div className="flex flex-col flex-1 overflow-hidden gap-1 pl-1">
-            <label className="text-xs font-semibold opacity-60 px-1">Formatted Output</label>
-            <div className="flex-1 overflow-hidden rounded">
-              <Editor
-                height="100%"
-                language="sql"
-                value={output}
-                theme={vsTheme}
-                options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13 }}
-              />
-            </div>
-          </div>
+          <Panel label="Formatted Output">
+            <Editor
+              height="100%"
+              language="sql"
+              value={output}
+              theme={vsTheme}
+              options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13, automaticLayout: true }}
+            />
+          </Panel>
         }
       />
-    </div>
+    </ToolPage>
   );
 }

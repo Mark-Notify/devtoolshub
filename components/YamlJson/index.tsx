@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import yaml from "js-yaml";
 import Editor from "@monaco-editor/react";
 import SplitPane from "../SplitPane";
+import ToolPage, { Panel, Segmented } from "../ui/ToolPage";
 import { toastSuccess, toastError } from "../../lib/swal";
 import { useToolHistory } from "../../hooks/useToolHistory";
 
@@ -59,47 +60,50 @@ export default function YamlJson() {
   const vsTheme = theme === "dark" ? "vs-dark" : "vs-light";
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden p-4 gap-3">
-      <div className="flex items-center gap-2 flex-wrap">
-        <div className="join">
-          <button className={`join-item btn btn-sm ${mode === "yaml-to-json" ? "btn-primary" : "btn-ghost border"}`} onClick={() => setMode("yaml-to-json")}>YAML → JSON</button>
-          <button className={`join-item btn btn-sm ${mode === "json-to-yaml" ? "btn-primary" : "btn-ghost border"}`} onClick={() => setMode("json-to-yaml")}>JSON → YAML</button>
-        </div>
-        <button className="btn btn-sm btn-ghost border" onClick={swap}>⇄ Swap</button>
-        <button className="btn btn-sm btn-ghost border ml-auto" onClick={copy}>Copy</button>
-      </div>
-
+    <ToolPage
+      slug="yaml-json"
+      description="Convert YAML to JSON and back"
+      variant="fill"
+      actions={
+        <>
+          <Segmented
+            value={mode}
+            onChange={setMode}
+            options={[
+              { value: "yaml-to-json", label: "YAML → JSON" },
+              { value: "json-to-yaml", label: "JSON → YAML" },
+            ]}
+          />
+          <button className="btn btn-sm btn-soft" onClick={swap}>⇄ Swap</button>
+          <button className="btn btn-sm btn-soft" onClick={copy}>Copy</button>
+        </>
+      }
+    >
       <SplitPane
         left={
-          <div className="flex flex-col flex-1 overflow-hidden gap-1 pr-1">
-            <label className="text-xs font-semibold opacity-60 px-1">{inputLang.toUpperCase()} Input</label>
-            <div className="flex-1 overflow-hidden rounded">
-              <Editor
-                height="100%"
-                language={inputLang}
-                value={input}
-                theme={vsTheme}
-                onChange={(v) => setInput(v ?? "")}
-                options={{ minimap: { enabled: false }, fontSize: 13 }}
-              />
-            </div>
-          </div>
+          <Panel label={`${inputLang.toUpperCase()} Input`}>
+            <Editor
+              height="100%"
+              language={inputLang}
+              value={input}
+              theme={vsTheme}
+              onChange={(v) => setInput(v ?? "")}
+              options={{ minimap: { enabled: false }, fontSize: 13, automaticLayout: true }}
+            />
+          </Panel>
         }
         right={
-          <div className="flex flex-col flex-1 overflow-hidden gap-1 pl-1">
-            <label className="text-xs font-semibold opacity-60 px-1">{outputLang.toUpperCase()} Output</label>
-            <div className="flex-1 overflow-hidden rounded">
-              <Editor
-                height="100%"
-                language={outputLang}
-                value={output}
-                theme={vsTheme}
-                options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13 }}
-              />
-            </div>
-          </div>
+          <Panel label={`${outputLang.toUpperCase()} Output`}>
+            <Editor
+              height="100%"
+              language={outputLang}
+              value={output}
+              theme={vsTheme}
+              options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13, automaticLayout: true }}
+            />
+          </Panel>
         }
       />
-    </div>
+    </ToolPage>
   );
 }

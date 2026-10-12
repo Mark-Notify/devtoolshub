@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
+import ToolPage from "../ui/ToolPage";
 import { toastSuccess } from "../../lib/swal";
 
 // ─── conversion helpers ───────────────────────────────────────
@@ -85,10 +86,10 @@ export default function ColorConverter() {
   ];
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto p-4 gap-4">
+    <ToolPage slug="color-converter" title="Color Converter" description="Convert between HEX, RGB, HSL and more" width="medium">
       {/* Color preview + native picker */}
       <div className="flex items-center gap-4">
-        <div className="w-20 h-20 rounded-xl shadow-lg border border-white/10" style={{ background: color.hex }} />
+        <div className="w-20 h-20 rounded-xl shadow-lg border border-base-content/10" style={{ background: color.hex }} />
         <div className="flex flex-col gap-1">
           <input
             type="color"
@@ -100,9 +101,9 @@ export default function ColorConverter() {
           <span className="text-xs opacity-50">Click to pick</span>
         </div>
         <div className="flex flex-col gap-1 flex-1">
-          <label className="text-xs opacity-60">HEX</label>
+          <label className="tool-label">HEX</label>
           <input
-            className="input input-bordered font-mono text-sm w-36"
+            className="input input-bordered input-sm font-mono w-36"
             value={hexInput}
             onChange={(e) => updateFromHex(e.target.value)}
             placeholder="#rrggbb"
@@ -113,8 +114,8 @@ export default function ColorConverter() {
       {/* Sliders */}
       <div className="grid grid-cols-1 gap-3">
         {/* RGB */}
-        <div className="bg-base-200 rounded-lg p-3 flex flex-col gap-2">
-          <span className="text-xs font-bold text-blue-400">RGB</span>
+        <div className="tool-card flex flex-col gap-2">
+          <span className="text-xs font-bold text-primary">RGB</span>
           {(["r","g","b"] as const).map((ch, i) => (
             <div key={ch} className="flex items-center gap-2">
               <span className="text-xs w-4 opacity-60">{ch.toUpperCase()}</span>
@@ -122,7 +123,7 @@ export default function ColorConverter() {
                 type="range" min={0} max={255}
                 value={color[ch]}
                 onChange={(e) => { const v = Number(e.target.value); const rgb: [number,number,number] = [color.r, color.g, color.b]; rgb[i] = v; updateFromRgb(...rgb); }}
-                className="flex-1"
+                className="range range-xs range-primary flex-1"
               />
               <input
                 type="number" min={0} max={255}
@@ -135,8 +136,8 @@ export default function ColorConverter() {
         </div>
 
         {/* HSL */}
-        <div className="bg-base-200 rounded-lg p-3 flex flex-col gap-2">
-          <span className="text-xs font-bold text-purple-400">HSL</span>
+        <div className="tool-card flex flex-col gap-2">
+          <span className="text-xs font-bold text-secondary">HSL</span>
           {([["h",360],["s",100],["l",100]] as [keyof ColorState, number][]).map(([ch, max]) => (
             <div key={ch} className="flex items-center gap-2">
               <span className="text-xs w-4 opacity-60">{String(ch).toUpperCase()}</span>
@@ -144,7 +145,7 @@ export default function ColorConverter() {
                 type="range" min={0} max={max}
                 value={color[ch] as number}
                 onChange={(e) => { const v = Number(e.target.value); const hsl: [number,number,number] = [color.h, color.s, color.l]; hsl[["h","s","l"].indexOf(ch as string)] = v; updateFromHsl(...hsl); }}
-                className="flex-1"
+                className="range range-xs range-primary flex-1"
               />
               <input
                 type="number" min={0} max={max}
@@ -159,24 +160,24 @@ export default function ColorConverter() {
 
       {/* Formats */}
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold">All Formats</label>
+        <label className="tool-label">All Formats</label>
         {formats.map(({ label, value }) => (
-          <div key={label} className="flex items-center justify-between bg-base-200 rounded-lg px-3 py-2">
-            <span className="text-xs font-bold text-blue-400 w-24">{label}</span>
+          <div key={label} className="flex items-center justify-between rounded-lg border border-base-content/10 bg-base-200/50 px-3 py-2">
+            <span className="text-xs font-bold text-primary w-24">{label}</span>
             <span className="font-mono text-xs flex-1">{value}</span>
-            <button className="btn btn-xs btn-ghost" onClick={() => copy(value, label)}>Copy</button>
+            <button className="btn btn-xs btn-soft" onClick={() => copy(value, label)}>Copy</button>
           </div>
         ))}
       </div>
 
       {/* Presets */}
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold">Presets</label>
+        <label className="tool-label">Presets</label>
         <div className="flex gap-2 flex-wrap">
           {PRESETS.map((p) => (
             <button
               key={p}
-              className="w-8 h-8 rounded-lg border border-white/10 shadow"
+              className="w-8 h-8 rounded-lg border border-base-content/10 shadow"
               style={{ background: p }}
               onClick={() => updateFromHex(p)}
               title={p}
@@ -184,6 +185,6 @@ export default function ColorConverter() {
           ))}
         </div>
       </div>
-    </div>
+    </ToolPage>
   );
 }

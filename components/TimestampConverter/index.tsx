@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import ToolPage from "../ui/ToolPage";
 import { toastSuccess } from "../../lib/swal";
 
 const FORMATS = [
@@ -16,10 +17,12 @@ export default function TimestampConverter() {
   const [input, setInput] = useState("");
   const [date, setDate] = useState<Date | null>(null);
   const [error, setError] = useState("");
-  const [now, setNow] = useState(Date.now());
+  // null until mounted: server and client clocks/timezones differ, which breaks hydration
+  const [now, setNow] = useState<number | null>(null);
 
   // Live clock
   useEffect(() => {
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
@@ -52,27 +55,27 @@ export default function TimestampConverter() {
   };
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto p-4 gap-4">
+    <ToolPage slug="timestamp-converter" title="Timestamp Converter" description="Convert Unix timestamps and dates" width="medium">
       {/* Live clock */}
-      <div className="bg-base-200 rounded-lg p-3 text-center">
+      <div className="tool-card text-center">
         <div className="text-xs opacity-50 mb-1">Current time</div>
-        <div className="font-mono text-lg">{new Date(now).toLocaleString()}</div>
-        <div className="text-xs opacity-50 mt-1">Unix: {Math.floor(now / 1000)}</div>
+        <div className="font-mono text-lg">{now ? new Date(now).toLocaleString() : "—"}</div>
+        <div className="text-xs opacity-50 mt-1">Unix: {now ? Math.floor(now / 1000) : "—"}</div>
       </div>
 
       {/* Input */}
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold">Input (Unix timestamp or date string)</label>
+        <label className="tool-label">Input (Unix timestamp or date string)</label>
         <div className="flex gap-2">
           <input
-            className="input input-bordered flex-1 font-mono text-sm"
+            className="input input-bordered input-sm flex-1 font-mono"
             placeholder="e.g. 1718000000  or  2024-06-15T12:00:00"
             value={input}
             onChange={(e) => parse(e.target.value)}
           />
-          <button className="btn btn-sm btn-accent" onClick={useNow}>Now</button>
+          <button className="btn btn-sm btn-primary" onClick={useNow}>Now</button>
         </div>
-        {error && <p className="text-red-400 text-xs">{error}</p>}
+        {error && <p className="text-error text-xs">{error}</p>}
       </div>
 
       {/* Results */}
@@ -81,15 +84,15 @@ export default function TimestampConverter() {
           {FORMATS.map(({ label, fn }) => {
             const val = fn(date);
             return (
-              <div key={label} className="flex items-center justify-between bg-base-200 rounded-lg px-3 py-2">
-                <span className="text-xs font-bold text-blue-400 w-24 shrink-0">{label}</span>
+              <div key={label} className="flex items-center justify-between rounded-lg border border-base-content/10 bg-base-200/50 px-3 py-2">
+                <span className="text-xs font-bold text-primary w-24 shrink-0">{label}</span>
                 <span className="font-mono text-xs flex-1 break-all opacity-80">{val}</span>
-                <button className="btn btn-xs btn-ghost ml-2" onClick={() => copy(val, label)}>Copy</button>
+                <button className="btn btn-xs btn-soft ml-2" onClick={() => copy(val, label)}>Copy</button>
               </div>
             );
           })}
         </div>
       )}
-    </div>
+    </ToolPage>
   );
 }

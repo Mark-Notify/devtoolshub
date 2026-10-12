@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useToolHistory } from "../../hooks/useToolHistory";
 import SaveSnippetButton from "../SaveSnippetButton";
+import ToolPage from "../ui/ToolPage";
 
 export default function HomePage() {
   const [inputData, setInputData] = useState<string>(""); // JWT Token
@@ -108,87 +109,69 @@ export default function HomePage() {
     }
   };
 
+  const parts: { label: string; value: string }[] = [
+    { label: "Header", value: JSON.stringify(header, null, 4) },
+    { label: "Payload", value: JSON.stringify(payload, null, 4) },
+    { label: "Signature", value: signature || `""` },
+  ];
+
   return (
-    <div className="p-4 overflow-y-auto">
-      <div className="flex flex-col lg:flex-row gap-4 lg:h-[calc(100vh-80px)]">
+    <ToolPage
+      slug="jwt-decode"
+      description="Decode JSON Web Tokens and verify HS256 signatures"
+      actions={
+        <SaveSnippetButton
+          toolKey="jwt-decode"
+          content={inputData ? JSON.stringify({ header, payload, signature }, null, 2) : ""}
+          disabled={!inputData}
+        />
+      }
+    >
+      <div className="flex flex-col lg:flex-row gap-4">
         {/* Input Section */}
-        <div className="w-full lg:w-1/3 flex flex-col">
-          <label htmlFor="inputData" className="text-sm font-semibold mb-1">
-            JWT Token Input
-          </label>
-          <textarea
-            id="inputData"
-            className="input-area mt-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Paste your JWT Token here..."
-            value={inputData}
-            onChange={(e) => setInputData(e.target.value)}
-            style={{
-              minHeight: "150px",
-              resize: "vertical",
-            }}
-          />
-
-          <label
-            htmlFor="secretKey"
-            className="text-sm font-semibold mb-1 mt-2"
-          >
-            Secret Key (signature verification)
-          </label>
-          <input
-            id="secretKey"
-            type="text"
-            className="input p-2 border border-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            placeholder="Enter secret key for signature verification..."
-            value={secretKey}
-            onChange={(e) => setSecretKey(e.target.value)}
-          />
-
-          <button className="btn btn-sm btn-accent mt-2 mb-2" onClick={processData}>
+        <div className="w-full lg:w-1/3 flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="inputData" className="tool-label">JWT Token</label>
+            <textarea
+              id="inputData"
+              className="input-area font-mono h-48 resize-y break-all"
+              placeholder="Paste your JWT Token here..."
+              value={inputData}
+              onChange={(e) => setInputData(e.target.value)}
+              spellCheck={false}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="secretKey" className="tool-label">Secret Key (signature verification)</label>
+            <input
+              id="secretKey"
+              type="text"
+              className="input input-bordered input-sm font-mono"
+              placeholder="Enter secret key for signature verification..."
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
+            />
+          </div>
+          <button className="btn btn-sm btn-primary" onClick={processData}>
             Process JWT
           </button>
-
-          <div>
-            <span className={`text-sm font-semibold ${isVerified ? "text-green-500" : "text-red-500"}`}>
-              {isVerified ? "✓ Signature verified!" : "✗ Invalid Signature"}
-            </span>
-          </div>
+          {secretKey && isVerified !== null && (
+            <div className={`text-sm font-semibold ${isVerified ? "text-success" : "text-error"}`}>
+              {isVerified ? "✓ Signature verified" : "✗ Invalid signature"}
+            </div>
+          )}
         </div>
 
         {/* Output Section */}
-        <div className="w-full lg:w-2/3 flex flex-col overflow-y-auto">
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-sm font-semibold">
-              JWT Parts (Header, Payload, Signature)
-            </label>
-            <SaveSnippetButton
-              toolKey="jwt-decode"
-              content={inputData ? JSON.stringify({ header, payload, signature }, null, 2) : ""}
-              disabled={!inputData}
-            />
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-sm">Header</h3>
-            <pre className="p-3 bg-base-100 rounded-md text-sm">
-              {JSON.stringify(header, null, 4)}
-            </pre>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-sm">Payload</h3>
-            <pre className="p-3 bg-base-100 rounded-md text-sm">
-              {JSON.stringify(payload, null, 4)}
-            </pre>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-sm">Signature</h3>
-            <pre className="p-3 bg-base-100 rounded-md text-sm">
-              {signature || `""`}
-            </pre>
-          </div>
+        <div className="w-full lg:w-2/3 flex flex-col gap-3">
+          {parts.map(({ label, value }) => (
+            <div key={label} className="flex flex-col gap-1">
+              <span className="tool-label">{label}</span>
+              <pre className="tool-card text-sm font-mono whitespace-pre-wrap break-all m-0">{value}</pre>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </ToolPage>
   );
 }

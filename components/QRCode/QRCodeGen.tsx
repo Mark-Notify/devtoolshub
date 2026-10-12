@@ -1,4 +1,5 @@
 "use client";
+import ToolPage from "../ui/ToolPage";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 // Install: npm i qr-code-styling
 // This page uses the actively maintained API surface of qr-code-styling (shapes below are supported by this lib).
@@ -214,207 +215,202 @@ export default function QRStudio() {
 
 
   return (
-    <div className="h-full p-4 overflow-y-auto">
-      <div className="w-full">
-        <div className="max-w-6xl mx-auto">
-          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight">QR Studio — Custom QR Code Generator</h1>
-            <div className="flex flex-wrap items-center gap-2">
-              {presets.map((p) => (
-                <button key={p.key} onClick={p.apply} className="px-3 py-1.5 sm:py-2 rounded-xl shadow text-xs sm:text-sm">
-                  {p.label}
-                </button>
-              ))}
+    <ToolPage
+      slug="qr-code-generator"
+      title="QR Studio — Custom QR Code Generator"
+      description="Design QR codes with colours, gradients, shapes and a logo"
+      width="wide"
+      actions={presets.map((p) => (
+        <button key={p.key} onClick={p.apply} className="btn btn-sm btn-soft">
+          {p.label}
+        </button>
+      ))}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Preview */}
+        <div className="tool-card p-4 sm:p-5 flex flex-col items-center">
+          <div className="w-full flex items-center justify-center overflow-hidden" style={{ minHeight: Math.min(size + 24, PREVIEW_MAX_HEIGHT) }}>
+            <div
+              ref={containerRef}
+              className="max-w-full [&_canvas]:mx-auto [&_canvas]:max-w-full [&_canvas]:h-auto [&_img]:mx-auto [&_img]:max-w-full [&_img]:h-auto [&_svg]:mx-auto [&_svg]:max-w-full [&_svg]:h-auto"
+            />
+          </div>
+          <div className="mt-4 flex items-center gap-3">
+            <select value={fileType} onChange={(e) => setFileType(e.target.value as FileType)} className="select select-bordered select-sm">
+              <option value="png">PNG</option>
+              <option value="svg">SVG</option>
+              <option value="jpeg">JPEG</option>
+            </select>
+            <button onClick={onDownload} className="btn btn-sm btn-primary">Download</button>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="tool-card p-4 sm:p-5 space-y-4">
+          <div>
+            <label className="tool-label block mb-1">Data / URL</label>
+            <input value={data} onChange={(e) => setData(e.target.value)} className="input input-bordered input-sm w-full" placeholder="https://example.com" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="tool-label block mb-1">Size (px)</label>
+              <input type="number" min={128} max={2048} value={size} onChange={(e) => setSize(Number(e.target.value))} className="input input-bordered input-sm w-full" />
             </div>
-          </header>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Preview */}
-            <div className="rounded-2xl shadow p-4 sm:p-5 flex flex-col items-center">
-              <div className="w-full flex items-center justify-center overflow-hidden" style={{ minHeight: Math.min(size + 24, PREVIEW_MAX_HEIGHT) }}>
-                <div
-                  ref={containerRef}
-                  className="max-w-full [&_canvas]:mx-auto [&_canvas]:max-w-full [&_canvas]:h-auto [&_img]:mx-auto [&_img]:max-w-full [&_img]:h-auto [&_svg]:mx-auto [&_svg]:max-w-full [&_svg]:h-auto"
-                />
-              </div>
-              <div className="mt-4 flex items-center gap-3">
-                <select value={fileType} onChange={(e) => setFileType(e.target.value as FileType)} className="px-3 py-2 rounded-xl border">
-                  <option value="png">PNG</option>
-                  <option value="svg">SVG</option>
-                  <option value="jpeg">JPEG</option>
-                </select>
-                <button onClick={onDownload} className="px-4 py-2 rounded-xl bg-blue-600  shadow">Download</button>
-              </div>
+            <div>
+              <label className="tool-label block mb-1">Margin</label>
+              <input type="number" min={0} max={64} value={margin} onChange={(e) => setMargin(Number(e.target.value))} className="input input-bordered input-sm w-full" />
             </div>
-
-            {/* Controls */}
-            <div className="rounded-2xl shadow p-4 sm:p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Data / URL</label>
-                <input value={data} onChange={(e) => setData(e.target.value)} className="w-full px-3 py-2 rounded-xl border" placeholder="https://example.com" />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Size (px)</label>
-                  <input type="number" min={128} max={2048} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full px-3 py-2 rounded-xl border" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Margin</label>
-                  <input type="number" min={0} max={64} value={margin} onChange={(e) => setMargin(Number(e.target.value))} className="w-full px-3 py-2 rounded-xl border" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">ECC</label>
-                  <select value={ecc} onChange={(e) => setEcc(e.target.value as ECC)} className="w-full px-3 py-2 rounded-xl border">
-                    <option value="L">L</option>
-                    <option value="M">M</option>
-                    <option value="Q">Q</option>
-                    <option value="H">H</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Dots (Body)</label>
-                  <select value={dotType} onChange={(e) => setDotType(e.target.value as DotType)} className="w-full px-3 py-2 rounded-xl border">
-                    <option>square</option>
-                    <option>dots</option>
-                    <option>rounded</option>
-                    <option>classy</option>
-                    <option>classy-rounded</option>
-                    <option>extra-rounded</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Eye Frame</label>
-                  <select value={cornerSquare} onChange={(e) => setCornerSquare(e.target.value as CornerSquareType)} className="w-full px-3 py-2 rounded-xl border">
-                    <option>square</option>
-                    <option>dot</option>
-                    <option>extra-rounded</option>
-                    <option>classy</option>
-                    <option>classy-rounded</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Eye Ball</label>
-                  <select value={cornerDot} onChange={(e) => setCornerDot(e.target.value as CornerDotType)} className="w-full px-3 py-2 rounded-xl border">
-                    <option>square</option>
-                    <option>dots</option>
-                    <option>rounded</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Foreground #1</label>
-                  <input type="color" value={fg1} onChange={(e) => setFg1(e.target.value)} className="w-full h-10 rounded-xl border" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Foreground #2</label>
-                  <input type="color" value={fg2} onChange={(e) => setFg2(e.target.value)} className="w-full h-10 rounded-xl border" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input id="useGradient" type="checkbox" checked={useGradient} onChange={(e) => setUseGradient(e.target.checked)} />
-                  <label htmlFor="useGradient" className="text-sm">Use gradient</label>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Gradient Type</label>
-                  <select value={gradType} onChange={(e) => setGradType(e.target.value as GradientType)} className="w-full px-3 py-2 rounded-xl border">
-                    <option value="linear">linear</option>
-                    <option value="radial">radial</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Gradient Rotation (°)</label>
-                  <input type="number" min={0} max={360} value={gradRotation} onChange={(e) => setGradRotation(Number(e.target.value))} className="w-full px-3 py-2 rounded-xl border" />
-                </div>
-                <div className="rounded-xl bg-gray-50 p-3 text-xs text-gray-600">
-                  Linear เท่านั้นที่ใช้ rotation ได้
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Eye Frame Color</label>
-                  <input type="color" value={eyeColor} onChange={(e) => setEyeColor(e.target.value)} className="w-full h-10 rounded-xl border" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Eye Ball Color</label>
-                  <input type="color" value={eyeDotColor} onChange={(e) => setEyeDotColor(e.target.value)} className="w-full h-10 rounded-xl border" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Background</label>
-                  <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-full h-10 rounded-xl border" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input id="transparentBg" type="checkbox" checked={transparentBg} onChange={(e) => setTransparentBg(e.target.checked)} />
-                  <label htmlFor="transparentBg" className="text-sm">Transparent BG</label>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium mb-1">Logo (PNG/SVG/JPEG)</label>
-                  <input type="file" accept="image/*,image/svg+xml" onChange={(e) => onLogoFile(e.target.files?.[0])} className="w-full px-3 py-2 rounded-xl border" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Logo size (0.05–0.35)</label>
-                  <input type="number" step={0.01} min={0.05} max={0.35} value={logoRatio} onChange={(e) => setLogoRatio(Number(e.target.value))} className="w-full px-3 py-2 rounded-xl border" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Logo margin</label>
-                  <input type="number" min={0} max={32} value={logoMargin} onChange={(e) => setLogoMargin(Number(e.target.value))} className="w-full px-3 py-2 rounded-xl border" />
-                </div>
-                <div className="flex items-center gap-2 sm:col-span-2">
-                  <input id="hideBgDots" type="checkbox" checked={hideBgDotsBehindLogo} onChange={(e) => setHideBgDotsBehindLogo(e.target.checked)} />
-                  <label htmlFor="hideBgDots" className="text-sm">Hide background dots behind logo</label>
-                </div>
-              </div>
-
-              <div className="rounded-xl bg-gray-50 p-3 text-xs text-gray-600 leading-relaxed">
-                <b>Scan tips</b>: ECC = H when using a logo; keep strong contrast; margin ≥ 4 modules.
-              </div>
+            <div>
+              <label className="tool-label block mb-1">ECC</label>
+              <select value={ecc} onChange={(e) => setEcc(e.target.value as ECC)} className="select select-bordered select-sm w-full">
+                <option value="L">L</option>
+                <option value="M">M</option>
+                <option value="Q">Q</option>
+                <option value="H">H</option>
+              </select>
             </div>
           </div>
 
-          {/* API Usage Guide */}
-          <div className="mt-8 sm:mt-12 p-4 sm:p-6 rounded-2xl bg-gray-900 text-gray-100 shadow-lg">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">Usage Guide</h2>
-            <p className="text-sm mb-3 text-gray-400">
-              API Endpoint (ฟรีใช้งานผ่าน URL)
-            </p>
-
-            <pre className="bg-black/40 p-3 sm:p-4 rounded-lg overflow-x-auto text-xs sm:text-sm">
-              <code>
-                <a
-                  href="https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 underline hover:text-blue-300 break-all"
-                >
-                  https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono
-                </a>
-              </code>
-            </pre>
-
-            {/* <p className="mt-3 text-xs text-gray-400">
-              📌 คุณสามารถ copy JSON ด้านบนไปใช้เรียกผ่าน <code>qr-code-styling</code> หรือ API server-side ได้โดยตรง
-            </p> */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="tool-label block mb-1">Dots (Body)</label>
+              <select value={dotType} onChange={(e) => setDotType(e.target.value as DotType)} className="select select-bordered select-sm w-full">
+                <option>square</option>
+                <option>dots</option>
+                <option>rounded</option>
+                <option>classy</option>
+                <option>classy-rounded</option>
+                <option>extra-rounded</option>
+              </select>
+            </div>
+            <div>
+              <label className="tool-label block mb-1">Eye Frame</label>
+              <select value={cornerSquare} onChange={(e) => setCornerSquare(e.target.value as CornerSquareType)} className="select select-bordered select-sm w-full">
+                <option>square</option>
+                <option>dot</option>
+                <option>extra-rounded</option>
+                <option>classy</option>
+                <option>classy-rounded</option>
+              </select>
+            </div>
+            <div>
+              <label className="tool-label block mb-1">Eye Ball</label>
+              <select value={cornerDot} onChange={(e) => setCornerDot(e.target.value as CornerDotType)} className="select select-bordered select-sm w-full">
+                <option>square</option>
+                <option>dots</option>
+                <option>rounded</option>
+              </select>
+            </div>
           </div>
 
-          {/* <footer className="mt-8 text-sm text-gray-500">
-            Built with <code>qr-code-styling</code> (valid shape names only). Drop in <code>app/page.tsx</code>.
-          </footer> */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+            <div>
+              <label className="tool-label block mb-1">Foreground #1</label>
+              <input type="color" value={fg1} onChange={(e) => setFg1(e.target.value)} className="w-full h-9 p-1 rounded-lg border border-base-content/15 bg-base-100 cursor-pointer" />
+            </div>
+            <div>
+              <label className="tool-label block mb-1">Foreground #2</label>
+              <input type="color" value={fg2} onChange={(e) => setFg2(e.target.value)} className="w-full h-9 p-1 rounded-lg border border-base-content/15 bg-base-100 cursor-pointer" />
+            </div>
+            <div className="flex items-center gap-2">
+              <input id="useGradient" type="checkbox" className="checkbox checkbox-sm" checked={useGradient} onChange={(e) => setUseGradient(e.target.checked)} />
+              <label htmlFor="useGradient" className="text-sm">Use gradient</label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+            <div>
+              <label className="tool-label block mb-1">Gradient Type</label>
+              <select value={gradType} onChange={(e) => setGradType(e.target.value as GradientType)} className="select select-bordered select-sm w-full">
+                <option value="linear">linear</option>
+                <option value="radial">radial</option>
+              </select>
+            </div>
+            <div>
+              <label className="tool-label block mb-1">Gradient Rotation (°)</label>
+              <input type="number" min={0} max={360} value={gradRotation} onChange={(e) => setGradRotation(Number(e.target.value))} className="input input-bordered input-sm w-full" />
+            </div>
+            <div className="rounded-lg bg-base-300/50 p-3 text-xs opacity-80">
+              Linear เท่านั้นที่ใช้ rotation ได้
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
+            <div>
+              <label className="tool-label block mb-1">Eye Frame Color</label>
+              <input type="color" value={eyeColor} onChange={(e) => setEyeColor(e.target.value)} className="w-full h-9 p-1 rounded-lg border border-base-content/15 bg-base-100 cursor-pointer" />
+            </div>
+            <div>
+              <label className="tool-label block mb-1">Eye Ball Color</label>
+              <input type="color" value={eyeDotColor} onChange={(e) => setEyeDotColor(e.target.value)} className="w-full h-9 p-1 rounded-lg border border-base-content/15 bg-base-100 cursor-pointer" />
+            </div>
+            <div>
+              <label className="tool-label block mb-1">Background</label>
+              <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-full h-9 p-1 rounded-lg border border-base-content/15 bg-base-100 cursor-pointer" />
+            </div>
+            <div className="flex items-center gap-2">
+              <input id="transparentBg" type="checkbox" className="checkbox checkbox-sm" checked={transparentBg} onChange={(e) => setTransparentBg(e.target.checked)} />
+              <label htmlFor="transparentBg" className="text-sm">Transparent BG</label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+            <div className="sm:col-span-2">
+              <label className="tool-label block mb-1">Logo (PNG/SVG/JPEG)</label>
+              <input type="file" accept="image/*,image/svg+xml" onChange={(e) => onLogoFile(e.target.files?.[0])} className="file-input file-input-bordered file-input-sm w-full" />
+            </div>
+            <div>
+              <label className="tool-label block mb-1">Logo size (0.05–0.35)</label>
+              <input type="number" step={0.01} min={0.05} max={0.35} value={logoRatio} onChange={(e) => setLogoRatio(Number(e.target.value))} className="input input-bordered input-sm w-full" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+            <div>
+              <label className="tool-label block mb-1">Logo margin</label>
+              <input type="number" min={0} max={32} value={logoMargin} onChange={(e) => setLogoMargin(Number(e.target.value))} className="input input-bordered input-sm w-full" />
+            </div>
+            <div className="flex items-center gap-2 sm:col-span-2">
+              <input id="hideBgDots" type="checkbox" className="checkbox checkbox-sm" checked={hideBgDotsBehindLogo} onChange={(e) => setHideBgDotsBehindLogo(e.target.checked)} />
+              <label htmlFor="hideBgDots" className="text-sm">Hide background dots behind logo</label>
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-base-300/50 p-3 text-xs opacity-80 leading-relaxed">
+            <b>Scan tips</b>: ECC = H when using a logo; keep strong contrast; margin ≥ 4 modules.
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* API Usage Guide */}
+      <div className="tool-card p-4 sm:p-6">
+        <h2 className="text-sm font-semibold mb-2">Usage Guide</h2>
+        <p className="text-xs mb-3 opacity-60">
+          API Endpoint (ฟรีใช้งานผ่าน URL)
+        </p>
+
+        <pre className="bg-base-100 border border-base-content/10 p-3 sm:p-4 rounded-lg overflow-x-auto text-xs sm:text-sm m-0">
+          <code>
+            <a
+              href="https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-primary break-all"
+            >
+              https://www.devtoolshub.org/api/qr?text=https://www.devtoolshub.org&size=512&type=jpeg&style=mono
+            </a>
+          </code>
+        </pre>
+
+        {/* <p className="mt-3 text-xs text-gray-400">
+          📌 คุณสามารถ copy JSON ด้านบนไปใช้เรียกผ่าน <code>qr-code-styling</code> หรือ API server-side ได้โดยตรง
+        </p> */}
+      </div>
+
+      {/* <footer className="mt-8 text-sm text-gray-500">
+        Built with <code>qr-code-styling</code> (valid shape names only). Drop in <code>app/page.tsx</code>.
+      </footer> */}
+    </ToolPage>
   );
 }
