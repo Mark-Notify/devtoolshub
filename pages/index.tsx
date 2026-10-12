@@ -70,7 +70,7 @@ const Home: NextPage<Props> = ({ type, seo, isTool, index }) => {
         index={index}
       />
       <CommonLayout>
-        <div className="min-h-full">{renderComponent()}</div>
+        <div className="flex-1 flex flex-col overflow-hidden">{renderComponent()}</div>
       </CommonLayout>
     </>
   );
