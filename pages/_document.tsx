@@ -8,8 +8,9 @@ export default function Document() {
         <meta charSet="utf-8" />
         <meta name="theme-color" content={SITE.themeColor} />
         <meta name="application-name" content={SITE.name} />
-        <link rel="icon" href="/devtools-logo.png" />
-        <link rel="apple-touch-icon" href="/devtools-logo.png" />
+        <link rel="icon" href="/favicon.ico" sizes="48x48" />
+        <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/sitemap.xml" />
       </Head>
       <body>

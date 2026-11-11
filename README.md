@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/devtools-logo-full.png" alt="DevToolsHub logo" width="72" />
+  <img src="public/devtools-logo.png" alt="DevToolsHub logo" width="72" />
 
   <h1>DevToolsHub</h1>
   <p>Free, fast, and developer-friendly online tools — no installation required.</p>

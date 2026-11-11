@@ -24,8 +24,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <RecoilRoot>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Favicon placed in public/ */}
-        <link rel="icon" href="/devtools-logo.png" />
         {/* Site-wide Organization schema */}
         <script
           type="application/ld+json"
@@ -35,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               "@type": "Organization",
               name: "DevToolsHub",
               url: "https://www.devtoolshub.org",
-              logo: "https://www.devtoolshub.org/devtools-logo-full.png",
+              logo: "https://www.devtoolshub.org/devtools-logo.png",
             }),
           }}
         />

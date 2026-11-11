@@ -2,7 +2,6 @@ import * as React from "react";
 import NextLink from "next/link";
 import {
   Bars3Icon,
-  CodeBracketIcon,
   MoonIcon,
   SunIcon,
   XMarkIcon,
@@ -153,9 +152,8 @@ export default function Header(props: HeaderProps) {
 
           {/* Logo */}
           <NextLink href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-sm">
-              <CodeBracketIcon className="w-4 h-4 text-white" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="" width={28} height={28} className="w-7 h-7 rounded-lg shadow-sm" />
             <span className="font-bold text-sm tracking-tight hidden sm:inline">DevToolsHub</span>
           </NextLink>
         </div>
@@ -199,9 +197,8 @@ export default function Header(props: HeaderProps) {
             {/* Drawer header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-base-300/50">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center">
-                  <CodeBracketIcon className="w-3.5 h-3.5 text-white" />
-                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.svg" alt="" width={24} height={24} className="w-6 h-6 rounded-md" />
                 <span className="font-bold text-sm">DevToolsHub</span>
               </div>
               <button className="btn btn-ghost btn-xs btn-square" onClick={() => setSidebarOpen(false)}>
