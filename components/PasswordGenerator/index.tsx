@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ToolPage from "../ui/ToolPage";
 import { toastSuccess } from "../../lib/swal";
 
@@ -38,11 +38,20 @@ function strength(pwd: string): { label: string; color: string; pct: number } {
   return { label: "Strong", color: "bg-green-500", pct: 100 };
 }
 
+const DEFAULT_LENGTH = 16;
+const DEFAULT_OPTS = { upper: true, lower: true, numbers: true, symbols: false };
+
 export default function PasswordGenerator() {
-  const [length, setLength] = useState(16);
-  const [opts, setOpts] = useState({ upper: true, lower: true, numbers: true, symbols: false });
+  const [length, setLength] = useState(DEFAULT_LENGTH);
+  const [opts, setOpts] = useState(DEFAULT_OPTS);
   const [count, setCount] = useState(1);
-  const [passwords, setPasswords] = useState<string[]>([generate(16, { upper: true, lower: true, numbers: true, symbols: false })]);
+  // Start empty so server and client render identical markup; the first
+  // password is random and must only be generated on the client after mount.
+  const [passwords, setPasswords] = useState<string[]>([]);
+
+  useEffect(() => {
+    setPasswords([generate(DEFAULT_LENGTH, DEFAULT_OPTS)]);
+  }, []);
 
   const gen = useCallback(() => {
     setPasswords(Array.from({ length: Math.min(count, 50) }, () => generate(length, opts)));
