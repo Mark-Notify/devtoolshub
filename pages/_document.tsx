@@ -17,7 +17,7 @@ export default function Document() {
         {/* Apply the saved theme + layout template before first paint so pages don't flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var d=document.documentElement;d.setAttribute("data-theme",t);d.setAttribute("data-ui",localStorage.getItem("ui-template")==="glass"?"glass":"classic")}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var d=document.documentElement;d.setAttribute("data-theme",t);var s=localStorage,u=s.getItem("ui-template");if(!s.getItem("ui-onboarded"))u=(u==="glass"||!s.getItem("theme"))?"glass":"classic";d.setAttribute("data-ui",u==="glass"?"glass":"classic")}catch(e){}`,
           }}
         />
         <Main />
