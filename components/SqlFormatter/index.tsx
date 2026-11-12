@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { format } from "sql-formatter";
 import Editor from "@monaco-editor/react";
+import { editorTheme } from "../../lib/monacoTheme";
 import SplitPane from "../SplitPane";
 import ToolPage, { Panel } from "../ui/ToolPage";
 import { toastSuccess, toastError } from "../../lib/swal";
@@ -48,7 +49,7 @@ export default function SqlFormatter() {
     toastSuccess("Copied!");
   };
 
-  const vsTheme = theme === "dark" ? "vs-dark" : "vs-light";
+  const vsTheme = editorTheme(theme);
 
   return (
     <ToolPage

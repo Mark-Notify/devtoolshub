@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { editorTheme } from "lib/monacoTheme";
 
 // Shared UI preferences (colour theme + layout template). Kept in a tiny
 // module-level store so the header, sidebar and layout all stay in sync
@@ -52,10 +53,13 @@ export function useUiPrefs() {
   const toggleTheme = () => {
     const theme: Theme = state.theme === "dark" ? "light" : "dark";
     set({ theme });
-    try { (window as any).monaco?.editor.setTheme(theme === "dark" ? "vs-dark" : "vs-light"); } catch {}
+    try { (window as any).monaco?.editor.setTheme(editorTheme(theme)); } catch {}
   };
 
-  const toggleTemplate = () => set({ template: state.template === "glass" ? "classic" : "glass" });
+  const toggleTemplate = () => {
+    set({ template: state.template === "glass" ? "classic" : "glass" });
+    try { (window as any).monaco?.editor.setTheme(editorTheme(state.theme)); } catch {}
+  };
 
   return { ...prefs, toggleTheme, toggleTemplate };
 }
