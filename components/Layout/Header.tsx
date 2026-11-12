@@ -2,8 +2,6 @@ import * as React from "react";
 import NextLink from "next/link";
 import {
   Bars3Icon,
-  MoonIcon,
-  SunIcon,
   XMarkIcon,
   CodeBracketSquareIcon,
   KeyIcon,
@@ -32,7 +30,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useUiPrefs } from "hooks/useUiPrefs";
+import ThemeControls from "./ThemeControls";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 
@@ -96,34 +96,13 @@ const SLUG_ALIASES: Record<string, string> = {
 export const menuSlugFor = (slug: string) => SLUG_ALIASES[slug] || slug;
 
 export default function Header(props: HeaderProps) {
-  const [theme, setTheme] = useState<string | null>(null);
+  const { ready } = useUiPrefs();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const currentSlug = menuSlugFor((router.query.slug || router.query.type || "") as string);
   const { data: session } = useSession();
 
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      setTheme(storedTheme);
-    } else {
-      setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (theme) {
-      document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem("theme", theme);
-    }
-  }, [theme]);
-
-  if (theme === null) return <div style={{ visibility: "hidden" }}>Loading...</div>;
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-    try { window.monaco.editor.setTheme(theme === "dark" ? "vs-light" : "vs-dark"); } catch { }
-  };
+  if (!ready) return <div style={{ visibility: "hidden" }}>Loading...</div>;
 
   const groups = Array.from(new Set(menuItems.map((m) => m.group))) as GroupName[];
 
@@ -159,20 +138,7 @@ export default function Header(props: HeaderProps) {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-1">
-          <motion.button
-            whileHover={{ scale: 1.1, rotate: 15 }} whileTap={{ scale: 0.9 }}
-            onClick={toggleTheme}
-            className="btn btn-ghost btn-sm btn-square"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              {theme === "dark"
-                ? <motion.span key="sun" initial={{ rotate: -90, scale: 0.5, opacity: 0 }} animate={{ rotate: 0, scale: 1, opacity: 1 }} exit={{ rotate: 90, scale: 0.5, opacity: 0 }} transition={{ duration: 0.2 }}><SunIcon className="w-5 h-5 text-yellow-400" /></motion.span>
-                : <motion.span key="moon" initial={{ rotate: 90, scale: 0.5, opacity: 0 }} animate={{ rotate: 0, scale: 1, opacity: 1 }} exit={{ rotate: -90, scale: 0.5, opacity: 0 }} transition={{ duration: 0.2 }}><MoonIcon className="w-5 h-5 text-blue-400" /></motion.span>
-              }
-            </AnimatePresence>
-          </motion.button>
-        </div>
+        <ThemeControls />
       </header>
 
       {/* ── Mobile overlay ───────────────────────────────────── */}

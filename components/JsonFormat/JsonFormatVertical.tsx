@@ -4,6 +4,7 @@ import { ViewColumnsIcon, RectangleStackIcon } from "@heroicons/react/24/outline
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
+import { editorTheme } from "../../lib/monacoTheme";
 import { serialize } from "php-serialize";
 import { toastSuccess, toastError } from "../../lib/swal";
 import { isPHPSerialized, deepUnserialize, safeUnserialize } from "../../lib/phpUnserialize";
@@ -187,7 +188,7 @@ export default function JsonFormatTool({ stacked = false }: { stacked?: boolean 
         height="100%"
         language="json"
         value={outputData}
-        theme={theme === "dark" ? "vs-dark" : "vs-light"}
+        theme={editorTheme(theme)}
         onChange={handleEditorChange}
         options={{
           readOnly: false,

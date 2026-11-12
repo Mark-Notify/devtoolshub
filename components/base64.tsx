@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
+import { editorTheme } from "../lib/monacoTheme";
 import { toastSuccess, toastError } from "../lib/swal";
 import { useToolHistory } from "../hooks/useToolHistory";
 import SaveSnippetButton from "./SaveSnippetButton";
@@ -91,7 +92,7 @@ export default function Base64Page() {
                 height="100%"
                 language="plaintext"
                 value={outputData}
-                theme={theme === "dark" ? "vs-dark" : "vs-light"}
+                theme={editorTheme(theme)}
                 onChange={handleEditorChange}
                 options={{
                     readOnly: false,

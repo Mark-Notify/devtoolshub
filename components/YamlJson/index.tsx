@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import yaml from "js-yaml";
 import Editor from "@monaco-editor/react";
+import { editorTheme } from "../../lib/monacoTheme";
 import SplitPane from "../SplitPane";
 import ToolPage, { Panel, Segmented } from "../ui/ToolPage";
 import { toastSuccess, toastError } from "../../lib/swal";
@@ -57,7 +58,7 @@ export default function YamlJson() {
 
   const inputLang = mode === "yaml-to-json" ? "yaml" : "json";
   const outputLang = mode === "yaml-to-json" ? "json" : "yaml";
-  const vsTheme = theme === "dark" ? "vs-dark" : "vs-light";
+  const vsTheme = editorTheme(theme);
 
   return (
     <ToolPage
