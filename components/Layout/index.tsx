@@ -30,6 +30,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { signIn } from "next-auth/react";
+import { useUiPrefs } from "hooks/useUiPrefs";
+import GlassLayout from "./GlassLayout";
 
 export interface CommonLayoutProps {
   children?: any;
@@ -129,6 +131,15 @@ export default function CommonLayout(props: CommonLayoutProps) {
   const currentSlug = menuSlugFor((router.query.slug || router.query.type || "") as string);
   const { data: session } = useSession();
 
+  const { theme, template, ready } = useUiPrefs();
+  // Several tools read the theme from localStorage on mount — remount them on change.
+  const lastTheme = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ready) return;
+    if (lastTheme.current === null) { lastTheme.current = theme; return; }
+    if (lastTheme.current !== theme) { lastTheme.current = theme; setRefreshKey((p) => p + 1); onThemeChange?.(); }
+  }, [theme, ready, onThemeChange]);
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   const fetchPrefs = useCallback(async () => {
@@ -194,15 +205,28 @@ export default function CommonLayout(props: CommonLayoutProps) {
     } finally { setSharing(false); }
   };
 
-  const handleThemeChange = () => { setRefreshKey((p) => p + 1); onThemeChange?.(); };
-
   const starredInOrder = menuOrder.filter((s) => favorites.includes(s));
   const unstarredInOrder = menuOrder.filter((s) => !favorites.includes(s));
   const groups = Array.from(new Set(unstarredInOrder.map((s) => menuItems.find((m) => m.slug === s)?.group).filter(Boolean))) as GroupName[];
 
+  if (ready && template === "glass") {
+    return (
+      <GlassLayout session={session} currentSlug={currentSlug} menuOrder={menuOrder} favorites={favorites} onToggleFav={toggleFavorite}>
+        <Analytics debug={process.env.NODE_ENV === "development"} />
+        <AnimatePresence mode="wait">
+          <motion.div key={refreshKey} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }} className="flex-1 flex flex-col overflow-hidden min-h-0">
+            {children}
+          </motion.div>
+        </AnimatePresence>
+        <SpeedInsights />
+      </GlassLayout>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-screen overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <Header {...headerProps} onThemeChange={handleThemeChange} />
+    <div className="ui-classic flex flex-col h-screen overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <Header {...headerProps} />
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── Desktop sidebar ── */}

@@ -14,10 +14,10 @@ export default function Document() {
         <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/sitemap.xml" />
       </Head>
       <body>
-        {/* Apply the saved theme before first paint so pages don't flash light → dark */}
+        {/* Apply the saved theme + layout template before first paint so pages don't flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t)}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var d=document.documentElement;d.setAttribute("data-theme",t);d.setAttribute("data-ui",localStorage.getItem("ui-template")==="glass"?"glass":"classic")}catch(e){}`,
           }}
         />
         <Main />
