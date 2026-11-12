@@ -32,6 +32,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { signIn } from "next-auth/react";
 import { useUiPrefs } from "hooks/useUiPrefs";
 import GlassLayout from "./GlassLayout";
+import GlassTip from "./GlassTip";
 
 export interface CommonLayoutProps {
   children?: any;
@@ -306,6 +307,7 @@ export default function CommonLayout(props: CommonLayoutProps) {
             </motion.div>
           </AnimatePresence>
           <SpeedInsights />
+          <GlassTip />
 
           <AnimatePresence>
             {shareToast && (
